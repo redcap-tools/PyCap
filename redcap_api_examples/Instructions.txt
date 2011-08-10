@@ -1,0 +1,11 @@
+REDCap API Examples
+
+1.) Place all the PHP files included here in a web-accessible directory on a web server 
+running PHP.
+2.) Modify any of the PHP files (except RestCallRequest.php) as needed to conform to 
+the API token, URL, and other values that you wish to set for your API request(s).
+3.) Once you have modified the files, you can then access them via a web browser in 
+order to send the API request (e.g. https://www.example.com/export_records.php).
+
+NOTE: These example files require the PHP cURL library to be installed on the web server 
+on which these files are hosted.
