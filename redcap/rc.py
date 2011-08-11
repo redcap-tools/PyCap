@@ -118,3 +118,59 @@ class RCRequest(object):
         finally:            
             sock.close()
 
+class RCProject(object):
+    """Main class representing a RedCap Project"""
+    
+    def __init__(self, token, name=''):
+        """Must init with your token"""
+        
+        self.token = token
+        self.name = name
+        
+        self.metadata = self._md()
+        
+    def _md(self):
+        """Return the project's metadata structure"""
+        
+        pl = {'token':self.token, 'content':'metadata',
+            'format':'json','type':'flat'}
+        metadata = RCRequest(pl, 'metadata').execute()
+        return metadata
+
+    def _basepl(self):
+        """Return a dictionary which can be used as is or added to for 
+        RCRequest payloads"""
+        retur {'token':self.token, 'format':'json', 'type':'flat'}
+        
+
+    def export_rec(self, records=[], fields=[], forms=[], events=[], 
+                rawOrLabel='raw', eventName='label'):
+        """Return data
+        
+        Parameters
+        ----------
+        records: list
+            an array of record names specifying specific records you wish 
+            to pull (by default, all records are pulled)
+        records: list
+            an array of record names specifying specific records you wish to 
+            pull (by default, all records are pulled)
+        fields: list
+            an array of field names specifying specific fields you wish to 
+            pull (by default, all fields are pulled)
+        forms: list
+            an array of form names you wish to pull records for. If the form 
+            name has a space in it, replace the space with an underscore (by default, all records are pulled)
+        events: list
+            an array of unique event names that you wish to pull records for -
+            only for longitudinal projects
+        rawOrLabel: 'raw' [default] |  'label' | 'both' 
+            export the raw coded values or labels for the options of
+            multiple choice fields
+        eventName: 'label' | 'unique'
+             export the unique event name or the event label
+        """
+        
+        pl = self._basepl()
+        pl['content'] = 'record'
+        #keys_to_add = 
