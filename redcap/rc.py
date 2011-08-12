@@ -8,6 +8,7 @@ All rights reserved.
 from urllib import urlencode
 from urllib2 import Request, urlopen, URLError
 
+from pdb import set_trace
 
 class RCAPIError(Exception):
     pass
@@ -20,7 +21,7 @@ class RCRequest(object):
     Decodes response from redcap and returns it.
     """
     
-    def __init__(self, payload={}, type=''):
+    def __init__(self, payload, type=''):
         """Constructor
         
         Parameters
@@ -46,7 +47,8 @@ class RCRequest(object):
             # a list we need to unpack in comma-seperated string
             if len(v) > 0 and not isinstance(v, basestring):
                 to_encode[str(k)] = ','.join(v)
-            to_encode[str(k)] = str(v)
+            else:
+                to_encode[str(k)] = str(v)
         self.api_url = urlencode(to_encode)
         
     def validate_pl(self, type):
@@ -128,24 +130,47 @@ class RCProject(object):
         self.name = name
         
         self.metadata = self._md()
+        self.field_names = self.filter_metadata('field_name')
+        self.field_labels = self.filter_metadata('field_label')
         
     def _md(self):
-        """Return the project's metadata structure"""
+        """Return the project's metadata structure
+        
+        Private
+        
+        """
         
         pl = {'token':self.token, 'content':'metadata',
             'format':'json','type':'flat'}
         metadata = RCRequest(pl, 'metadata').execute()
         return metadata
 
-    def _basepl(self):
+    def _basepl(self, format='json', type='flat'):
         """Return a dictionary which can be used as is or added to for 
         RCRequest payloads"""
-        retur {'token':self.token, 'format':'json', 'type':'flat'}
+        return {'token':self.token, 'format':format, 'type':type}
+    
+    def filter_metadata(self, key):
+        """Return a list values for the key in each field from the project's
+        metadata.
         
-
-    def export_rec(self, records=[], fields=[], forms=[], events=[], 
+        Private
+        
+        Parameters
+        ----------
+        key: str
+            A known key in the metadata structure
+        """
+        filtered = [field[key] for field in self.metadata if key in field]
+        if len(filtered) == 0:
+            raise KeyError("Key not found in metadata")
+        return filtered
+         
+    def export_records(self, records=[], fields=[], forms=[], events=[], 
                 rawOrLabel='raw', eventName='label'):
         """Return data
+        
+        Low level function of RCProject
         
         Parameters
         ----------
@@ -170,7 +195,17 @@ class RCProject(object):
         eventName: 'label' | 'unique'
              export the unique event name or the event label
         """
-        
+        #check that all fields are in self.field_names
+        diff = set(fields).difference(set(self.field_names))
+        if len(diff) > 0:
+            raise ValueError('These fields are not valid: %s' %
+                    ' '.join(diff))
         pl = self._basepl()
         pl['content'] = 'record'
-        #keys_to_add = 
+        keys_to_add = (records, fields, forms, events, rawOrLabel, eventName)
+        str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel', 
+                'eventName')
+        for key, data in zip(str_keys, keys_to_add):
+            if data:
+                pl[key] = data
+        return RCRequest(pl, 'exp_record').execute()
