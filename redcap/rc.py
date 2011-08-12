@@ -7,6 +7,7 @@ All rights reserved.
 
 from urllib import urlencode
 from urllib2 import Request, urlopen, URLError
+import operator as op
 
 from pdb import set_trace
 
@@ -114,7 +115,10 @@ class RCRequest(object):
         else:
             if self.fmt == 'json':
                 import json
-                return json.loads(response)
+                try:
+                    return json.loads(response)
+                except ValueError:
+                    print("JSON parsing failed")
             else:
                 return response  
         finally:            
@@ -129,11 +133,13 @@ class RCProject(object):
         self.token = token
         self.name = name
         
-        self.metadata = self._md()
+        self.metadata = self.md()
         self.field_names = self.filter_metadata('field_name')
+        # we'll use the first field as the default id for each row
+        self.def_field = self.field_names[0]
         self.field_labels = self.filter_metadata('field_label')
         
-    def _md(self):
+    def md(self):
         """Return the project's metadata structure
         
         Private
@@ -145,7 +151,7 @@ class RCProject(object):
         metadata = RCRequest(pl, 'metadata').execute()
         return metadata
 
-    def _basepl(self, format='json', type='flat'):
+    def basepl(self, format='json', type='flat'):
         """Return a dictionary which can be used as is or added to for 
         RCRequest payloads"""
         return {'token':self.token, 'format':format, 'type':type}
@@ -200,7 +206,7 @@ class RCProject(object):
         if len(diff) > 0:
             raise ValueError('These fields are not valid: %s' %
                     ' '.join(diff))
-        pl = self._basepl()
+        pl = self.basepl()
         pl['content'] = 'record'
         keys_to_add = (records, fields, forms, events, rawOrLabel, eventName)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel', 
@@ -209,3 +215,35 @@ class RCProject(object):
             if data:
                 pl[key] = data
         return RCRequest(pl, 'exp_record').execute()
+
+    def single_query(self, query):
+        """ Pose a single query on the database"""
+        # build the fields we need
+        fields = [self.def_field, q['f']]
+        pl = self.basepl()
+        pl['fields'] = fields
+        data = RCRequest(pl, 'exp_record').execute()
+        
+
+    def compare(self, cmp_str, value1, value2):
+        """ """
+        cmp_map = {'eq':op.eq, 'ne':op.ne, 'gt':op.gt, 'ge':op.ge, 'le':op.le,
+                    'lt':op.lt}
+        return cmp_map[cmp_str](value1, value2)
+
+    def query(self, query_list, output_fields=[]):
+        """Query the database and return subject information for those
+        who match the query logic
+        
+        Parameters
+        ----------
+        query_list: list
+            list of dicts, which most contain the following keys:
+                'f': string of field name to key off of
+                'l': 'and' | 'or' 
+                'cmp': list of dicts
+                    each key is a "verb" from the following:
+                        'eq', 'ne', 'le', 'lt', 'ge', 'gt'
+                    and value is the value of the comparison
+        """
+        pass        
