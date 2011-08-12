@@ -8,6 +8,7 @@ All rights reserved.
 from urllib import urlencode
 from urllib2 import Request, urlopen, URLError
 import operator as op
+import time
 
 from pdb import set_trace
 
@@ -216,22 +217,38 @@ class RCProject(object):
                 pl[key] = data
         return RCRequest(pl, 'exp_record').execute()
 
-    def single_query(self, query):
+    def single_filter(self, q, data_type):
         """ Pose a single query on the database"""
         # build the fields we need
-        fields = [self.def_field, q['f']]
-        pl = self.basepl()
-        pl['fields'] = fields
-        data = RCRequest(pl, 'exp_record').execute()
+        if not isinstance(q, Query):
+            raise ValueError("Need Query objects")
+        if not q.fn in self.field_names:
+            raise ValueError("Field name not found in project")
+        fields = [self.def_field, q.fn]
+        data = self.export_records(fields=fields)
+        field_type = self.metadata_type(q.fn)
+        if not field_type:
+            field_type = data_type
+        return q.filter(data, self.def_field, field_type)
+    
+    def metadata_type(self, field_name):
+        """If the given field_name is validated by REDCap, return it's type"""
+        return self._meta_metadata(field_name, 
+            'text_validation_type_or_show_slider_number')
+    
+    def _meta_metadata(self, field, key):
+        """Return the value for key for the field in the metadata"""
+        mf = ''
+        try:
+            mf = str([f[key] for f in self.metadata 
+                            if f['field_name'] == field][0])
+        except IndexError:
+            print("%s not in metadata field:%s" % (key, field))
+            return mf
+        else:
+            return mf
         
-
-    def compare(self, cmp_str, value1, value2):
-        """ """
-        cmp_map = {'eq':op.eq, 'ne':op.ne, 'gt':op.gt, 'ge':op.ge, 'le':op.le,
-                    'lt':op.lt}
-        return cmp_map[cmp_str](value1, value2)
-
-    def query(self, query_list, output_fields=[]):
+    def filter(self, query, output_fields=[]):
         """Query the database and return subject information for those
         who match the query logic
         
@@ -241,9 +258,116 @@ class RCProject(object):
             list of dicts, which most contain the following keys:
                 'f': string of field name to key off of
                 'l': 'and' | 'or' 
-                'cmp': list of dicts
-                    each key is a "verb" from the following:
-                        'eq', 'ne', 'le', 'lt', 'ge', 'gt'
-                    and value is the value of the comparison
         """
         pass        
+
+class Query(object):
+    """Main class abstracting one single query"""
+    cmp_map = {'eq':op.eq, 'ne':op.ne, 'gt':op.gt, 'ge':op.ge, 'le':op.le,
+                    'lt':op.lt}
+    
+    def __init__(self, field_name, comparisons):
+        """ Constructor
+        
+        Parameters
+        ----------
+        field_name: str
+            string corresponding to the field for comparisons
+        comparisons: list of dicts
+            each key is a "verb" from the following:
+                'eq', 'ne', 'le', 'lt', 'ge', 'gt'
+            and value is the value of the comparison
+
+        """
+        self.fn = field_name
+        self.cmps = comparisons    
+        
+    def __str__(self):
+        """How to print Queries"""
+        a = ''
+        log = ' AND '.join(['%s:%s' % (cmp.keys()[0], cmp.values()[0]) 
+                            for cmp in self.cmps])
+        return '%s %s' % (self.fn, log)
+
+    def filter(self, data, return_key, data_type):
+        """
+        """
+        if data_type in ('number', 'integer'):
+            xfm = float
+        elif data_type == 'date_ymd':
+            xfm = lambda x: time.strptime(x,'%Y-%m-%d')
+        elif data_type == 'email':
+            raise ValueError("WHY ARE YOU SEARCHING BY EMAIL?")
+        else:
+            xfm = str
+        match = []
+        if data:
+            sets = []
+            for cmp_d in self.cmps:
+                cmp = cmp_d.keys()[0]
+                val = xfm(cmp_d.values()[0])
+                mat = set([row[return_key] for row in data 
+                            if self.cmp_map[cmp](xfm(row[self.fn]), val)])
+                sets.append(mat)
+            match = list(reduce(lambda a,b: a.intersection(b), sets))
+        return match
+
+class QueryGroup(object):
+    """Class to hold one or more Querys (or QueryGroups!)"""
+    
+    def __init__(self, query):
+        """ Constructor
+        
+        Parameters
+        ----------
+        query: Query
+            first query object
+        
+        """
+        
+        self.queries = [query]
+        self.logic = []
+        self.index = 0
+        self.total = 1
+    
+    def __str__(self):
+        """Print a QueryGroup"""
+        qs = self.queries[:]
+        lg = self.logic[:]
+        if len(qs) > 1:
+            log = ''
+            lg.append('')
+            for q, l in zip(qs, lg):
+                if isinstance(q, QueryGroup):
+                    fmt = '(%s %s) '
+                else:
+                    fmt = '%s %s '
+                log += fmt % (q.__str__(), l)
+            return log
+        else:
+            return qs[0].__str__()
+    
+    def add_query(self, query, logic='AND'):
+        """Add a query to the group
+        
+        Parameters
+        ----------
+        query:  Query | QueryGroup
+            query to add
+        logic:  'AND' | 'OR'
+            logic connecting this query from the last
+        """
+        self.queries.append(query)
+        self.logic.append(logic)
+        self.total += 1
+        
+    def __iter__(self):
+        return self
+        
+    def next(self):
+        if self.index == self.total:
+            raise StopIteration
+        next_q = self.queries[self.index]
+        self.index = self.index + 1
+        return next_q        
+        
