@@ -104,7 +104,7 @@ class RCRequest(object):
         request.add_header('User-Agent', 'PyCap/0.1 scott.s.burns@vanderbilt.edu')
         response = ''
         try:
-            sock = urllib2.urlopen(request)
+            sock = urlopen(request)
             response = sock.read()
         except URLError, e:
             if hasattr(e, 'reason'):
@@ -217,7 +217,7 @@ class RCProject(object):
                 pl[key] = data
         return RCRequest(pl, 'exp_record').execute()
 
-    def single_filter(self, q, data_type):
+    def single_filter(self, q):
         """ Pose a single query on the database"""
         # build the fields we need
         if not isinstance(q, Query):
@@ -227,8 +227,6 @@ class RCProject(object):
         fields = [self.def_field, q.fn]
         data = self.export_records(fields=fields)
         field_type = self.metadata_type(q.fn)
-        if not field_type:
-            field_type = data_type
         return q.filter(data, self.def_field, field_type)
     
     def metadata_type(self, field_name):
@@ -254,10 +252,10 @@ class RCProject(object):
         
         Parameters
         ----------
-        query_list: list
-            list of dicts, which most contain the following keys:
-                'f': string of field name to key off of
-                'l': 'and' | 'or' 
+        query_list: Query or QueryGroup
+            Query(Group) object to process
+        output_fields: list
+            The fields desired for matching subjects
         """
         pass        
 
@@ -266,51 +264,60 @@ class Query(object):
     cmp_map = {'eq':op.eq, 'ne':op.ne, 'gt':op.gt, 'ge':op.ge, 'le':op.le,
                     'lt':op.lt}
     
-    def __init__(self, field_name, comparisons):
+    def __init__(self, field_name, comparisons, type='number'):
         """ Constructor
         
         Parameters
         ----------
         field_name: str
             string corresponding to the field for comparisons
-        comparisons: list of dicts
+        comparisons: dict
             each key is a "verb" from the following:
                 'eq', 'ne', 'le', 'lt', 'ge', 'gt'
             and value is the value of the comparison
 
         """
         self.fn = field_name
-        self.cmps = comparisons    
-        
+        self.cmps = comparisons
+        for k, _ in self.cmps.items():
+            if k not in self.cmp_map:
+                raise ValueError("Bad comparison verb in the Query constructor")
+        self.type = type
+
     def __str__(self):
         """How to print Queries"""
         a = ''
-        log = ' AND '.join(['%s:%s' % (cmp.keys()[0], cmp.values()[0]) 
-                            for cmp in self.cmps])
+        log = ' AND '.join(['%s:%s' % (cmp, v) for cmp, v in self.cmps.items()])
         return '%s %s' % (self.fn, log)
 
-    def filter(self, data, return_key, data_type):
+    def filter(self, data, return_key, type=''):
         """
         """
-        if data_type in ('number', 'integer'):
+        if type:
+            t = type
+        else:
+            t = self.type
+        if t in ('number', 'integer'):
             xfm = float
-        elif data_type == 'date_ymd':
+        elif t == 'date_ymd':
             xfm = lambda x: time.strptime(x,'%Y-%m-%d')
-        elif data_type == 'email':
+        elif t == 'email':
             raise ValueError("WHY ARE YOU SEARCHING BY EMAIL?")
         else:
             xfm = str
         match = []
         if data:
             sets = []
-            for cmp_d in self.cmps:
-                cmp = cmp_d.keys()[0]
-                val = xfm(cmp_d.values()[0])
+            for cmp, v in self.cmps.items():
+                val = xfm(v)
                 mat = set([row[return_key] for row in data 
                             if self.cmp_map[cmp](xfm(row[self.fn]), val)])
                 sets.append(mat)
             match = list(reduce(lambda a,b: a.intersection(b), sets))
         return match
+
+    def fields(self):
+        return self.fn
 
 class QueryGroup(object):
     """Class to hold one or more Querys (or QueryGroups!)"""
@@ -320,11 +327,9 @@ class QueryGroup(object):
         
         Parameters
         ----------
-        query: Query
+        query: Query | QueryGroup
             first query object
-        
         """
-        
         self.queries = [query]
         self.logic = []
         self.index = 0
@@ -332,12 +337,11 @@ class QueryGroup(object):
     
     def __str__(self):
         """Print a QueryGroup"""
-        qs = self.queries[:]
         lg = self.logic[:]
-        if len(qs) > 1:
+        if len(self.queries) > 1:
             log = ''
             lg.append('')
-            for q, l in zip(qs, lg):
+            for q, l in zip(self.queries, lg):
                 if isinstance(q, QueryGroup):
                     fmt = '(%s %s) '
                 else:
@@ -345,7 +349,7 @@ class QueryGroup(object):
                 log += fmt % (q.__str__(), l)
             return log
         else:
-            return qs[0].__str__()
+            return self.queries[0].__str__()
     
     def add_query(self, query, logic='AND'):
         """Add a query to the group
@@ -355,9 +359,11 @@ class QueryGroup(object):
         query:  Query | QueryGroup
             query to add
         logic:  'AND' | 'OR'
-            logic connecting this query from the last
+            logic connecting this query to the last
         """
         self.queries.append(query)
+        if logic.upper() not in ('AND', 'OR'):
+            raise ValueError('Queries can only be connectd with AND | OR')
         self.logic.append(logic)
         self.total += 1
         
@@ -371,3 +377,32 @@ class QueryGroup(object):
         self.index = self.index + 1
         return next_q        
         
+    def fields(self):
+        """Returns a list of keys of all the field names referenced by the
+        queries in the group"""
+        keys = []
+        for q in self.queries:
+            fields = q.fields()
+            if isinstance(q, QueryGroup):
+                keys.extend(fields)
+            else:
+                keys.append(fields)
+        return keys
+        
+    def filter(self, data, return_key):
+        """ Filter for the query group
+        
+        """
+        match = []
+        for i, q in enumerate(self.queries):
+            temp_match = set(q.filter(data, return_key))
+            if i == 0:
+                # first, set match == to set
+                match = temp_match
+            else:
+                logic = self.logic[i]
+                if logic == 'AND':
+                    match = match & temp_match
+                else:
+                    match = match | temp_match 
+        return match
