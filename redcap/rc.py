@@ -268,8 +268,17 @@ class RCProject(object):
         output_fields: list
             The fields desired for matching subjects
         """
-        if isinstance(query, Query):
-            query_keys = set(query.fields())
+        query_keys = query.fields()
+        if not set(query_keys).issubset(set(self.field_names)):
+            raise ValueError("One or more query keys not in project keys")
+        query_keys.append(self.def_field)
+        data = self.export_records(fields=query_keys)
+        matches = query.filter(data, self.def_field)
+        # if output_fields is empty, we'll download all fields, which is 
+        # not desired
+        if not output_fields:
+            output_fields = [self.def_field]
+        return self.export_records(records=matches, fields=output_fields)
     
     def names_labels(self, do_print=False):
         if do_print:
