@@ -263,12 +263,13 @@ class RCProject(object):
         
         Parameters
         ----------
-        query_list: Query or QueryGroup
+        query: Query or QueryGroup
             Query(Group) object to process
         output_fields: list
             The fields desired for matching subjects
         """
-        pass        
+        if isinstance(query, Query):
+            query_keys = set(query.fields())
     
     def names_labels(self, do_print=False):
         if do_print:
@@ -342,7 +343,7 @@ class Query(object):
         return match
 
     def fields(self):
-        return self.fn
+        return [self.fn]
 
 class QueryGroup(object):
     """Class to hold one or more Querys (or QueryGroups!)"""
@@ -408,10 +409,7 @@ class QueryGroup(object):
         keys = []
         for q in self.queries:
             fields = q.fields()
-            if isinstance(q, QueryGroup):
-                keys.extend(fields)
-            else:
-                keys.append(fields)
+            keys.extend(fields)
         return keys
         
     def filter(self, data, return_key):
