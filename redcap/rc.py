@@ -229,6 +229,17 @@ class RCProject(object):
         field_type = self.metadata_type(q.fn)
         return q.filter(data, self.def_field, field_type)
     
+    def group_filter(self, q):
+        """Pose a group filter on the database"""
+        if not isinstance(q, QueryGroup):
+            raise ValueError("Need QueryGroup objects")
+        query_keys = q.fields()
+        if not set(query_keys).issubset(set(self.field_names)):
+            raise ValueError("One or more query keys not in project keys")
+        query_keys.append(self.def_field)
+        data = self.export_records(fields=query_keys)
+        return q.filter(data, self.def_field)
+    
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
         return self._meta_metadata(field_name, 
@@ -310,9 +321,17 @@ class Query(object):
             sets = []
             for cmp, v in self.cmps.items():
                 val = xfm(v)
-                mat = set([row[return_key] for row in data 
-                            if self.cmp_map[cmp](xfm(row[self.fn]), val)])
-                sets.append(mat)
+                mat = []
+                for row in data:
+                    try:
+                        new_val = xfm(row[self.fn])
+                    except ValueError: #probably an emtpy cell
+                        pass
+                    else:
+                        c = self.cmp_map[cmp](new_val, val)
+                        if c: #comparison is true
+                            mat.append(row[return_key])
+                sets.append(set(mat))
             match = list(reduce(lambda a,b: a.intersection(b), sets))
         return match
 
@@ -400,9 +419,9 @@ class QueryGroup(object):
                 # first, set match == to set
                 match = temp_match
             else:
-                logic = self.logic[i]
+                logic = self.logic[i - 1]
                 if logic == 'AND':
                     match = match & temp_match
                 else:
                     match = match | temp_match 
-        return match
+        return list(match)
