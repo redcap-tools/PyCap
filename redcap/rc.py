@@ -269,6 +269,12 @@ class RCProject(object):
             The fields desired for matching subjects
         """
         pass        
+    
+    def names_labels(self, do_print=False):
+        if do_print:
+            for name, label in zip(self.field_names, self.field_labels):
+                print('%s --> %s' % (str(name), str(label)))
+        return zip(self.field_names, self.field_labels)
 
 class Query(object):
     """Main class abstracting one single query"""
