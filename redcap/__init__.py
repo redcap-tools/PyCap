@@ -5,4 +5,4 @@ Copyright (c) 2011, Scott Burns
 All rights reserved.
 """
 
-import rc
+from rc import Project, Query, QueryGroup
