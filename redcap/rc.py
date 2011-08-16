@@ -23,7 +23,7 @@ class RCRequest(object):
     Decodes response from redcap and returns it.
     """
     
-    def __init__(self, payload, type=''):
+    def __init__(self, url, payload, type=''):
         """Constructor
         
         Parameters
@@ -33,7 +33,7 @@ class RCRequest(object):
         type: str
             If provided, attempts to validate payload contents against API
         """
-        self.url = 'https://redcap.vanderbilt.edu/api/'
+        self.url = url
         self.payload = payload
         if type:
             self.validate_pl(type)
@@ -128,11 +128,12 @@ class RCRequest(object):
 class RCProject(object):
     """Main class representing a RedCap Project"""
     
-    def __init__(self, token, name=''):
+    def __init__(self, url, token, name=''):
         """Must init with your token"""
         
         self.token = token
         self.name = name
+        self.url = url
         
         self.metadata = self.md()
         self.field_names = self.filter_metadata('field_name')
@@ -149,7 +150,7 @@ class RCProject(object):
         
         pl = {'token':self.token, 'content':'metadata',
             'format':'json','type':'flat'}
-        metadata = RCRequest(pl, 'metadata').execute()
+        metadata = RCRequest(self.url, pl, 'metadata').execute()
         return metadata
 
     def basepl(self, format='json', type='flat'):
@@ -215,7 +216,7 @@ class RCProject(object):
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 pl[key] = data
-        return RCRequest(pl, 'exp_record').execute()
+        return RCRequest(self.url, pl, 'exp_record').execute()
     
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
