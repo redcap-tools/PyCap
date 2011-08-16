@@ -125,7 +125,7 @@ class RCRequest(object):
         finally:            
             sock.close()
 
-class RCProject(object):
+class Project(object):
     """Main class representing a RedCap Project"""
     
     def __init__(self, url, token, name=''):
@@ -135,13 +135,13 @@ class RCProject(object):
         self.name = name
         self.url = url
         
-        self.metadata = self.md()
+        self.metadata = self.__md()
         self.field_names = self.filter_metadata('field_name')
         # we'll use the first field as the default id for each row
         self.def_field = self.field_names[0]
         self.field_labels = self.filter_metadata('field_label')
         
-    def md(self):
+    def __md(self):
         """Return the project's metadata structure
         
         Private
@@ -153,7 +153,7 @@ class RCProject(object):
         metadata = RCRequest(self.url, pl, 'metadata').execute()
         return metadata
 
-    def basepl(self, format='json', type='flat'):
+    def __basepl(self, format='json', type='flat'):
         """Return a dictionary which can be used as is or added to for 
         RCRequest payloads"""
         return {'token':self.token, 'format':format, 'type':type}
@@ -208,7 +208,7 @@ class RCProject(object):
         if len(diff) > 0:
             raise ValueError('These fields are not valid: %s' %
                     ' '.join(diff))
-        pl = self.basepl()
+        pl = self.__basepl()
         pl['content'] = 'record'
         keys_to_add = (records, fields, forms, events, rawOrLabel, eventName)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel', 
@@ -220,10 +220,10 @@ class RCProject(object):
     
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
-        return self._meta_metadata(field_name, 
+        return self.__meta_metadata(field_name, 
             'text_validation_type_or_show_slider_number')
     
-    def _meta_metadata(self, field, key):
+    def __meta_metadata(self, field, key):
         """Return the value for key for the field in the metadata"""
         mf = ''
         try:
@@ -245,6 +245,12 @@ class RCProject(object):
             Query(Group) object to process
         output_fields: list
             The fields desired for matching subjects
+            
+        Returns
+        -------
+        A list of dictionaries whose keys contains at least the default field
+        and at most each key passed in with output_fields, each dictionary
+        representing a surviving row in the database.
         """
         query_keys = query.fields()
         if not set(query_keys).issubset(set(self.field_names)):
@@ -262,7 +268,7 @@ class RCProject(object):
         if do_print:
             for name, label in zip(self.field_names, self.field_labels):
                 print('%s --> %s' % (str(name), str(label)))
-        return zip(self.field_names, self.field_labels)
+        return self.field_names, self.field_labels
 
 class Query(object):
     """Main class abstracting one single query"""
