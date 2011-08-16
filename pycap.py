@@ -7,64 +7,74 @@ All rights reserved.
 
 import sys
 import os
-import yaml
 
 from redcap import rc
 reload(rc)
 
+USE_YAML = True
 
-pycap_path = os.path.expanduser('~/.pycap.yaml')
-try:
-    with open(pycap_path, 'r') as f:
-        rc_data = yaml.load(f)
-except IOError:
-    print("Cannot load pycap user data")
-    rc_data = {}
+"""
+You need to somehow bring your API keys into python.
 
+I have them written in a yaml document at ~/.pycap.yaml and it looks like this:
+
+KEYS:
+    {study_name}: {API KEY}
+    {study_name}: {API KEY}
+    {study_name}: {API KEY}
+    {study_name}: {API KEY}
+
+You can put them straight into this (or another file), but be wary of including
+your sensitive data (the API keys) in version-control systems.
+"""
+if USE_YAML:
+    import yaml
+    pycap_path = os.path.expanduser('~/.pycap.yaml')
+    try:
+        with open(pycap_path, 'r') as f:
+            rc_data = yaml.load(f)
+    except IOError:
+        print("Cannot load pycap user data")
+        rc_data = {}
+
+# $ python pycap {study_name}
 study = sys.argv[1]
 
 if ('KEYS' not in rc_data) or (study not in rc_data['KEYS']):
     raise ValueError('%s API key not found in %s' % (study, pycap_path))
 
-project = rc.RCProject(rc_data['KEYS'][study], study)
+# If you just want to copy/paste your API key, here's the place
+API_Key = rc_data['KEYS'][study]
 
+# We instantiate a RedCap project with the API Key 
+project = rc.RCProject(API_Key)
+
+"""The following query is project specific because every project will have 
+different field_names (aka keys, headers, etc.)
+
+If you want to find all of the field_names and their associated labels, you can
+do this in code:
+
+project.names_labels(do_print=True)
+
+This will print many lines of {field_name} --> {field_label}
+
+where field_name is a specific column name as known to the REDCap database and 
+field_label is a (hopefully) more verbose description string.
+
+It is the field_names that should be used when building Query/QueryGroup 
+objects.
+"""
+
+# 8 <= SubjectAge <= 12
 q1 = rc.Query('subjage', {'le':12, 'ge':8}, 'number')
+# Woodock-Johson Basic Reading Skills Standard Score > 75
 q2 = rc.Query('wjbrsss', {'ge':75},'number')
+# WISC FSIQ > 100
+q3 = rc.Query('wiscfsiq', {'ge': 100}, 'number')
 
-match1 = project.single_filter(q1)
-match2 = project.single_filter(q2)
-print("Manually made...")
-man = sorted(set(match1) & set(match2))
-print(man)
-print(len(man))
 
 query_group = rc.QueryGroup(q1)
 query_group.add_query(q2, 'AND')
-auto = project.group_filter(query_group)
-print("Made with QueryGroup")
-print(sorted(auto))
-print(len(auto))
-
-
-
-# q1 = rc.Query('score', {'ge':12})
-# q2 = rc.Query('index', {'ge':75})
-# q3 = rc.Query('cat', {'eq':'RD'}, 'string')
-# 
-# qg = rc.QueryGroup(q1)
-# qg.add_query(q2)
-# qg.add_query(q3)
-# 
-# 
-# q5 = rc.Query('iq', {'ge':85})
-# q6 = rc.Query('subscore', {'ge':74})
-# 
-# qg2 = rc.QueryGroup(q5)
-# qg2.add_query(q6, 'OR')
-# 
-# qg.add_query(qg2, 'OR')
-# 
-# print qg
-# 
-# print qg.fields()
-
+query_group.add_query(q3) # AND is the default logic, but OR is available too
+group = project.filter(query_group)

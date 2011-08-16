@@ -216,29 +216,6 @@ class RCProject(object):
             if data:
                 pl[key] = data
         return RCRequest(pl, 'exp_record').execute()
-
-    def single_filter(self, q):
-        """ Pose a single query on the database"""
-        # build the fields we need
-        if not isinstance(q, Query):
-            raise ValueError("Need Query objects")
-        if not q.fn in self.field_names:
-            raise ValueError("Field name not found in project")
-        fields = [self.def_field, q.fn]
-        data = self.export_records(fields=fields)
-        field_type = self.metadata_type(q.fn)
-        return q.filter(data, self.def_field, field_type)
-    
-    def group_filter(self, q):
-        """Pose a group filter on the database"""
-        if not isinstance(q, QueryGroup):
-            raise ValueError("Need QueryGroup objects")
-        query_keys = q.fields()
-        if not set(query_keys).issubset(set(self.field_names)):
-            raise ValueError("One or more query keys not in project keys")
-        query_keys.append(self.def_field)
-        data = self.export_records(fields=query_keys)
-        return q.filter(data, self.def_field)
     
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
