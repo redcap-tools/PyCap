@@ -46,8 +46,10 @@ if ('KEYS' not in rc_data) or (study not in rc_data['KEYS']):
 # If you just want to copy/paste your API key, here's the place
 API_Key = rc_data['KEYS'][study]
 
-# We instantiate a RedCap project with the API Key 
-project = rc.RCProject(API_Key)
+vandy_url = "https://redcap.vanderbilt.edu/api/"
+
+# We instantiate a RedCap project with your REDCap URL and API Key 
+project = rc.RCProject(vandy_url, API_Key)
 
 """The following query is project specific because every project will have 
 different field_names (aka keys, headers, etc.)
@@ -66,15 +68,12 @@ It is the field_names that should be used when building Query/QueryGroup
 objects.
 """
 
-# 8 <= SubjectAge <= 12
-q1 = rc.Query('subjage', {'le':12, 'ge':8}, 'number')
-# Woodock-Johson Basic Reading Skills Standard Score > 75
-q2 = rc.Query('wjbrsss', {'ge':75},'number')
-# WISC FSIQ > 100
-q3 = rc.Query('wiscfsiq', {'ge': 100}, 'number')
-
-
-query_group = rc.QueryGroup(q1)
-query_group.add_query(q2, 'AND')
-query_group.add_query(q3) # AND is the default logic, but OR is available too
-group = project.filter(query_group)
+# q1 = rc.Query('subjage', {'le':12, 'ge':8}, 'number')
+# q2 = rc.Query('wjbrsss', {'ge':75},'number')
+# q3 = rc.Query('wiscfsiq', {'ge': 100}, 'number')
+# 
+# 
+# query_group = rc.QueryGroup(q1)
+# query_group.add_query(q2, 'AND')
+# query_group.add_query(q3) # AND is the default logic, but OR is available too
+# group = project.filter(query_group)
