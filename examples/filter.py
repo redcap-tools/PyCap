@@ -32,7 +32,7 @@ You can put them straight into this code (or another file), but be wary of
 including your API keys in version-control systems.
 """
 import yaml
-pycap_path = os.path.expanduser('~/.pycap.yaml')
+pycap_path = os.path.expanduser('~/.pycap.yml')
 try:
     with open(pycap_path, 'r') as f:
         rc_data = yaml.load(f)
