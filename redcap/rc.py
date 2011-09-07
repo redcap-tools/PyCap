@@ -90,9 +90,8 @@ class RCRequest(object):
     def execute(self):
         """Execute the API request and return data
         
-        Returns:
-        response: str
-            HTTP reponse code from API
+        Returns
+        -------
         data: ?
             Depends on format in payload and action
             
