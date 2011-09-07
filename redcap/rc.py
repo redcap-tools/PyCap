@@ -15,6 +15,7 @@ from pdb import set_trace
 class RCAPIError(Exception):
     pass
 
+
 class RCRequest(object):
     """Private class wrapping the REDCap API
     
@@ -23,7 +24,7 @@ class RCRequest(object):
     Decodes response from redcap and returns it.
     """
     
-    def __init__(self, url, payload, type=''):
+    def __init__(self, url, payload, type):
         """Constructor
         
         Parameters
@@ -35,8 +36,9 @@ class RCRequest(object):
         """
         self.url = url
         self.payload = payload
+        self.type = type
         if type:
-            self.validate_pl(type)
+            self.validate_pl()
         self.fmt = payload['format']
             
         # the payload dictionary can have non-url-like objects (specifically,
@@ -53,30 +55,28 @@ class RCRequest(object):
                 to_encode[str(k)] = str(v)
         self.api_url = urlencode(to_encode)
         
-    def validate_pl(self, type):
+    def validate_pl(self):
         """Check that at least required params exist
         
-        type: str
-            Type of action request
         """
-        if type == 'exp_record':
+        if self.type == 'exp_record':
             req = set(('token', 'content', 'format', 'type'))
             if self.payload['content'] != 'record':
                 raise RCAPIError('Exporting record but content is not record')
-        if type == 'imp_record':
+        if self.type == 'imp_record':
             req = set(('token', 'content', 'format', 'type', 'overwriteBehavior',
                     'data'))
             if self.payload['content'] != 'record':
                 raise RCAPIError('Importing record but content is not record')            
-        if type == 'metadata':
+        if self.type == 'metadata':
             req = set(('token', 'content', 'format'))
             if self.payload['content'] != 'metadata':
                 raise RCAPIError('Requesting metadata but content is not metadata')
-        if type == 'exp_file': 
+        if self.type == 'exp_file': 
             req = set(('token', 'content', 'action', 'record', 'field'))
             if self.payload['content'] != 'file':
                 raise RCAPIError('Exporting file but content is not file')
-        if type == 'imp_file':
+        if self.type == 'imp_file':
             req = set(('token', 'content', 'action', 'record', 'field', 'file'))
             if self.payload['content'] != 'file':
                 raise RCAPIError('Importing file but content is not file')
@@ -102,10 +102,11 @@ class RCRequest(object):
         """
         request = Request(self.url, self.api_url)
         request.add_header('User-Agent', 'PyCap/0.1 scott.s.burns@vanderbilt.edu')
+        if 'imp' in self.type:
+            request.add_header('Content-Type', 'application/x-www-form-urlencoded')
         response = ''
         try:
-            sock = urlopen(request)
-            response = sock.read()
+            response = urlopen(request)
         except URLError, e:
             if hasattr(e, 'reason'):
                 print("Failure to reach RedCap server.")
@@ -114,16 +115,16 @@ class RCRequest(object):
                 print("Server couldn't fulfill request.")
                 print("Error code: %s" % e.code)
         else:
+            resp_str = response.read()
+            response.close()
+            to_return = resp_str
             if self.fmt == 'json':
                 import json
                 try:
-                    return json.loads(response)
+                    to_return = json.loads(resp_str)
                 except ValueError:
                     print("JSON parsing failed")
-            else:
-                return response  
-        finally:            
-            sock.close()
+            return to_return
 
 class Project(object):
     """Main class representing a RedCap Project"""

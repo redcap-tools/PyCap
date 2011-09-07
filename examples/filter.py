@@ -11,7 +11,7 @@ import os
 from redcap import rc
 reload(rc)
 
-# $ python pycap {study_name}
+# $ python filter {study_name}
 study = sys.argv[1]
 
 ############################
