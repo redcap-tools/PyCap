@@ -281,6 +281,9 @@ class Project(object):
         to_import: seq of dicts
             List of dictionaries describing the data you wish to import_records
             Keys of the dictionaries must be subset of project's fields
+        overwrite: 'normal' | 'overwrite'
+            'overwrite' will erase values previously stored in the database if 
+            not specified in the to_import dictionaries
         """
         all_fields = set(self.field_names)
         passed_fields = [set(d.keys()) for d in to_import]
