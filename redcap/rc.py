@@ -11,6 +11,7 @@ import operator as op
 import time
 
 from pdb import set_trace
+import json
 
 class RCAPIError(Exception):
     pass
@@ -121,7 +122,6 @@ class RCRequest(object):
             response.close()
             to_return = resp_str
             if self.fmt == 'json':
-                import json
                 try:
                     to_return = json.loads(resp_str)
                 except ValueError:
@@ -273,6 +273,29 @@ class Project(object):
                 print('%s --> %s' % (str(name), str(label)))
         return self.field_names, self.field_labels
 
+    def import_records(self, to_import, overwrite='normal'):
+        """ Import data into the RedCap Project
+        
+        Parameters
+        ----------
+        to_import: seq of dicts
+            List of dictionaries describing the data you wish to import_records
+            Keys of the dictionaries must be subset of project's fields
+        """
+        all_fields = set(self.field_names)
+        passed_fields = [set(d.keys()) for d in to_import]
+        is_subsets = map(lambda x: all_fields.issuperset(x), passed_fields)
+        if not all(is_subsets):
+            msg = "Some fields you passed do not exist in the project"
+            raise ValueError(msg)
+        pl = self.__basepl()
+        pl['overwriteBehavior'] = overwrite
+        pl['content'] = 'record'
+        pl['data'] = json.dumps(to_import, separators=(',',':'))
+        num_proc = RCRequest(self.url, pl, 'imp_record').execute()
+        print("Imported %s records" % num_proc)
+        
+        
 class Query(object):
     """Main class abstracting one single query"""
     cmp_map = {'eq':op.eq, 'ne':op.ne, 'gt':op.gt, 'ge':op.ge, 'le':op.le,
