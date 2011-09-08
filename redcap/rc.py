@@ -113,6 +113,9 @@ class RCRequest(object):
             if hasattr(e, 'code'):
                 print("Server couldn't fulfill request.")
                 print("Error code: %s" % e.code)
+            error_text = e.read()
+            if error_text:
+                print("Response from server: %s" % error_text)
         else:
             resp_str = response.read()
             response.close()
