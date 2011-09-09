@@ -9,8 +9,6 @@ from urllib import urlencode
 from urllib2 import Request, urlopen, URLError
 import operator as op
 import time
-
-from pdb import set_trace
 import json
 
 class RCAPIError(Exception):
@@ -23,6 +21,8 @@ class RCRequest(object):
     see https://redcap.vanderbilt.edu/api/help/
     
     Decodes response from redcap and returns it.
+    
+    Users shouldn't really need to use this, the Project class will use this.
     """
     
     def __init__(self, url, payload, type):
@@ -32,8 +32,8 @@ class RCRequest(object):
         ----------
         payload: dict
             key,values corresponding to the REDCap API
-        type: str
-            If provided, attempts to validate payload contents against API
+        type: 'imp_record' | 'exp_record' | 'metadata'
+            Used to validate payload contents against API
         """
         self.url = url
         self.payload = payload
@@ -145,16 +145,10 @@ class Project(object):
         self.field_labels = self.filter_metadata('field_label')
         
     def __md(self):
-        """Return the project's metadata structure
-        
-        Private
-        
-        """
-        
-        pl = {'token':self.token, 'content':'metadata',
-            'format':'json','type':'flat'}
-        metadata = RCRequest(self.url, pl, 'metadata').execute()
-        return metadata
+        """Return the project's metadata structure"""
+        pl = self.__basepl()
+        pl['content'] = 'metadata'
+        return RCRequest(self.url, pl, 'metadata').execute()
 
     def __basepl(self, format='json', type='flat'):
         """Return a dictionary which can be used as is or added to for 
@@ -164,8 +158,6 @@ class Project(object):
     def filter_metadata(self, key):
         """Return a list values for the key in each field from the project's
         metadata.
-        
-        Private
         
         Parameters
         ----------
@@ -326,7 +318,6 @@ class Query(object):
 
     def __str__(self):
         """How to print Queries"""
-        a = ''
         log = ' AND '.join(['%s:%s' % (cmp, v) for cmp, v in self.cmps.items()])
         return '%s %s' % (self.fn, log)
 
