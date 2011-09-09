@@ -11,49 +11,20 @@ import os
 from redcap import rc
 reload(rc)
 
-# $ python filter {study_name}
-study = sys.argv[1]
+study = 'NF1'
 
-############################
-## BEGIN API KEY BOILERPLATE
+config = ConfigParser()
+with open(os.path.expanduser('~/.pycap.cfg')) as f:
+    config.readfp(f)    
+API_Key = config.get('keys', study)
 
-"""
-You need to somehow bring your API keys into python.
-
-I have them written in a yaml document at ~/.pycap.yaml and it looks like this:
-
-KEYS:
-    {study_name}: {API KEY}
-    {study_name}: {API KEY}
-    {study_name}: {API KEY}
-    {study_name}: {API KEY}
-
-You can put them straight into this code (or another file), but be wary of 
-including your API keys in version-control systems.
-"""
-import yaml
-pycap_path = os.path.expanduser('~/.pycap.yml')
-try:
-    with open(pycap_path, 'r') as f:
-        rc_data = yaml.load(f)
-except IOError:
-    print("Cannot load pycap user data")
-    rc_data = {}
-
-if ('KEYS' not in rc_data) or (study not in rc_data['KEYS']):
-    raise ValueError('%s API key not found in %s' % (study, pycap_path))
-## END API KEY BOILERPLATE
-##########################
-
-
-# If you just want to copy/paste your API key, here's the place
-API_Key = rc_data['KEYS'][study]
 
 vandy_url = "https://redcap.vanderbilt.edu/api/"
 
 # We instantiate a RedCap project with your REDCap URL and API Key 
 project = rc.Project(vandy_url, API_Key)
 
+# These fields are known to be in the study specified above
 q1 = rc.Query('subjage', {'le':12, 'ge':8}, 'number')
 q2 = rc.Query('wjbrsss', {'ge':75},'number')
 q3 = rc.Query('wiscfsiq', {'ge': 100}, 'number')

@@ -6,44 +6,42 @@ All rights reserved.
 """
 
 import os
-import sys
-import json
+from ConfigParser import ConfigParser
 
 import redcap
 reload(redcap)
-reload(redcap.rc)
 
 study = 'Testing'
 
-import yaml
-pycap_file = os.path.expanduser('~/.pycap.yml')
-try:
-    with open(pycap_file, 'r') as f:
-        rc_data = yaml.load(f)
-except ImportError:
-    rc_data = {}
-    
-API_Key = rc_data['KEYS'][study]
+config = ConfigParser()
+with open(os.path.expanduser('~/.pycap.cfg')) as f:
+    config.readfp(f)    
+API_Key = config.get('keys', study)
 
 url = 'https://redcap.vanderbilt.edu/api/'
 
 project = redcap.Project(url, API_Key)
 
-
-pl = {'token':API_Key, 'content':'record', 'type':'eav', 'overwriteBehavior':'normal'}
-
-pl['format'] = 'json'
-data = {'study_id':'1',
+#Data to import
+data = [{'study_id':'1',
         'first_name':'John',
         'last_name':'Doe',
         'dob':'2000-01-01',
-        'sex':'M',
+        'sex':'1',
         'foo_score':'1',
         'bar_score':'2',
-        'image_path':'/path/to/image'}
+        'image_path':'/path/to/image',
+        'address':'123 Main Street, Anytown USA 23456',
+        'phone_number':6155551234},
+        {'study_id':'2',
+        'first_name':'Jane',
+        'last_name':'Smith',
+        'dob':'2000-02-01',
+        'sex':'0',
+        'foo_score':'10',
+        'bar_score':'20',
+        'image_path':'/path/to/image2',
+        'address':'124 Main Street, Anytown USA 12345',
+        'phone_number':6155556789}]
 
-jData = json.dumps(data,separators=(',',':'))
-pl['data'] = jData
-
-a = redcap.rc.RCRequest(url, pl, 'imp_record').execute()
-
+project.import_records(data)
