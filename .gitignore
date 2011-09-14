@@ -5,3 +5,4 @@ MANIFEST
 dist/
 README
 *.egg-info
+build/
