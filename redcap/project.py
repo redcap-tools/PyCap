@@ -29,14 +29,14 @@ class Project(object):
 
     def __md(self):
         """Return the project's metadata structure"""
-        pl = self.__basepl()
-        pl['content'] = 'metadata'
-        return RCRequest(self.url, pl, 'metadata').execute()
+        p_l = self.__basepl()
+        p_l['content'] = 'metadata'
+        return RCRequest(self.url, p_l, 'metadata').execute()
 
-    def __basepl(self, format='json', type='flat'):
+    def __basepl(self, rec_format='json', rec_type='flat'):
         """Return a dictionary which can be used as is or added to for
         RCRequest payloads"""
-        return {'token': self.token, 'format': format, 'type': type}
+        return {'token': self.token, 'format': rec_format, 'type': rec_type}
 
     def filter_metadata(self, key):
         """Return a list values for the key in each field from the project's
@@ -52,7 +52,7 @@ class Project(object):
             raise KeyError("Key not found in metadata")
         return filtered
 
-    def export_records(self, records=[], fields=[], forms=[], events=[],
+    def export_records(self, records=None, fields=None, forms=None, events=None,
                 rawOrLabel='raw', eventName='label'):
         """Return data
 
