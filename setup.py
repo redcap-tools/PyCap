@@ -40,7 +40,7 @@ if __name__ == '__main__':
                 'Operating System :: Microsoft :: Windows',
                 'Operating System :: POSIX',
                 'Operating System :: Unix',
-                'Operating System :: MacOS'
+                'Operating System :: MacOS',
                 'Programming Language :: Python',
                 'Programming Language :: Python :: 2.7',)
         )
