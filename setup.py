@@ -27,7 +27,7 @@ if __name__ == '__main__':
         url='http://github.com/VUIIS/PyCap',
         version=redcap.__version__,
         download_url='http://github.com/VUIIS/PyCap',
-        long_description=open('README.md').read() + '\n\n',
+        long_description=open('README.rst').read() + '\n\n',
         packages=['redcap'],
         platforms='any',
         classifiers=(
