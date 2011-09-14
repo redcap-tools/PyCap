@@ -12,6 +12,8 @@ import json
 
 
 class RCAPIError(Exception):
+    """ This is raised when the caller is trying to do an API call that
+    RedCap doesn't handle"""
     pass
 
 
@@ -25,19 +27,21 @@ class RCRequest(object):
     Users shouldn't really need to use this, the Project class will use this.
     """
 
-    def __init__(self, url, payload, type):
+    def __init__(self, url, payload, req_type):
         """Constructor
 
         Parameters
         ----------
+        url: str
+            Full URL to your RedCap API 
         payload: dict
             key,values corresponding to the REDCap API
-        type: 'imp_record' | 'exp_record' | 'metadata'
+        req_type: 'imp_record' | 'exp_record' | 'metadata'
             Used to validate payload contents against API
         """
         self.url = url
         self.payload = payload
-        self.type = type
+        self.type = req_type
         if type:
             self.validate_pl()
         self.fmt = payload['format']
@@ -45,15 +49,15 @@ class RCRequest(object):
         # the payload dictionary can have non-url-like objects (specifically,
         # arrays, so let's transfrom payload to a url-like dictionary
         to_encode = {}
-        for k, v in payload.iteritems():
+        for k, val in payload.iteritems():
             # the only weird thing we might get is an array
             # like exp_record with multiple fields
-            # so check if v responds to length and if it's not a string, it's
+            # so check if val responds to length and if it's not a string, it's
             # a list we need to unpack in comma-seperated string
-            if len(v) > 0 and not isinstance(v, basestring):
-                to_encode[str(k)] = ','.join(v)
+            if len(val) > 0 and not isinstance(val, basestring):
+                to_encode[str(k)] = ','.join(val)
             else:
-                to_encode[str(k)] = str(v)
+                to_encode[str(k)] = str(val)
         self.api_url = urlencode(to_encode)
 
     def validate_pl(self):
@@ -109,14 +113,14 @@ class RCRequest(object):
         response = ''
         try:
             response = urlopen(request)
-        except URLError, e:
-            if hasattr(e, 'reason'):
+        except URLError, err:
+            if hasattr(err, 'reason'):
                 print("Failure to reach RedCap server.")
-                print("Reason: %s'" % e.reason)
-            if hasattr(e, 'code'):
+                print("Reason: %s'" % err.reason)
+            if hasattr(err, 'code'):
                 print("Server couldn't fulfill request.")
-                print("Error code: %s" % e.code)
-            error_text = e.read()
+                print("Error code: %s" % err.code)
+            error_text = err.read()
             if error_text:
                 print("Response from server: %s" % error_text)
         else:
