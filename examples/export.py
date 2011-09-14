@@ -16,8 +16,7 @@ study = sys.argv[1]
 
 # Use a .cfg file to store API keys
 config = ConfigParser()
-with open(os.path.expanduser('~/.pycap.cfg')) as f:
-    config.readfp(f)
+config.read([os.path.expanduser('~/.pycap.cfg')])
 API_Key = config.get('keys',study)
 
 vandy_url = "https://redcap.vanderbilt.edu/api/"

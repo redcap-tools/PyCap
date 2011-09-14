@@ -14,8 +14,7 @@ reload(redcap)
 study = 'Testing'
 
 config = ConfigParser()
-with open(os.path.expanduser('~/.pycap.cfg')) as f:
-    config.readfp(f)    
+config.read([os.path.expanduser('~/.pycap.cfg')])
 API_Key = config.get('keys', study)
 
 url = 'https://redcap.vanderbilt.edu/api/'
@@ -44,4 +43,4 @@ data = [{'study_id':'1',
         'address':'124 Main Street, Anytown USA 12345',
         'phone_number':6155556789}]
 
-project.import_records(data)
+num_imports = project.import_records(data)
