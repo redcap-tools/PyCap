@@ -9,7 +9,10 @@ All rights reserved.
 import os
 import redcap
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 
 if __name__ == '__main__':
@@ -26,10 +29,7 @@ if __name__ == '__main__':
         download_url='http://github.com/VUIIS/PyCap',
         long_description=open('README.md').read() + '\n\n',
         packages=['redcap'],
-        install_requires=[],
-        required=[],
         platforms='any',
-        zip_safe=False,
         classifiers=(
                 'Development Status :: 4 - Beta',
                 'Intended Audience :: Developers',

@@ -3,3 +3,5 @@
 MANIFEST
 .gitignore
 dist/
+README
+*.egg-info
