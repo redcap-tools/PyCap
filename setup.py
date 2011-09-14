@@ -6,33 +6,30 @@ Copyright (c) 2011, Scott Burns
 All rights reserved.
 """
 
+import os
 import redcap
 
 from distutils.core import setup
 
 
-DISTNAME = 'PyCap'
-DESCR = """PyCap: Python interface to REDCap"""
-MAINTAINER = 'Scott Burns'
-MAINTAINER_EMAIL = 'scott.s.burns@gmail.com'
-URL = 'http://github.com/VUIIS/PyCap'
-LICENSE = 'BSD (3-clause)'
-DOWNLOAD_URL = 'https://github.com/VUIIS/PyCap'
-VERSION = redcap.__version__
-
 if __name__ == '__main__':
-
-    setup(name=DISTNAME,
-        maintainer=MAINTAINER,
-        maintainer_email=MAINTAINER_EMAIL,
-        description=DESCR,
-        license=LICENSE,
-        url=URL,
-        version=VERSION,
-        download_url=DOWNLOAD_URL,
+    if os.path.exists('MANIFEST'):
+        os.remove('MANIFEST')    
+    
+    setup(name='PyCap',
+        maintainer='Scott Burns',
+        maintainer_email='scott.s.burns@gmail.com',
+        description="""PyCap: Python interface to REDCap""",
+        license='BSD (3-clause)',
+        url='http://github.com/VUIIS/PyCap',
+        version=redcap.__version__,
+        download_url='http://github.com/VUIIS/PyCap',
         long_description=open('README.md').read() + '\n\n',
-        packages=['redcap', 'tests'],
+        packages=['redcap'],
         install_requires=[],
+        required=[],
+        platforms='any',
+        zip_safe=False,
         classifiers=(
                 'Development Status :: 4 - Beta',
                 'Intended Audience :: Developers',
@@ -45,7 +42,5 @@ if __name__ == '__main__':
                 'Operating System :: Unix',
                 'Operating System :: MacOS'
                 'Programming Language :: Python',
-                'Programming Language :: Python :: 2.5',
-                'Programming Language :: Python :: 2.6',
                 'Programming Language :: Python :: 2.7',)
         )
