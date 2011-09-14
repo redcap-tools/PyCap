@@ -16,6 +16,13 @@ Currently, these API calls are available through the `redcap.Project` class:
 
 See the examples for more information.
 
+Installation
+------------
+
+    git clone git://github.com/VUIIS/PyCap.git PyCap
+    cd PyCap
+    python setup.py install
+
 Todo & Future
 -------------
 
