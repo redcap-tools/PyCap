@@ -5,7 +5,7 @@
 Copyright (c) 2011, Scott Burns
 All rights reserved.
 """
-__version__ = '0.2'
+__version__ = '0.21'
 
 from project import Project
 from query import Query, QueryGroup
