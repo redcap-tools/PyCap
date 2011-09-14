@@ -9,3 +9,4 @@ __version__ = '0.1'
 
 from project import Project
 from query import Query, QueryGroup
+from request import RCRequest, RCAPIError
