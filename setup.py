@@ -6,12 +6,10 @@ Copyright (c) 2011, Scott Burns
 All rights reserved.
 """
 
-import os
-import sys
 import redcap
 
 from distutils.core import setup
-    
+
 
 DISTNAME = 'PyCap'
 DESCR = """PyCap: Python interface to REDCap"""
@@ -24,7 +22,7 @@ VERSION = redcap.__version__
 
 if __name__ == '__main__':
 
-    set(name=DISTNAME,
+    setup(name=DISTNAME,
         maintainer=MAINTAINER,
         maintainer_email=MAINTAINER_EMAIL,
         description=DESCR,
@@ -32,7 +30,7 @@ if __name__ == '__main__':
         url=URL,
         version=VERSION,
         download_url=DOWNLOAD_URL,
-        long_description=open('README.md').read() + '\n\n'
+        long_description=open('README.md').read() + '\n\n',
         packages=['redcap', 'tests'],
         install_requires=[],
         classifiers=(
@@ -51,4 +49,3 @@ if __name__ == '__main__':
                 'Programming Language :: Python :: 2.6',
                 'Programming Language :: Python :: 2.7',)
         )
-        
