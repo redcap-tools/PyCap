@@ -28,14 +28,11 @@ Usage
     >>> subset = project.filter(q)
     
     # import data
-    data = [{'subjid': i, 'age':a} for i, a in zip(range(1,6), range(7, 13))]
-    num_processed = project.import_records(data)
-    
-    
+    >>> data = [{'subjid': i, 'age':a} for i, a in zip(range(1,6), range(7, 13))]
+    >>> num_processed = project.import_records(data)
     
 Installation
 ------------
-
 ::
 
     git clone git://github.com/VUIIS/PyCap.git PyCap
