@@ -52,8 +52,8 @@ class Project(object):
             raise KeyError("Key not found in metadata")
         return filtered
 
-    def export_records(self, records=None, fields=None, forms=None,
-                        events=None, raw_or_label='raw', event_name='label'):
+    def export_records(self, records=None, fields=None, forms=None, events=None,
+                rawOrLabel='raw', eventName='label'):
         """Return data
 
         Low level function of RCProject
@@ -76,10 +76,10 @@ class Project(object):
         events: list
             an array of unique event names that you wish to pull records for -
             only for longitudinal projects
-        raw_or_label: 'raw' [default] |  'label' | 'both'
+        rawOrLabel: 'raw' [default] |  'label' | 'both'
             export the raw coded values or labels for the options of
             multiple choice fields
-        event_name: 'label' | 'unique'
+        eventName: 'label' | 'unique'
              export the unique event name or the event label
         """
         #check that all fields are in self.field_names
@@ -89,10 +89,9 @@ class Project(object):
                     ' '.join(diff))
         pl = self.__basepl()
         pl['content'] = 'record'
-        keys_to_add = (records, fields, forms, events,
-                        raw_or_label, event_name)
-        str_keys = ('records', 'fields', 'forms', 'events', 'raw_or_label',
-                'event_name')
+        keys_to_add = (records, fields, forms, events, rawOrLabel, eventName)
+        str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
+                'eventName')
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 pl[key] = data
@@ -115,7 +114,7 @@ class Project(object):
         else:
             return mf
 
-    def filter(self, query, output_fields=None):
+    def filter(self, query, output_fields=[]):
         """Query the database and return subject information for those
         who match the query logic
 
@@ -145,7 +144,6 @@ class Project(object):
         return self.export_records(records=matches, fields=output_fields)
 
     def names_labels(self, do_print=False):
-        """ Small helper method to get field names and labels """
         if do_print:
             for name, label in zip(self.field_names, self.field_labels):
                 print('%s --> %s' % (str(name), str(label)))
