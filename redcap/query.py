@@ -15,7 +15,7 @@ class Query(object):
     cmp_map = {'eq': op.eq, 'ne': op.ne, 'gt': op.gt, 'ge': op.ge, 'le': op.le,
                     'lt': op.lt}
 
-    def __init__(self, field_name, comparisons, type='number'):
+    def __init__(self, field_name, comparisons, qtype='number'):
         """ Constructor
 
         Parameters
@@ -26,59 +26,67 @@ class Query(object):
             each key is a "verb" from the following:
                 'eq', 'ne', 'le', 'lt', 'ge', 'gt'
             and value is the value of the comparison
-        type: 'number' | 'integer' | 'date_ymd'
+        qtype: 'number' | 'integer' | 'date_ymd'
             The assumed type of data for this field_name. Values are casted
             based on this.
         """
-        self.fn = field_name
+        self.fname = field_name
         self.cmps = comparisons
         for k, _ in self.cmps.items():
             if k not in self.cmp_map:
                 raise ValueError("Bad comparison verb in constructor")
-        self.type = type
+        self.type = qtype
 
     def __str__(self):
         """How to print Queries"""
-        log = ' AND '.join(['%s:%s' % (cmp, v) for
-                            cmp, v in self.cmps.items()])
-        return '%s %s' % (self.fn, log)
+        log = ' AND '.join(['%s:%s' % (comp, v) for
+                            comp, v in self.cmps.items()])
+        return '%s %s' % (self.fname, log)
 
-    def filter(self, data, return_key, type=''):
+    def filter(self, data, return_key, qtype=''):
+        """ Filter the data through this Query
+        
+        Parameters
+        ----------
+        data: seq of dicts
+        	assumed that each dict contains a key of the Query's field name
+        return_key: dict key
+        	assumed that each dict also contains this key, this is what's returned
         """
-        """
-        if type:
-            t = type
+        if qtype:
+            typ = qtype
         else:
-            t = self.type
-        if t in ('number', 'integer'):
+            typ = self.type
+        if typ in ('number', 'integer'):
             xfm = float
-        elif t == 'date_ymd':
+        elif typ == 'date_ymd':
             xfm = lambda x: time.strptime(x, '%Y-%m-%d')
-        elif t == 'email':
+        elif typ == 'email':
             raise ValueError("WHY ARE YOU SEARCHING BY EMAIL?")
         else:
             xfm = str
         match = []
         if data:
             sets = []
-            for cmp, v in self.cmps.items():
-                val = xfm(v)
+            for comp, raw_val in self.cmps.items():
+                val = xfm(raw_val)
                 mat = []
                 for row in data:
                     try:
-                        new_val = xfm(row[self.fn])
-                    except ValueError:  # probably an emtpy cell
+                        new_val = xfm(row[self.fname])
+                    except ValueError:  # probably an empty cell
                         pass
                     else:
-                        c = self.cmp_map[cmp](new_val, val)
-                        if c:  # comparison is true
+                        match = self.cmp_map[comp](new_val, val)
+                        if match:  # comparison is true
                             mat.append(row[return_key])
                 sets.append(set(mat))
             match = list(reduce(lambda a, b: a.intersection(b), sets))
         return match
 
     def fields(self):
-        return [self.fn]
+        """ Query and QueryGroup both respond to this method"""
+        return [self.fname]
 
 
 class QueryGroup(object):
@@ -99,16 +107,17 @@ class QueryGroup(object):
 
     def __str__(self):
         """Print a QueryGroup"""
-        lg = self.logic[:]
+        all_logic = self.logic[:]
         if len(self.queries) > 1:
             log = ''
-            lg.append('')
-            for q, l in zip(self.queries, lg):
-                if isinstance(q, QueryGroup):
+            #  Because there's one less logic verb than queries
+            all_logic.append('')
+            for qry, logic in zip(self.queries, all_logic):
+                if isinstance(qry, QueryGroup):
                     fmt = '(%s %s) '
                 else:
                     fmt = '%s %s '
-                log += fmt % (q.__str__(), l)
+                log += fmt % (qry.__str__(), logic)
             return log
         else:
             return self.queries[0].__str__()
@@ -130,9 +139,11 @@ class QueryGroup(object):
         self.total += 1
 
     def __iter__(self):
+        """ So QueryGroup is an iterator"""
         return self
 
     def next(self):
+        """ So we can loop through a QueryGroup """
         if self.index == self.total:
             raise StopIteration
         next_q = self.queries[self.index]
@@ -143,18 +154,16 @@ class QueryGroup(object):
         """Returns a list of keys of all the field names referenced by the
         queries in the group"""
         keys = []
-        for q in self.queries:
-            fields = q.fields()
+        for qry in self.queries:
+            fields = qry.fields()
             keys.extend(fields)
         return keys
 
     def filter(self, data, return_key):
-        """ Filter for the query group
-
-        """
+        """ Filter for the query group """
         match = []
-        for i, q in enumerate(self.queries):
-            temp_match = set(q.filter(data, return_key))
+        for i, qry in enumerate(self.queries):
+            temp_match = set(qry.filter(data, return_key))
             if i == 0:
                 # first, set match == to set
                 match = temp_match
