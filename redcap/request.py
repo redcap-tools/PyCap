@@ -12,6 +12,7 @@ import json
 
 
 class RCAPIError(Exception):
+    """ Errors corresponding to a misuse of the REDCap API """
     pass
 
 
@@ -25,20 +26,20 @@ class RCRequest(object):
     Users shouldn't really need to use this, the Project class will use this.
     """
 
-    def __init__(self, url, payload, type):
+    def __init__(self, url, payload, qtype):
         """Constructor
 
         Parameters
         ----------
         payload: dict
             key,values corresponding to the REDCap API
-        type: 'imp_record' | 'exp_record' | 'metadata'
+        qtype: 'imp_record' | 'exp_record' | 'metadata'
             Used to validate payload contents against API
         """
         self.url = url
         self.payload = payload
-        self.type = type
-        if type:
+        self.type = qtype
+        if qtype:
             self.validate_pl()
         self.fmt = payload['format']
 
