@@ -45,13 +45,14 @@ class Query(object):
 
     def filter(self, data, return_key, qtype=''):
         """ Filter the data through this Query
-        
+
         Parameters
         ----------
         data: seq of dicts
-        	assumed that each dict contains a key of the Query's field name
+            assumed that each dict contains a key of the Query's field name
         return_key: dict key
-        	assumed that each dict also contains this key, this is what's returned
+            assumed that each dict also contains this key
+            this key exists in the list of returned dicts
         """
         if qtype:
             typ = qtype

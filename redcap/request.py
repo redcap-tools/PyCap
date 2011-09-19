@@ -72,8 +72,12 @@ class RCRequest(object):
                 raise RCAPIError('Importing record but content is not record')
         if self.type == 'metadata':
             req = set(('token', 'content', 'format'))
-            if self.payload['content'] != 'metadata':
-                raise RCAPIError('Requesting metadata but content != metadata')
+            try:
+                if self.payload['content'] != 'metadata':
+                    msg = 'Requesting metadata but content != metadata'
+                    raise RCAPIError(msg)
+            except KeyError:
+                raise RCAPIError('content not in payload')
         if self.type == 'exp_file':
             req = set(('token', 'content', 'action', 'record', 'field'))
             if self.payload['content'] != 'file':
@@ -114,12 +118,15 @@ class RCRequest(object):
             if hasattr(e, 'reason'):
                 print("Failure to reach RedCap server.")
                 print("Reason: %s'" % e.reason)
+                raise URLError('See traceback above')
             if hasattr(e, 'code'):
                 print("Server couldn't fulfill request.")
                 print("Error code: %s" % e.code)
-            error_text = e.read()
-            if error_text:
-                print("Response from server: %s" % error_text)
+                raise URLError('See traceback above')
+            if hasattr(e, 'read'):
+                error_text = e.read()
+                if error_text:
+                    print("Response from server: %s" % error_text)
         else:
             resp_str = response.read()
             response.close()
