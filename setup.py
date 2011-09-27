@@ -18,6 +18,8 @@ except ImportError:
 if __name__ == '__main__':
     if os.path.exists('MANIFEST'):
         os.remove('MANIFEST')
+    
+    long_desc = open('README.rst').read() + '\n\n' + open('HISTORY.rst').read()
 
     setup(name='PyCap',
         maintainer='Scott Burns',
@@ -27,7 +29,7 @@ if __name__ == '__main__':
         url='http://github.com/VUIIS/PyCap',
         version=redcap.__version__,
         download_url='http://github.com/VUIIS/PyCap',
-        long_description=open('README.rst').read() + '\n\n',
+        long_description=long_desc,
         packages=['redcap'],
         platforms='any',
         classifiers=(
