@@ -31,6 +31,7 @@ if __name__ == '__main__':
         download_url='http://github.com/VUIIS/PyCap',
         long_description=long_desc,
         packages=['redcap'],
+        requires=['requests'],
         platforms='any',
         classifiers=(
                 'Development Status :: 4 - Beta',

@@ -29,14 +29,17 @@ class Project(object):
 
     def __md(self):
         """Return the project's metadata structure"""
-        p_l = self.__basepl()
+        p_l = self.__basepl('metadata')
         p_l['content'] = 'metadata'
         return RCRequest(self.url, p_l, 'metadata').execute()
 
-    def __basepl(self, rec_format='json', rec_type='flat'):
+    def __basepl(self, content, rec_format='json', rec_type='flat'):
         """Return a dictionary which can be used as is or added to for
         RCRequest payloads"""
-        return {'token': self.token, 'format': rec_format, 'type': rec_type}
+        d = {'token': self.token, 'content': content, 'format': rec_format}
+        if content != 'metadata':
+            d['type'] = rec_type
+        return d
 
     def filter_metadata(self, key):
         """Return a list values for the key in each field from the project's
@@ -61,9 +64,6 @@ class Project(object):
         Parameters
         ----------
         records: list
-            an array of record names specifying specific records you wish
-            to pull (by default, all records are pulled)
-        records: list
             an array of record names specifying specific records you wish to
             pull (by default, all records are pulled)
         fields: list
@@ -87,15 +87,18 @@ class Project(object):
         if len(diff) > 0:
             raise ValueError('These fields are not valid: %s' %
                     ' '.join(diff))
-        pl = self.__basepl()
-        pl['content'] = 'record'
+        pl = self.__basepl('record')
         keys_to_add = (records, fields, forms, events,
                         raw_or_label, event_name)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
                 'eventName')
         for key, data in zip(str_keys, keys_to_add):
             if data:
-                pl[key] = data
+                #  Make a url-ok string
+                if key in ('fields', 'records', 'forms', 'events'):
+                    pl[key] = ','.join(data)
+                else:
+                    pl[key] = data
         return RCRequest(self.url, pl, 'exp_record').execute()
 
     def metadata_type(self, field_name):
@@ -169,9 +172,8 @@ class Project(object):
         if not all(is_subsets):
             msg = "Some fields you passed do not exist in the project"
             raise ValueError(msg)
-        pl = self.__basepl()
+        pl = self.__basepl('record')
         pl['overwriteBehavior'] = overwrite
-        pl['content'] = 'record'
         pl['data'] = json.dumps(to_import, separators=(',', ':'))
         num_proc = RCRequest(self.url, pl, 'imp_record').execute()
         print("Imported %s records" % num_proc)

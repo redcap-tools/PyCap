@@ -6,8 +6,7 @@ Copyright (c) 2011, Scott Burns
 All rights reserved.
 """
 
-from urllib import urlencode
-from urllib2 import Request, urlopen, URLError
+import requests
 import json
 
 
@@ -31,6 +30,8 @@ class RCRequest(object):
 
         Parameters
         ----------
+        url: str
+            REDCap API URL
         payload: dict
             key,values corresponding to the REDCap API
         qtype: 'imp_record' | 'exp_record' | 'metadata'
@@ -42,20 +43,6 @@ class RCRequest(object):
         if qtype:
             self.validate_pl()
         self.fmt = payload['format']
-
-        # the payload dictionary can have non-url-like objects (specifically,
-        # arrays, so let's transfrom payload to a url-like dictionary
-        to_encode = {}
-        for k, v in payload.iteritems():
-            # the only weird thing we might get is an array
-            # like exp_record with multiple fields
-            # so check if v responds to length and if it's not a string, it's
-            # a list we need to unpack in comma-seperated string
-            if len(v) > 0 and not isinstance(v, basestring):
-                to_encode[str(k)] = ','.join(v)
-            else:
-                to_encode[str(k)] = str(v)
-        self.api_url = urlencode(to_encode)
 
     def validate_pl(self):
         """Check that at least required params exist
@@ -103,37 +90,17 @@ class RCRequest(object):
             Depends on format in payload and action
 
         if the RCRequest object was built with payload['format'] == 'json',
-        json data structure is returned, otherwise its up to caller to
-        decode.
+        data structure from json.load() is returned, otherwise its up to
+        caller to decode.
         """
-        request = Request(self.url, self.api_url)
-        request.add_header('User-Agent', 'PyCap')
-        if 'imp' in self.type:
-            request.add_header('Content-Type',
-                                'application/x-www-form-urlencoded')
-        response = ''
-        try:
-            response = urlopen(request)
-        except URLError, e:
-            if hasattr(e, 'reason'):
-                print("Failure to reach RedCap server.")
-                print("Reason: %s'" % e.reason)
-                raise URLError('See traceback above')
-            if hasattr(e, 'code'):
-                print("Server couldn't fulfill request.")
-                print("Error code: %s" % e.code)
-                raise URLError('See traceback above')
-            if hasattr(e, 'read'):
-                error_text = e.read()
-                if error_text:
-                    print("Response from server: %s" % error_text)
-        else:
-            resp_str = response.read()
-            response.close()
-            to_return = resp_str
-            if self.fmt == 'json':
-                try:
-                    to_return = json.loads(resp_str)
-                except ValueError:
-                    print("JSON parsing failed")
-            return to_return
+        header = {'Content-Type': 'application/x-www-form-urlencoded'}
+        r = requests.post(self.url, data=self.payload, headers=header)
+        r.raise_for_status()
+        resp_str = r.read()
+        to_return = resp_str
+        if self.fmt == 'json':
+            try:
+                to_return = json.loads(resp_str)
+            except ValueError:
+                print("JSON parsing failed")
+        return to_return
