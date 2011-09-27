@@ -8,7 +8,7 @@ All rights reserved.
 import os
 from ConfigParser import ConfigParser
 
-from redcap import rc
+import redcap as rc
 reload(rc)
 
 study = 'NF1'
