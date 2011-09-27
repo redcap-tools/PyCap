@@ -14,6 +14,13 @@ Currently, these API calls are available:
 -   Export Metadata
 -   Import Records
 
+Requirements
+------------
+
+-   requests
+
+    ``$ easy_install requests``
+
 Usage
 -----
 ::
@@ -35,9 +42,13 @@ Installation
 ------------
 ::
 
-    git clone git://github.com/VUIIS/PyCap.git PyCap
-    cd PyCap
-    python setup.py install
+    $ git clone git://github.com/VUIIS/PyCap.git PyCap
+    $ cd PyCap
+    $ python setup.py install
+    
+    OR
+    
+    $ easy_install PyCap
 
 TODO
 ----
