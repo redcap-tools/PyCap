@@ -99,8 +99,5 @@ class RCRequest(object):
         resp_str = r.read()
         to_return = resp_str
         if self.fmt == 'json':
-            try:
-                to_return = json.loads(resp_str)
-            except ValueError:
-                print("JSON parsing failed")
+            to_return = json.loads(resp_str)
         return to_return
