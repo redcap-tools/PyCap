@@ -55,8 +55,8 @@ class Project(object):
             raise KeyError("Key not found in metadata")
         return filtered
 
-    def export_records(self, records=None, fields=None, forms=None,
-                events=None, raw_or_label='raw', event_name='label'):
+    def export_records(self, records=[], fields=[], forms=[],
+                events=[], raw_or_label='raw', event_name='label'):
         """Return data
 
         Low level function of RCProject
