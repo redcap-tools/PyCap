@@ -13,7 +13,7 @@ in conjunction with your Project to filter your data.
 Copyright (c) 2011, Scott Burns
 All rights reserved.
 """
-__version__ = '0.3'
+__version__ = '0.3.1'
 
 from .project import Project
 from .query import Query, QueryGroup

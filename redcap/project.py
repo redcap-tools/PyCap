@@ -145,6 +145,8 @@ class Project(object):
         # not desired
         if not output_fields:
             output_fields = [self.def_field]
+        if isinstance(output_fields, basestring):
+            output_fields = [output_fields]
         return self.export_records(records=matches, fields=output_fields)
 
     def names_labels(self, do_print=False):
@@ -170,10 +172,13 @@ class Project(object):
         passed_fields = [set(d.keys()) for d in to_import]
         is_subsets = map(lambda x: all_fields.issuperset(x), passed_fields)
         if not all(is_subsets):
-            msg = "Some fields you passed do not exist in the project"
+            bad = []
+            for i, is_sub in enumerate(is_subsets):
+                if not is_sub:
+                    bad.extend(list(passed_fields[i] - all_fields))
+            msg = "Bad fields: %s"  % ' '.join(bad)
             raise ValueError(msg)
         pl = self.__basepl('record')
         pl['overwriteBehavior'] = overwrite
         pl['data'] = json.dumps(to_import, separators=(',', ':'))
-        num_proc = RCRequest(self.url, pl, 'imp_record').execute()
-        print("Imported %s records" % num_proc)
+        return RCRequest(self.url, pl, 'imp_record').execute()
