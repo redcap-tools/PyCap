@@ -33,10 +33,10 @@ class Project(object):
         p_l['content'] = 'metadata'
         return RCRequest(self.url, p_l, 'metadata').execute()
 
-    def __basepl(self, content, rec_format='json', rec_type='flat'):
+    def __basepl(self, content, rec_type='flat'):
         """Return a dictionary which can be used as is or added to for
         RCRequest payloads"""
-        d = {'token': self.token, 'content': content, 'format': rec_format}
+        d = {'token': self.token, 'content': content, 'format': 'json'}
         if content != 'metadata':
             d['type'] = rec_type
         return d
@@ -55,11 +55,11 @@ class Project(object):
             raise KeyError("Key not found in metadata")
         return filtered
 
-    def export_records(self, records=[], fields=[], forms=[],
-                events=[], raw_or_label='raw', event_name='label'):
+    def export_records(self, records=None, fields=None, forms=None,
+                events=None, raw_or_label='raw', event_name='label'):
         """Return data
 
-        Low level function of RCProject
+        High level function of Project
 
         Parameters
         ----------
@@ -141,13 +141,20 @@ class Project(object):
         query_keys.append(self.def_field)
         data = self.export_records(fields=query_keys)
         matches = query.filter(data, self.def_field)
-        # if output_fields is empty, we'll download all fields, which is
-        # not desired
-        if not output_fields:
-            output_fields = [self.def_field]
-        if isinstance(output_fields, basestring):
-            output_fields = [output_fields]
-        return self.export_records(records=matches, fields=output_fields)
+        if matches:
+            # if output_fields is empty, we'll download all fields, which is
+            # not desired, so we limit download to def_field
+            if not output_fields:
+                output_fields = [self.def_field]
+            #  But if caller passed a string and not list, we need to listify
+            if isinstance(output_fields, basestring):
+                output_fields = [output_fields]
+            return self.export_records(records=matches, fields=output_fields)
+        else:
+            #  If there are no matches, then sending an empty list to
+            #  export_records will actually return all rows, which is not
+            #  what we want
+            return []
 
     def names_labels(self, do_print=False):
         """ Simple helper function to get all field names and labels """
@@ -176,7 +183,7 @@ class Project(object):
             for i, is_sub in enumerate(is_subsets):
                 if not is_sub:
                     bad.extend(list(passed_fields[i] - all_fields))
-            msg = "Bad fields: %s"  % ' '.join(bad)
+            msg = "Bad fields: %s" % ' '.join(bad)
             raise ValueError(msg)
         pl = self.__basepl('record')
         pl['overwriteBehavior'] = overwrite

@@ -17,7 +17,7 @@ Currently, these API calls are available:
 Requirements
 ------------
 
--   requests
+-   requests (> 0.6.4)
 
     ``$ easy_install requests``
 

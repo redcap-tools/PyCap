@@ -3,7 +3,7 @@
 
 import unittest
 
-from urllib2 import URLError
+from requests import ConnectionError
 from redcap import RCRequest, RCAPIError
 
 class TestClass(unittest.TestCase):
@@ -22,8 +22,8 @@ class TestClass(unittest.TestCase):
     def test_badurl(self):
         pl = self.base
         pl['content'] = 'metadata'
-        req = RCRequest('http://www.asldkfasdf.com', pl, 'metadata')
-        self.assertRaises(URLError, req.execute, *[])
+        req = RCRequest('http://www.qewri2-.com', pl, 'metadata')
+        self.assertRaises(ConnectionError, req.execute, *[])
         
     def test_md_content(self):
         pl = self.base

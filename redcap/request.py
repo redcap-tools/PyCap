@@ -86,18 +86,9 @@ class RCRequest(object):
 
         Returns
         -------
-        data: ?
-            Depends on format in payload and action
-
-        if the RCRequest object was built with payload['format'] == 'json',
-        data structure from json.load() is returned, otherwise its up to
-        caller to decode.
+        Return data object from JSON decoding process
         """
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         r = requests.post(self.url, data=self.payload, headers=header)
         r.raise_for_status()
-        resp_str = r.read()
-        to_return = resp_str
-        if self.fmt == 'json':
-            to_return = json.loads(resp_str)
-        return to_return
+        return json.loads(r.content)

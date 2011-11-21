@@ -1,8 +1,15 @@
 HISTORY
 -------
 
+0.3.2 (2011-11-21)
+++++++++++++++++++
+
+* Works with current version of requests
+* Under-the-hood changes (only json is used for RCRequest)
+* Bug fix in Project.filter
+
 0.3.1 (2011-11-02)
-++++++++++++++++
+++++++++++++++++++
 
 * Bug fix in import_records
 
