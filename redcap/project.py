@@ -82,11 +82,12 @@ class Project(object):
         event_name: 'label' | 'unique'
              export the unique event name or the event label
         """
-        #check that all fields are in self.field_names
-        diff = set(fields).difference(set(self.field_names))
-        if len(diff) > 0:
-            raise ValueError('These fields are not valid: %s' %
-                    ' '.join(diff))
+        if fields:
+            #  check that all fields are in self.field_names
+            diff = set(fields).difference(set(self.field_names))
+            if len(diff) > 0:
+                raise ValueError('These fields are not valid: %s' %
+                        ' '.join(diff))
         pl = self.__basepl('record')
         keys_to_add = (records, fields, forms, events,
                         raw_or_label, event_name)
