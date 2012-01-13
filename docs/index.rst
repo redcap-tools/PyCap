@@ -6,7 +6,7 @@
 Welcome to PyCap's documentation!
 =================================
 
-PyCap is a python module to communicate with `REDCap <http://www.redcap.com>`_ databases through the Redcap API.
+PyCap is a python module to communicate with `REDCap <http://www.project-redcap.org>`_ databases through the Redcap API.
 
 Contents:
 
@@ -15,4 +15,6 @@ Contents:
 
 
 .. automodule:: redcap
-   :members:
+   :members: Project
+
+New
