@@ -6,3 +6,4 @@ dist/
 README
 *.egg-info
 build/
+docs/_build/
