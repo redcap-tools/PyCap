@@ -91,5 +91,4 @@ class RCRequest(object):
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         r = requests.post(self.url, data=self.payload, headers=header)
         r.raise_for_status()
-        uni_content = unicode(r.content, errors='replace')
-        return json.loads(uni_content)
+        return json.loads(r.content.encode(errors='replace'))
