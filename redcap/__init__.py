@@ -11,7 +11,7 @@ can also build search queries with the Query/QueryGroup classes and use those
 in conjunction with your Project to filter your data.
 
 """
-__version__ = '0.4.1'
+__version__ = '0.4.2'
 
 from .project import Project
 from .query import Query, QueryGroup
