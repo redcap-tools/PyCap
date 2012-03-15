@@ -1,6 +1,11 @@
 HISTORY
 -------
 
+0.4.1 (2012-03-15)
+++++++++++++++++++
+
+* Defend against non-unicode characters in Redcap Project
+
 0.3.4 (2012-01-12)
 ++++++++++++++++++
 
@@ -38,4 +43,4 @@ HISTORY
 0.1 (2011-09-14)
 +++++++++++++++++
 
-* Basic import, export, metadata   
+* Basic import, export, metadata
