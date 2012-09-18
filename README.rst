@@ -14,6 +14,9 @@ Currently, these API calls are available:
 -   Export Metadata
 -   Import Records
 
+Events and Arms are automatically exported for longitudinal projects (see below).
+
+
 Requirements
 ------------
 
@@ -28,27 +31,34 @@ Usage
     >>> import redcap
     # Init the project with the api url and your specific api key
     >>> project = redcap.Project(api_url, api_key)
+
+    # Export all data
     >>> all_data = project.export_records()
-    
-    # filter your data
-    >>> q = redcap.Query('age', {'ge':12})
-    >>> subset = project.filter(q)
-    
+
     # import data
     >>> data = [{'subjid': i, 'age':a} for i, a in zip(range(1,6), range(7, 13))]
     >>> num_processed = project.import_records(data)
-    
+
+    # For longitudinal projects, project already contains events, arm numbers
+    # and arm names
+    >>> print project.events
+    ...
+    >>> print project.arm_nums
+    ...
+    >>> print project.arm_names
+    ...
+
 Installation
 ------------
 ::
 
-    $ git clone git://github.com/VUIIS/PyCap.git PyCap
+    $ git clone git://github.com/sburns/PyCap.git PyCap
     $ cd PyCap
     $ python setup.py install
-    
+
     OR
-    
-    $ easy_install PyCap
+
+    $ pip install PyCap
 
 TODO
 ----
