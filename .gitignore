@@ -7,3 +7,4 @@ README
 *.egg-info
 build/
 docs/_build/
+_site/
