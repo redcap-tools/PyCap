@@ -26,6 +26,23 @@ class Project(object):
         # we'll use the first field as the default id for each row
         self.def_field = self.field_names[0]
         self.field_labels = self.filter_metadata('field_label')
+        self.forms = tuple(set(c['form_name'] for c in self.metadata))
+        # determine whether longitudinal
+        ev_data = RCRequest(self.url, self.__basepl('event'),
+            'exp_event').execute()
+        if 'error' in ev_data:
+            events = tuple([])
+            arm_nums = tuple([])
+            arm_names = tuple([])
+        else:
+            events = ev_data
+            arm_data = RCRequest(self.url, self.__basepl('arm'),
+                'exp_arm').execute()
+            arm_nums = tuple([a['arm_num'] for a in arm_data])
+            arm_names = tuple([a['name'] for a in arm_data])
+        self.events = events
+        self.arm_nums = arm_nums
+        self.arm_names = arm_names
 
     def __md(self):
         """Return the project's metadata structure"""
@@ -33,10 +50,10 @@ class Project(object):
         p_l['content'] = 'metadata'
         return RCRequest(self.url, p_l, 'metadata').execute()
 
-    def __basepl(self, content, rec_type='flat'):
+    def __basepl(self, content, rec_type='flat', format='json'):
         """Return a dictionary which can be used as is or added to for
         RCRequest payloads"""
-        d = {'token': self.token, 'content': content, 'format': 'json'}
+        d = {'token': self.token, 'content': content, 'format': format}
         if content != 'metadata':
             d['type'] = rec_type
         return d
@@ -56,7 +73,8 @@ class Project(object):
         return filtered
 
     def export_records(self, records=None, fields=None, forms=None,
-                events=None, raw_or_label='raw', event_name='label'):
+                events=None, raw_or_label='raw', event_name='label',
+                format='obj'):
         """Return data
 
         High level function of Project
@@ -81,14 +99,13 @@ class Project(object):
             multiple choice fields
         event_name: 'label' | 'unique'
              export the unique event name or the event label
+        format: 'obj' [default] | 'csv' | 'xml'
+            Format of returned data. 'obj' returns json-decoded objects
+            'csv' and 'xml' return other formats
         """
-        if fields:
-            #  check that all fields are in self.field_names
-            diff = set(fields).difference(set(self.field_names))
-            if len(diff) > 0:
-                raise ValueError('These fields are not valid: %s' %
-                        ' '.join(diff))
-        pl = self.__basepl('record')
+        if format == 'obj':
+            format = 'json'
+        pl = self.__basepl('record', format=format)
         keys_to_add = (records, fields, forms, events,
                         raw_or_label, event_name)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
@@ -171,21 +188,15 @@ class Project(object):
         ----------
         to_import: seq of dicts
             List of dictionaries describing the data you wish to import_records
-            Keys of the dictionaries must be subset of project's fields
+            Note:
+                Keys of the dictionaries should be subset of project's,
+                fields, but this isn't a requirement. If you provide keys
+                that aren't defined fields, the returned response will
+                contain and 'error' key.
         overwrite: 'normal' | 'overwrite'
             'overwrite' will erase values previously stored in the database if
             not specified in the to_import dictionaries
         """
-        all_fields = set(self.field_names)
-        passed_fields = [set(d.keys()) for d in to_import]
-        is_subsets = map(lambda x: all_fields.issuperset(x), passed_fields)
-        if not all(is_subsets):
-            bad = []
-            for i, is_sub in enumerate(is_subsets):
-                if not is_sub:
-                    bad.extend(list(passed_fields[i] - all_fields))
-            msg = "Bad fields: %s" % ' '.join(bad)
-            raise ValueError(msg)
         pl = self.__basepl('record')
         pl['overwriteBehavior'] = overwrite
         pl['data'] = json.dumps(to_import, separators=(',', ':'))
