@@ -1,1 +1,2 @@
-requests
+certifi==0.0.6
+requests==0.14.0

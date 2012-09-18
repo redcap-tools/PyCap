@@ -15,10 +15,12 @@ except ImportError:
     from distutils.core import setup
 
 
+required = ['requests']
+
 if __name__ == '__main__':
     if os.path.exists('MANIFEST'):
         os.remove('MANIFEST')
-    
+
     long_desc = open('README.rst').read() + '\n\n' + open('HISTORY.rst').read()
 
     setup(name='PyCap',
@@ -26,15 +28,15 @@ if __name__ == '__main__':
         maintainer_email='scott.s.burns@gmail.com',
         description="""PyCap: Python interface to REDCap""",
         license='BSD (3-clause)',
-        url='http://github.com/VUIIS/PyCap',
+        url='http://sburns.github.com/PyCap',
         version=redcap.__version__,
-        download_url='http://github.com/VUIIS/PyCap',
+        download_url='http://sburns.github.com/PyCap',
         long_description=long_desc,
         packages=['redcap'],
-        requires=['requests'],
+        install_requires=required,
         platforms='any',
         classifiers=(
-                'Development Status :: 4 - Beta',
+                'Development Status :: 4 - Production/Stable',
                 'Intended Audience :: Developers',
                 'Intended Audience :: Science/Research',
                 'License :: OSI Approved',
