@@ -1,3 +1,5 @@
+.. image:: https://secure.travis-ci.org/sburns/PyCap.png?branch=master
+
 Intro
 =====
 
