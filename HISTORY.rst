@@ -1,6 +1,14 @@
 HISTORY
 -------
 
+0.5 (2012-09-19)
+++++++++++++++++
+
+- Add initial support for longitudinal databases
+- Add helper attributes on redcap.Project class
+- Improve testing
+- Add Travis-CI testing on github
+
 0.4.2 (2012-03-15)
 ++++++++++++++++++
 
