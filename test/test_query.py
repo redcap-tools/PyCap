@@ -16,20 +16,24 @@ class QueryTests(unittest.TestCase):
         del self.data
 
     def test_bad_comp(self):
+        """ Test bad compartor"""
         with self.assertRaises(ValueError):
             Query('subjage', {'ze': '12'})
 
     def test_good_comp(self):
+        """Test instantiation with good comparators"""
         good_cmp = {'le': 10, 'lt': 10, 'gt': 1, 'ge': 1, 'ne': 5, 'eq': 6}
         field = 'score'
         q = Query(field, good_cmp)
         self.assertIsInstance(q, Query)
 
     def test_filter(self):
+        """Test filtering"""
         q = Query('age', {'gt': 8}, 'number')
         self.assertEqual(len(q.filter(self.data, 'id')), 2)
 
     def test_groupfilter_and(self):
+        """Test group filtering with and logic"""
         q1 = Query('age', {'ge': 5})
         q2 = Query('score', {'lt': 40})
         q = QueryGroup(q1)
@@ -37,6 +41,7 @@ class QueryTests(unittest.TestCase):
         self.assertEqual(len(q.filter(self.data, 'id')), 3)
 
     def test_groupfilter_or(self):
+        """Test group filtering with or logic"""
         q1 = Query('age', {'ge': 5})
         q2 = Query('score', {'lt': 70})
         q = QueryGroup(q1)

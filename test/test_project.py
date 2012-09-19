@@ -23,7 +23,7 @@ class ProjectTests(unittest.TestCase):
         pass
 
     def test_good_init(self):
-        """Basic instantiation """
+        """Ensure basic instantiation """
         self.assertIsInstance(self.long_proj, Project)
         self.assertIsInstance(self.reg_proj, Project)
 

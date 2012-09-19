@@ -48,50 +48,51 @@ class RCRequest(object):
         """Check that at least required params exist
 
         """
+        required = ['token', 'content']
         if self.type == 'exp_record':
-            req = set(('token', 'content', 'format', 'type'))
+            extra = ['type', 'format']
             req_content = 'record'
             err_msg = 'Exporting record but content is not record'
         if self.type == 'imp_record':
-            req = set(('token', 'content', 'format', 'type',
-                        'overwriteBehavior', 'data'))
+            extra = ['type', 'overwriteBehavior', 'data', 'format']
             req_content = 'record'
             err_msg = 'Importing record but content is not record'
         if self.type == 'metadata':
-            req = set(('token', 'content', 'format'))
+            extra = ['format']
             req_content = 'metadata'
             err_msg = 'Requesting metadata but content != metadata'
         if self.type == 'exp_file':
-            req = set(('token', 'content', 'action', 'record', 'field'))
+            extra = ['action', 'record', 'field']
             req_content = 'file'
             err_msg = 'Exporting file but content is not file'
         if self.type == 'imp_file':
-            req = set(('token', 'content', 'action', 'record', 'field',
-                'file'))
+            extra = ['action', 'record', 'field', 'file']
             req_content = 'file'
             err_msg = 'Importing file but content is not file'
         if self.type == 'exp_event':
-            req = set(('token', 'content', 'format'))
+            extra = ['format']
             req_content = 'event'
             err_msg = 'Exporting events but content is not event'
         if self.type == 'exp_arm':
-            req = set(('token', 'content', 'format'))
+            extra = ['format']
             req_content = 'arm'
             err_msg = 'Exporting arms but content is not arm'
         if self.type == 'exp_fem':
-            req = set(('token', 'content', 'format'))
+            extra = ['format']
             req_content = 'formEventMapping'
             err_msg = 'Exporting form-event mappings but content is not ' + \
                     'formEventMapping'
         if self.type == 'exp_user':
-            req = set(('token', 'content', 'format'))
+            extra = ['format']
             req_content = 'user'
             err_msg = 'Exporting users but content is not user'
+        required.extend(extra)
+        required = set(required)
         pl_keys = set(self.payload.keys())
         # if req is not subset of payload keys, this call is wrong
-        if not req <= pl_keys:
+        if not set(required) <= pl_keys:
             #what is not in pl_keys?
-            not_pre = req - pl_keys
+            not_pre = required - pl_keys
             raise RCAPIError("Required keys: %s" % ', '.join(not_pre))
         # Check content, raise with err_msg if not good
         try:
@@ -110,7 +111,7 @@ class RCRequest(object):
         """
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         r = requests.post(self.url, data=self.payload, headers=header)
-        if self.payload['format'] == 'json':
+        if self.fmt == 'json':
             return json.loads(r.content.encode(errors='replace'))
         else:
             return r.content.encode(errors='replace')
