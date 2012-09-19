@@ -27,6 +27,12 @@ class ProjectTests(unittest.TestCase):
         self.assertIsInstance(self.long_proj, Project)
         self.assertIsInstance(self.reg_proj, Project)
 
+    def test_normal_attrs(self):
+        """Ensure projects are created with all normal attrs"""
+        for attr in ('metadata', 'field_names', 'field_labels', 'forms',
+            'events', 'arm_names', 'arm_nums', 'def_field'):
+            self.assertTrue(hasattr(self.reg_proj, attr))
+
     def test_long_attrs(self):
         """proj.events/arm_names/arm_nums should not be empty in long projects"""
         self.assertIsNotNone(self.long_proj.events)

@@ -26,4 +26,4 @@ def clean():
 
 
 def test():
-    local('nosetests -w test/')
+    local('nosetests -v -w test/')
