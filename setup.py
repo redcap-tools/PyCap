@@ -15,7 +15,7 @@ except ImportError:
     from distutils.core import setup
 
 
-required = ['requests']
+required = ['requests>=0.12.1']
 
 if __name__ == '__main__':
     if os.path.exists('MANIFEST'):

@@ -7,7 +7,6 @@ All rights reserved.
 """
 
 import requests
-import json
 
 
 class RCAPIError(Exception):
@@ -112,6 +111,6 @@ class RCRequest(object):
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         r = requests.post(self.url, data=self.payload, headers=header)
         if self.fmt == 'json':
-            return json.loads(r.content.encode(errors='replace'))
+            return r.json
         else:
-            return r.content.encode(errors='replace')
+            return r.text
