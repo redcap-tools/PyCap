@@ -22,7 +22,7 @@ Events and Arms are automatically exported for longitudinal projects (see below)
 Requirements
 ------------
 
--   requests (> 0.6.4)
+-   requests (> 0.12.1)
 
     ``$ easy_install requests``
 

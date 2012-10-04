@@ -1,6 +1,11 @@
 HISTORY
 -------
 
+0.5.1 (2012-10-04)
+++++++++++++++++++
+
+* Fix potential issue when exporting strange characters
+
 0.5 (2012-09-19)
 ++++++++++++++++
 
