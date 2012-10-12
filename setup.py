@@ -7,13 +7,19 @@ All rights reserved.
 """
 
 import os
-import redcap
 
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
+
+def get_version():
+    base = os.path.dirname(__file__)
+    with open(os.path.join(base, 'redcap/version.py')) as f:
+        VERSION = None
+        exec(f.read())
+        return VERSION
 
 required = ['requests>=0.12.1']
 
@@ -29,7 +35,7 @@ if __name__ == '__main__':
         description="""PyCap: Python interface to REDCap""",
         license='BSD (3-clause)',
         url='http://sburns.github.com/PyCap',
-        version=redcap.__version__,
+        version=get_version(),
         download_url='http://sburns.github.com/PyCap',
         long_description=long_desc,
         packages=['redcap'],
