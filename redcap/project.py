@@ -72,6 +72,38 @@ class Project(object):
             raise KeyError("Key not found in metadata")
         return filtered
 
+    def export_metadata(self, fields=None, forms=None, format='obj'):
+        """Export the project's metadata
+
+        Parameters
+        ----------
+        fields: list
+            Limit exported metadata to these fields
+        forms: list
+            Limit exported metadata to these forms
+        format: {'obj', 'csv', 'xml', 'df'}, default obj
+            Return the metadata in native objects, csv or xml
+            df will return a pandas.DataFrame
+        """
+        ret_format = format
+        if format == 'obj':
+            ret_format = 'json'
+        if format == 'df':
+            from StringIO import StringIO
+            from pandas import read_csv
+            ret_format = 'csv'
+        pl = self.__basepl('metadata', format=ret_format)
+        to_add = [fields, forms]
+        str_add = ['fields', 'forms']
+        for key, data in zip(str_add, to_add):
+            if data:
+                pl[key] = ','.join(data)
+        response = RCRequest(self.url, pl, 'metadata').execute()
+        if format in ('obj', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            return read_csv(StringIO(response), index_col='field_name')
+
     def export_records(self, records=None, fields=None, forms=None,
                 events=None, raw_or_label='raw', event_name='label',
                 format='obj'):
@@ -99,13 +131,19 @@ class Project(object):
             multiple choice fields
         event_name: 'label' | 'unique'
              export the unique event name or the event label
-        format: 'obj' [default] | 'csv' | 'xml'
+        format: 'obj' [default] | 'csv' | 'xml' | 'df'
             Format of returned data. 'obj' returns json-decoded objects
-            'csv' and 'xml' return other formats
+            'csv' and 'xml' return other formats. 'df' will attempt to
+            return a pandas.DataFrame.
         """
+        ret_format = format
         if format == 'obj':
-            format = 'json'
-        pl = self.__basepl('record', format=format)
+            ret_format = 'json'
+        if format == 'df':
+            from pandas import read_csv
+            from StringIO import StringIO
+            ret_format = 'csv'
+        pl = self.__basepl('record', format=ret_format)
         keys_to_add = (records, fields, forms, events,
                         raw_or_label, event_name)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
@@ -117,7 +155,11 @@ class Project(object):
                     pl[key] = ','.join(data)
                 else:
                     pl[key] = data
-        return RCRequest(self.url, pl, 'exp_record').execute()
+        response = RCRequest(self.url, pl, 'exp_record').execute()
+        if format in ('obj', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            return read_csv(StringIO(response), index_col=self.def_field)
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""

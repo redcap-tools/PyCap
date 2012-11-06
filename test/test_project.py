@@ -1,14 +1,13 @@
 #! /usr/bin/env python
 
 import unittest
+from redcap import Project
 
 try:
     import pandas as pd
-    skip_csv_tests = False
+    skip_pd = False
 except ImportError:
-    skip_csv_tests = True
-
-from redcap import Project
+    skip_pd = True
 
 
 class ProjectTests(unittest.TestCase):
@@ -34,7 +33,7 @@ class ProjectTests(unittest.TestCase):
             self.assertTrue(hasattr(self.reg_proj, attr))
 
     def test_long_attrs(self):
-        """proj.events/arm_names/arm_nums should not be empty in long projects"""
+        "proj.events/arm_names/arm_nums should not be empty in long projects"
         self.assertIsNotNone(self.long_proj.events)
         self.assertIsNotNone(self.long_proj.arm_names)
         self.assertIsNotNone(self.long_proj.arm_nums)
@@ -62,10 +61,28 @@ class ProjectTests(unittest.TestCase):
         for record in data:
             self.assertIsInstance(record, dict)
 
-    @unittest.skipIf(skip_csv_tests, "pandas not installed, skipping csv tests")
+    def is_good_csv(self, csv_string):
+        "Helper to test csv strings"
+        return isinstance(csv_string, basestring)
+
     def test_csv_export(self):
         """Test valid csv export """
-        from StringIO import StringIO
-        csv_buf = StringIO(self.reg_proj.export_records(format='csv'))
-        df = pd.read_csv(csv_buf, index_col=self.reg_proj.def_field)
+        csv = self.reg_proj.export_records(format='csv')
+        self.assertTrue(self.is_good_csv(csv))
+
+    def test_metadata_export(self):
+        """Test valid metadata csv export"""
+        csv = self.reg_proj.export_metadata(format='csv')
+        self.assertTrue(self.is_good_csv(csv))
+
+    @unittest.skipIf(skip_pd, "Couldnl't import pandas")
+    def test_metadata_to_df(self):
+        """Test metadata export --> DataFrame"""
+        df = self.reg_proj.export_metadata(format='df')
+        self.assertIsInstance(df, pd.DataFrame)
+
+    @unittest.skipIf(skip_pd, "Couldn't import pandas")
+    def test_export_to_df(self):
+        """Test export --> DataFrame"""
+        df = self.reg_proj.export_records(format='df')
         self.assertIsInstance(df, pd.DataFrame)
