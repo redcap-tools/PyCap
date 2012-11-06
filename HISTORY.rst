@@ -1,6 +1,18 @@
 HISTORY
 -------
 
+0.6 (2012-11-06)
+++++++++++++++++
+
+* Add export_metadata function on redcap.Project class
+* Add 'df' as an option for the format argument on the redcap.Project
+    export methods to return a pandas.DataFrame
+
+0.5.2 (2012-10-12)
+++++++++++++++++++
+
+* Update setup.py for more graceful building
+
 0.5.1 (2012-10-04)
 ++++++++++++++++++
 
@@ -9,10 +21,10 @@ HISTORY
 0.5 (2012-09-19)
 ++++++++++++++++
 
-- Add initial support for longitudinal databases
-- Add helper attributes on redcap.Project class
-- Improve testing
-- Add Travis-CI testing on github
+* Add initial support for longitudinal databases
+* Add helper attributes on redcap.Project class
+* Improve testing
+* Add Travis-CI testing on github
 
 0.4.2 (2012-03-15)
 ++++++++++++++++++
