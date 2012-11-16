@@ -1,5 +1,11 @@
 HISTORY
 -------
+0.6.1 (2012-11-16)
+++++++++++++++++++
+
+* Add ability to alter DataFrame construction with the 'df_kwargs' arg
+  in Project.export_records and .export_metadata
+
 
 0.6 (2012-11-06)
 ++++++++++++++++
