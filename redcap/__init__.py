@@ -15,3 +15,4 @@ in conjunction with your Project to filter your data.
 from .project import Project
 from .query import Query, QueryGroup
 from .request import RCRequest, RCAPIError
+from .version import VERSION as __version__
