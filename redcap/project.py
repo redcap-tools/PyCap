@@ -72,7 +72,8 @@ class Project(object):
             raise KeyError("Key not found in metadata")
         return filtered
 
-    def export_metadata(self, fields=None, forms=None, format='obj'):
+    def export_metadata(self, fields=None, forms=None, format='obj',
+            df_kwargs=None):
         """Export the project's metadata
 
         Parameters
@@ -84,6 +85,9 @@ class Project(object):
         format: {'obj', 'csv', 'xml', 'df'}, default obj
             Return the metadata in native objects, csv or xml
             df will return a pandas.DataFrame
+        df_kwargs: dict [default: {'index_col': 'field_name'}]
+            Passed to pandas.read_csv to control construction of
+            returned DataFrame
         """
         ret_format = format
         if format == 'obj':
@@ -102,11 +106,13 @@ class Project(object):
         if format in ('obj', 'csv', 'xml'):
             return response
         elif format == 'df':
-            return read_csv(StringIO(response), index_col='field_name')
+            if not df_kwargs:
+                df_kwargs = {'index_col': 'field_name'}
+            return read_csv(StringIO(response), **df_kwargs)
 
     def export_records(self, records=None, fields=None, forms=None,
                 events=None, raw_or_label='raw', event_name='label',
-                format='obj'):
+                format='obj', df_kwargs=None):
         """Return data
 
         High level function of Project
@@ -135,6 +141,9 @@ class Project(object):
             Format of returned data. 'obj' returns json-decoded objects
             'csv' and 'xml' return other formats. 'df' will attempt to
             return a pandas.DataFrame.
+        df_kwargs: dict [default: {'index_col': self.def_field}]
+            Passed to pandas.read_csv to control construction of
+            returned DataFrame
         """
         ret_format = format
         if format == 'obj':
@@ -159,7 +168,9 @@ class Project(object):
         if format in ('obj', 'csv', 'xml'):
             return response
         elif format == 'df':
-            return read_csv(StringIO(response), index_col=self.def_field)
+            if not df_kwargs:
+                df_kwargs = {'index_col': self.def_field}
+            return read_csv(StringIO(response), **df_kwargs)
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""

@@ -86,3 +86,19 @@ class ProjectTests(unittest.TestCase):
         """Test export --> DataFrame"""
         df = self.reg_proj.export_records(format='df')
         self.assertIsInstance(df, pd.DataFrame)
+
+    @unittest.skipIf(skip_pd, "Couldn't import pandas")
+    def test_export_df_kwargs(self):
+        """Test passing kwargs to export DataFrame construction"""
+        df = self.reg_proj.export_records(format='df',
+            df_kwargs={'index_col': 'first_name'})
+        self.assertEqual(df.index.name, 'first_name')
+        self.assertTrue('study_id' in df)
+
+    @unittest.skipIf(skip_pd, "Couldn't import pandas")
+    def test_metadata_df_kwargs(self):
+        """Test passing kwargs to metadata DataFrame construction"""
+        df = self.reg_proj.export_metadata(format='df',
+            df_kwargs={'index_col': 'field_label'})
+        self.assertEqual(df.index.name, 'field_label')
+        self.assertTrue('field_name' in df)
