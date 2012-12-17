@@ -16,6 +16,10 @@ class TestClass(unittest.TestCase):
         self.base = {'token': '8E66DB6844D58E990075AFB51658A002',
                      'format': 'json',
                      'type': 'flat'}
+        self.badmd = {'token': 'B82CB05641E3BE8247E5F852EAFC5C21',
+                        'format': 'json',
+                        'type': 'flat',
+                        'content': 'metadata'}
 
     def tearDown(self):
         pass
@@ -40,3 +44,10 @@ class TestClass(unittest.TestCase):
         pl['content'] = 'metadata'
         r = RCRequest(*ags)
         self.assertIsInstance(r, RCRequest)
+
+    def test_bad_md(self):
+        """Test that newlines are appropriately dealt with"""
+        args = ['https://redcap.vanderbilt.edu/api/', self.badmd, 'metadata']
+        r = RCRequest(*args).execute()
+        self.assertTrue(r is not None)
+        self.assertTrue(len(r) > 0)
