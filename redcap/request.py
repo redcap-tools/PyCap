@@ -42,7 +42,8 @@ class RCRequest(object):
         self.type = qtype
         if qtype:
             self.validate_pl()
-        self.fmt = payload['format']
+        fmt_key = 'returnFormat' if 'returnFormat' in payload else 'format'
+        self.fmt = payload[fmt_key]
 
     def validate_pl(self):
         """Check that at least required params exist
@@ -101,8 +102,12 @@ class RCRequest(object):
         except KeyError:
             raise RCAPIError('content not in payload')
 
-    def execute(self):
+    def execute(self, **kwargs):
         """Execute the API request and return data
+
+        Parameters
+        ----------
+        kwargs: passed to requests.post()
 
         Returns
         -------
@@ -110,9 +115,12 @@ class RCRequest(object):
         else return raw string (ie format=='csv'|'xml')
         """
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
-        r = requests.post(self.url, data=self.payload, headers=header)
-        if self.fmt == 'json':
+        r = requests.post(self.url, data=self.payload, headers=header,
+            **kwargs)
+        # What we return depends on the type, as file contents come in r.text
+        if self.fmt == 'json' and self.type != 'exp_file':
              # REDCap doesn't sanitize newlines, screws up json decoding
-            return json.loads(r.text.replace('\n', '|'))
+            content = json.loads(r.text.replace('\n', '|'))
         else:
-            return r.text
+            content = r.text
+        return content, r.headers

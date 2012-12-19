@@ -29,7 +29,7 @@ class Project(object):
         self.forms = tuple(set(c['form_name'] for c in self.metadata))
         # determine whether longitudinal
         ev_data = RCRequest(self.url, self.__basepl('event'),
-            'exp_event').execute()
+            'exp_event').execute()[0]
         if 'error' in ev_data:
             events = tuple([])
             arm_nums = tuple([])
@@ -37,7 +37,7 @@ class Project(object):
         else:
             events = ev_data
             arm_data = RCRequest(self.url, self.__basepl('arm'),
-                'exp_arm').execute()
+                'exp_arm').execute()[0]
             arm_nums = tuple([a['arm_num'] for a in arm_data])
             arm_names = tuple([a['name'] for a in arm_data])
         self.events = events
@@ -48,13 +48,13 @@ class Project(object):
         """Return the project's metadata structure"""
         p_l = self.__basepl('metadata')
         p_l['content'] = 'metadata'
-        return RCRequest(self.url, p_l, 'metadata').execute()
+        return RCRequest(self.url, p_l, 'metadata').execute()[0]
 
     def __basepl(self, content, rec_type='flat', format='json'):
         """Return a dictionary which can be used as is or added to for
         RCRequest payloads"""
         d = {'token': self.token, 'content': content, 'format': format}
-        if content != 'metadata':
+        if content not in ['metadata', 'file']:
             d['type'] = rec_type
         return d
 
@@ -102,7 +102,7 @@ class Project(object):
         for key, data in zip(str_add, to_add):
             if data:
                 pl[key] = ','.join(data)
-        response = RCRequest(self.url, pl, 'metadata').execute()
+        response = RCRequest(self.url, pl, 'metadata').execute()[0]
         if format in ('obj', 'csv', 'xml'):
             return response
         elif format == 'df':
@@ -164,7 +164,7 @@ class Project(object):
                     pl[key] = ','.join(data)
                 else:
                     pl[key] = data
-        response = RCRequest(self.url, pl, 'exp_record').execute()
+        response = RCRequest(self.url, pl, 'exp_record').execute()[0]
         if format in ('obj', 'csv', 'xml'):
             return response
         elif format == 'df':
@@ -253,4 +253,44 @@ class Project(object):
         pl = self.__basepl('record')
         pl['overwriteBehavior'] = overwrite
         pl['data'] = json.dumps(to_import, separators=(',', ':'))
-        return RCRequest(self.url, pl, 'imp_record').execute()
+        return RCRequest(self.url, pl, 'imp_record').execute()[0]
+
+    def export_file(self, record, field, event=None, return_format='json'):
+        """ Export the contents of a file stored for a particular record
+
+        Note: unlike export_records and import_records, this method
+        works on a single record at a time.
+
+        Parameters
+        ----------
+        record: record ID
+        field: field name containing the file to be exported.
+        event: for longitudinal projects, specify the event here
+        return_format: {'json' (default), 'csv', 'xml'}, format of error
+            message
+        Returns
+        -------
+        two-tuple of the content of the file and content-type data
+        """
+        # load up payload
+        pl = self.__basepl(content='file', format=return_format)
+        # there's no format field in this call
+        del pl['format']
+        pl['returnFormat'] = return_format
+        pl['action'] = 'export'
+        if field not in self.field_names:
+            raise ValueError("'%s' is not a valid field" % field)
+        pl['field'] = field
+        pl['record'] = record
+        if event:
+            pl['event'] = event
+        content, headers = RCRequest(self.url, pl, 'exp_file').execute()
+        #REDCap adds some useful things in content-type
+        if 'content-type' in headers:
+            splat = [kv.strip() for kv in headers['content-type'].split(';')]
+            kv = [(kv.split('=')[0], kv.split('=')[1].replace('"', '')) for kv
+                in splat if '=' in kv]
+            content_map = dict(kv)
+        else:
+            content_map = {}
+        return content, content_map

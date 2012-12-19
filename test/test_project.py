@@ -75,6 +75,13 @@ class ProjectTests(unittest.TestCase):
         csv = self.reg_proj.export_metadata(format='csv')
         self.assertTrue(self.is_good_csv(csv))
 
+    def test_file_export(self):
+        """Test file export and proper content-type parsing"""
+        content, headers = self.reg_proj.export_file(record='1', field='file')
+        self.assertIsInstance(content, basestring)
+        for key in ['name', 'charset']:
+            self.assertIn(key, headers)
+
     @unittest.skipIf(skip_pd, "Couldnl't import pandas")
     def test_metadata_to_df(self):
         """Test metadata export --> DataFrame"""
