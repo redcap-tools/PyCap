@@ -1,5 +1,15 @@
 HISTORY
 -------
+
+0.7.0 (2013-01-18)
+++++++++++++++++++
+
+* Added Project.export_file and Project.import_file methods for exporting/
+  importing files from/to REDCap databases
+* Fixed a dependency issue that would cause new installations to fail
+* Fixed an issue where newline characters in the project's Data
+  Dictionary would case Projects to fail instantiation.
+
 0.6.1 (2012-11-16)
 ++++++++++++++++++
 

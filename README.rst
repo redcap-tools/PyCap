@@ -15,6 +15,8 @@ Currently, these API calls are available:
 -   Export Records
 -   Export Metadata
 -   Import Records
+-   Export File
+-   Import File
 
 Events and Arms are automatically exported for longitudinal projects (see below).
 
@@ -22,7 +24,7 @@ Events and Arms are automatically exported for longitudinal projects (see below)
 Requirements
 ------------
 
--   requests (> 0.12.1)
+-   requests (>= 1.0.0)
 
     ``$ easy_install requests``
 
@@ -66,4 +68,4 @@ TODO
 ----
 
 -   More Tests
--   File export and import
+-   User API call
