@@ -21,7 +21,7 @@ def get_version():
         exec(f.read())
         return VERSION
 
-required = ['requests>=0.12.1']
+required = ['requests>=1.0.0']
 
 if __name__ == '__main__':
     if os.path.exists('MANIFEST'):
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         install_requires=required,
         platforms='any',
         classifiers=(
-                'Development Status :: 4 - Production/Stable',
+                'Development Status :: 3 - Beta',
                 'Intended Audience :: Developers',
                 'Intended Audience :: Science/Research',
                 'License :: OSI Approved',

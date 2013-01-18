@@ -1,4 +1,5 @@
 *.pyc
+*.ipynb
 .DS_Store
 MANIFEST
 .gitignore
