@@ -67,7 +67,7 @@ class RCRequest(object):
             req_content = 'file'
             err_msg = 'Exporting file but content is not file'
         if self.type == 'imp_file':
-            extra = ['action', 'record', 'field', 'file']
+            extra = ['action', 'record', 'field']
             req_content = 'file'
             err_msg = 'Importing file but content is not file'
         if self.type == 'exp_event':
@@ -117,10 +117,20 @@ class RCRequest(object):
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         r = requests.post(self.url, data=self.payload, headers=header,
             **kwargs)
-        # What we return depends on the type, as file contents come in r.text
-        if self.fmt == 'json' and self.type != 'exp_file':
-             # REDCap doesn't sanitize newlines, screws up json decoding
-            content = json.loads(r.text.replace('\n', '|'))
+        if self.type != 'exp_file':
+            if self.fmt == 'json':
+                try:
+                    # Need to sanitize newlines, otherwise json decoding can fail
+                    content = json.loads(r.text.replace('\n', '|'))
+                except ValueError as e:
+                    if self.type == 'imp_file':
+                        # no response for successful file imports
+                        content = {}
+                    else:
+                        raise ValueError(e)
+            else:
+                content = r.text
         else:
-            content = r.text
+            # File exports need to return non-unicoded content
+            content = r.content
         return content, r.headers

@@ -265,7 +265,7 @@ class Project(object):
         ----------
         record: record ID
         field: field name containing the file to be exported.
-        event: for longitudinal projects, specify the event here
+        event: for longitudinal projects, specify the unique event here
         return_format: {'json' (default), 'csv', 'xml'}, format of error
             message
         Returns
@@ -294,3 +294,41 @@ class Project(object):
         else:
             content_map = {}
         return content, content_map
+
+    def import_file(self, record, field, fname, fobj, event=None,
+            return_format='json'):
+        """Import the contents of a file represented by fobj to a
+        particular records field
+
+        Parameters
+        ----------
+        record: record ID
+        field: field name where the file will go
+        fname: file name visible in REDCap UI
+        fobj: file object as returned by `open`
+        event: for longitudinal projects, specify the unique event here
+        return_format: {'json' (default), 'csv', 'xml'}, format of error
+            message
+
+        Returns
+        -------
+        response: response from server as specified by `return_format`
+        """
+        # load up payload
+        pl = self.__basepl(content='file', format=return_format)
+        # no format in this call
+        del pl['format']
+        pl['returnFormat'] = return_format
+        pl['action'] = 'import'
+        # Check that this is a filed
+        if field not in self.field_names:
+            raise ValueError("'%s' is not a valid field" % field)
+        # Check that it's a 'file' field
+        if self.__meta_metadata(field, 'field_type') != 'file':
+            raise ValueError("'%s' is not a 'file' field" % field)
+        pl['field'] = field
+        pl['record'] = record
+        if event:
+            pl['event'] = event
+        file_kwargs = {'files': {'file': (fname, fobj)}}
+        return RCRequest(self.url, pl, 'imp_file').execute(**file_kwargs)[0]

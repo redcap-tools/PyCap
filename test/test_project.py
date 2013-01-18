@@ -79,8 +79,24 @@ class ProjectTests(unittest.TestCase):
         """Test file export and proper content-type parsing"""
         content, headers = self.reg_proj.export_file(record='1', field='file')
         self.assertIsInstance(content, basestring)
-        for key in ['name', 'charset']:
+        # We should at least get the filename in the headers
+        for key in ['name']:
             self.assertIn(key, headers)
+
+    def test_file_import(self):
+        "Test file import"
+        import os
+        this_dir, this_fname = os.path.split(__file__)
+        upload_fname = os.path.join(this_dir, 'data.txt')
+        # Test a well-formed request
+        with open(upload_fname, 'r') as fobj:
+            response = self.reg_proj.import_file('1', 'file', upload_fname, fobj)
+        self.assertTrue('error' not in response)
+        # Test importing a file to a non-file field raises a ValueError
+        with open(upload_fname, 'r') as fobj:
+            with self.assertRaises(ValueError):
+                response = self.reg_proj.import_file('1', 'first_name',
+                    upload_fname, fobj)
 
     @unittest.skipIf(skip_pd, "Couldnl't import pandas")
     def test_metadata_to_df(self):
