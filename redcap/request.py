@@ -120,8 +120,8 @@ class RCRequest(object):
         if self.type != 'exp_file':
             if self.fmt == 'json':
                 try:
-                    # Need to sanitize newlines, otherwise json decoding can fail
-                    content = json.loads(r.text.replace('\n', '|'))
+                    # REDCap likes to send bad json
+                    content = json.loads(r.text, strict=False)
                 except ValueError as e:
                     if self.type == 'imp_file':
                         # no response for successful file imports
