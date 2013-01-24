@@ -82,6 +82,10 @@ class ProjectTests(unittest.TestCase):
         # We should at least get the filename in the headers
         for key in ['name']:
             self.assertIn(key, headers)
+        # needs to raise for bad file export requests
+        from requests.exceptions import HTTPError
+        with self.assertRaises(HTTPError):
+            self.reg_proj.export_file(record='1', field='dob')
 
     def test_file_import(self):
         "Test file import"
