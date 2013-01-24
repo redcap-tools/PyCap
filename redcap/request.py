@@ -132,5 +132,11 @@ class RCRequest(object):
                 content = r.text
         else:
             # File exports need to return non-unicoded content
+
+            # For file exports, file content comes where error
+            # messages usually would be. Raising for non-200 responses
+            # is the only way to signal that bad things happened.
+            r.raise_for_status()
+
             content = r.content
         return content, r.headers
