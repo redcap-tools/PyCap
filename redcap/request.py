@@ -50,43 +50,27 @@ class RCRequest(object):
 
         """
         required = ['token', 'content']
-        if self.type == 'exp_record':
-            extra = ['type', 'format']
-            req_content = 'record'
-            err_msg = 'Exporting record but content is not record'
-        if self.type == 'imp_record':
-            extra = ['type', 'overwriteBehavior', 'data', 'format']
-            req_content = 'record'
-            err_msg = 'Importing record but content is not record'
-        if self.type == 'metadata':
-            extra = ['format']
-            req_content = 'metadata'
-            err_msg = 'Requesting metadata but content != metadata'
-        if self.type == 'exp_file':
-            extra = ['action', 'record', 'field']
-            req_content = 'file'
-            err_msg = 'Exporting file but content is not file'
-        if self.type == 'imp_file':
-            extra = ['action', 'record', 'field']
-            req_content = 'file'
-            err_msg = 'Importing file but content is not file'
-        if self.type == 'exp_event':
-            extra = ['format']
-            req_content = 'event'
-            err_msg = 'Exporting events but content is not event'
-        if self.type == 'exp_arm':
-            extra = ['format']
-            req_content = 'arm'
-            err_msg = 'Exporting arms but content is not arm'
-        if self.type == 'exp_fem':
-            extra = ['format']
-            req_content = 'formEventMapping'
-            err_msg = 'Exporting form-event mappings but content is not ' + \
-                    'formEventMapping'
-        if self.type == 'exp_user':
-            extra = ['format']
-            req_content = 'user'
-            err_msg = 'Exporting users but content is not user'
+        valid_data = {
+            'exp_record': (['type', 'format'], 'record',
+                'Exporting record but content is not record'),
+            'imp_record': (['type', 'overwriteBehavior', 'data', 'format'],
+                'record', 'Importing record but content is not record'),
+            'metadata': (['format'], 'metadata',
+                'Requesting metadata but content != metadata'),
+            'exp_file': (['action', 'record', 'field'], 'file',
+                'Exporting file but content is not file'),
+            'imp_file': (['action', 'record', 'field'], 'file',
+                'Importing file but content is not file'),
+            'exp_event': (['format'], 'event',
+                'Exporting events but content is not event'),
+            'exp_arm': (['format'], 'arm',
+                'Exporting arms but content is not arm'),
+            'exp_fem': (['format'], 'formEventMapping',
+                'Exporting form-event mappings but content != formEventMapping'),
+            'exp_user': (['format'], 'user',
+                'Exporting users but content is not user')
+            }
+        extra, req_content, err_msg = valid_data[self.type]
         required.extend(extra)
         required = set(required)
         pl_keys = set(self.payload.keys())
@@ -114,9 +98,9 @@ class RCRequest(object):
         Return data object from JSON decoding process if format=='json',
         else return raw string (ie format=='csv'|'xml')
         """
-        header = {'Content-Type': 'application/x-www-form-urlencoded'}
-        r = requests.post(self.url, data=self.payload, headers=header,
-            **kwargs)
+        r = requests.post(self.url, data=self.payload, **kwargs)
+        # Raise if we need to
+        self.raise_for_status(r)
         if self.type != 'exp_file':
             if self.fmt == 'json':
                 try:
@@ -132,11 +116,17 @@ class RCRequest(object):
                 content = r.text
         else:
             # File exports need to return non-unicoded content
-
-            # For file exports, file content comes where error
-            # messages usually would be. Raising for non-200 responses
-            # is the only way to signal that bad things happened.
-            r.raise_for_status()
-
             content = r.content
         return content, r.headers
+
+    def raise_for_status(self, r):
+        """Given a response, raise for bad status for certain actions
+
+        Some redcap api methods don't return error messages
+        that the user could test for or otherwise use. Therefore, we
+        need to do the testing ourself
+
+        Raising for everything wouldn't let the user see the
+        (hopefully helpful) error  message"""
+        if self.type in ('exp_file', 'imp_file'):
+            r.raise_for_status()
