@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 import unittest
-from redcap import Project
+from redcap import Project, HTTPError
 
+skip_pd = False
 try:
     import pandas as pd
-    skip_pd = False
 except ImportError:
     skip_pd = True
 
@@ -77,30 +77,61 @@ class ProjectTests(unittest.TestCase):
 
     def test_file_export(self):
         """Test file export and proper content-type parsing"""
-        content, headers = self.reg_proj.export_file(record='1', field='file')
+        record, field = '1', 'file'
+        #Upload first to make sure file is there
+        self.import_file()
+        # Now export it
+        content, headers = self.reg_proj.export_file(record, field)
         self.assertIsInstance(content, basestring)
         # We should at least get the filename in the headers
         for key in ['name']:
             self.assertIn(key, headers)
-        # needs to raise for bad file export requests
-        from requests.exceptions import HTTPError
+        # needs to raise ValueError for exporting non-file fields
+        with self.assertRaises(ValueError):
+            self.reg_proj.export_file(record=record, field='dob')
+        # Delete and make sure we get an HTTPError with next export
+        self.reg_proj.delete_file(record, field)
         with self.assertRaises(HTTPError):
-            self.reg_proj.export_file(record='1', field='dob')
+            self.reg_proj.export_file(record, field)
+
+    def import_file(self):
+        upload_fname = self.upload_fname()
+        with open(upload_fname, 'r') as fobj:
+            response = self.reg_proj.import_file('1', 'file', upload_fname, fobj)
+        return response
+
+    def upload_fname(self):
+        import os
+        this_dir, this_fname = os.path.split(__file__)
+        return os.path.join(this_dir, 'data.txt')
 
     def test_file_import(self):
         "Test file import"
-        import os
-        this_dir, this_fname = os.path.split(__file__)
-        upload_fname = os.path.join(this_dir, 'data.txt')
-        # Test a well-formed request
-        with open(upload_fname, 'r') as fobj:
-            response = self.reg_proj.import_file('1', 'file', upload_fname, fobj)
+        # Make sure a well-formed request doesn't throw HTTPError
+        try:
+            response = self.import_file()
+        except HTTPError:
+            self.fail("Shouldn't throw HTTPError for successful imports")
         self.assertTrue('error' not in response)
         # Test importing a file to a non-file field raises a ValueError
-        with open(upload_fname, 'r') as fobj:
+        fname = self.upload_fname()
+        with open(fname, 'r') as fobj:
             with self.assertRaises(ValueError):
                 response = self.reg_proj.import_file('1', 'first_name',
-                    upload_fname, fobj)
+                    fname, fobj)
+
+    def test_file_delete(self):
+        "Test file deletion"
+        # upload a file
+        fname = self.upload_fname()
+        with open(fname, 'r') as fobj:
+            self.reg_proj.import_file('1', 'file', fname, fobj)
+        # make sure deleting doesn't raise
+        try:
+            self.reg_proj.delete_file('1', 'file')
+        except HTTPError:
+            self.fail("Shouldn't throw HTTPError for successful deletes")
+
     def test_user_export(self):
         "Test user export"
         users = self.reg_proj.export_users()
@@ -113,7 +144,7 @@ class ProjectTests(unittest.TestCase):
             for key in req_keys:
                 self.assertIn(key, user)
 
-    @unittest.skipIf(skip_pd, "Couldnl't import pandas")
+    @unittest.skipIf(skip_pd, "Couldn't import pandas")
     def test_metadata_to_df(self):
         """Test metadata export --> DataFrame"""
         df = self.reg_proj.export_metadata(format='df')

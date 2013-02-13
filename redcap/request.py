@@ -61,6 +61,8 @@ class RCRequest(object):
                 'Exporting file but content is not file'),
             'imp_file': (['action', 'record', 'field'], 'file',
                 'Importing file but content is not file'),
+            'del_file': (['action', 'record', 'field'], 'file',
+                'Deleteing file but content is not file'),
             'exp_event': (['format'], 'event',
                 'Exporting events but content is not event'),
             'exp_arm': (['format'], 'arm',
@@ -118,6 +120,9 @@ class RCRequest(object):
             # File exports need to return non-unicoded content
             content = r.content
         return content, r.headers
+    def expect_empty_json(self):
+        """Some responses are known to send empty responses"""
+        return self.type in ('imp_file', 'del_file')
 
     def raise_for_status(self, r):
         """Given a response, raise for bad status for certain actions
@@ -128,5 +133,5 @@ class RCRequest(object):
 
         Raising for everything wouldn't let the user see the
         (hopefully helpful) error  message"""
-        if self.type in ('exp_file', 'imp_file'):
+        if self.type in ('exp_file', 'imp_file', 'del_file'):
             r.raise_for_status()
