@@ -12,6 +12,8 @@ in conjunction with your Project to filter your data.
 
 """
 
+from requests import HTTPError
+
 from .project import Project
 from .query import Query, QueryGroup
 from .request import RCRequest, RCAPIError
