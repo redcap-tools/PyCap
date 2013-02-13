@@ -332,3 +332,31 @@ class Project(object):
             pl['event'] = event
         file_kwargs = {'files': {'file': (fname, fobj)}}
         return RCRequest(self.url, pl, 'imp_file').execute(**file_kwargs)[0]
+    def export_users(self, format='json'):
+        """Export the users of the Project
+
+        Each user will have the following keys:
+        firstname: User's first name
+        lastname: User's last name
+        email: Email address
+        username: User's username
+        expiration: Project access expiration date
+        data_access_group: data access group ID
+        data_export: (0=no access, 2=De-Identified, 1=Full Data Set)
+        forms: a list of dicts with a single key as the form name and
+            value is an integer describing that user's form rights,
+            where: 0=no access, 1=view records/responses and edit
+            records (survey responses are read-only), 2=read only, and
+            3=edit survey responses,
+
+
+        Parameters
+        ----------
+        format: 'json' (default)|'csv'|'xml', response return format
+
+        Returns
+        -------
+        list of users dicts when format=json, otherwise a string
+        """
+        pl = self.__basepl(content='user', format=format)
+        return RCRequest(self.url, pl, 'exp_user').execute()[0]

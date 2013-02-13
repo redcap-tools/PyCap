@@ -101,6 +101,17 @@ class ProjectTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 response = self.reg_proj.import_file('1', 'first_name',
                     upload_fname, fobj)
+    def test_user_export(self):
+        "Test user export"
+        users = self.reg_proj.export_users()
+        # A project must have at least one user
+        self.assertTrue(len(users) > 0)
+        req_keys = ['firstname', 'lastname', 'email', 'username',
+                    'expiration', 'data_access_group', 'data_export',
+                    'forms']
+        for user in users:
+            for key in req_keys:
+                self.assertIn(key, user)
 
     @unittest.skipIf(skip_pd, "Couldnl't import pandas")
     def test_metadata_to_df(self):
