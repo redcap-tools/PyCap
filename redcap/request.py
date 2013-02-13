@@ -103,23 +103,30 @@ class RCRequest(object):
         r = requests.post(self.url, data=self.payload, **kwargs)
         # Raise if we need to
         self.raise_for_status(r)
-        if self.type != 'exp_file':
+        content = self.get_content(r)
+        return content, r.headers
+
+    def get_content(self, r):
+        """Abstraction for grabbing content from a returned response"""
+        if self.type == 'exp_file':
+            # don't use the decoded r.text
+            return r.content
+        else:
             if self.fmt == 'json':
+                content = {}
+                # Decode
                 try:
-                    # REDCap likes to send bad json
+                    # Watch out for bad/empty json
                     content = json.loads(r.text, strict=False)
                 except ValueError as e:
-                    if self.type == 'imp_file':
-                        # no response for successful file imports
-                        content = {}
-                    else:
+                    if not self.expect_empty_json():
+                        # reraise for requests that shouldn't send empty json
                         raise ValueError(e)
+                finally:
+                    return content
             else:
-                content = r.text
-        else:
-            # File exports need to return non-unicoded content
-            content = r.content
-        return content, r.headers
+                return r.text
+
     def expect_empty_json(self):
         """Some responses are known to send empty responses"""
         return self.type in ('imp_file', 'del_file')
