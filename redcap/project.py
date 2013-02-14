@@ -272,14 +272,13 @@ class Project(object):
         -------
         two-tuple of the content of the file and content-type data
         """
+        self._check_file_field(field)
         # load up payload
         pl = self.__basepl(content='file', format=return_format)
         # there's no format field in this call
         del pl['format']
         pl['returnFormat'] = return_format
         pl['action'] = 'export'
-        if field not in self.field_names:
-            raise ValueError("'%s' is not a valid field" % field)
         pl['field'] = field
         pl['record'] = record
         if event:
@@ -314,21 +313,68 @@ class Project(object):
         -------
         response: response from server as specified by `return_format`
         """
+        self._check_file_field(field)
         # load up payload
         pl = self.__basepl(content='file', format=return_format)
         # no format in this call
         del pl['format']
         pl['returnFormat'] = return_format
         pl['action'] = 'import'
-        # Check that this is a filed
-        if field not in self.field_names:
-            raise ValueError("'%s' is not a valid field" % field)
-        # Check that it's a 'file' field
-        if self.__meta_metadata(field, 'field_type') != 'file':
-            raise ValueError("'%s' is not a 'file' field" % field)
         pl['field'] = field
         pl['record'] = record
         if event:
             pl['event'] = event
         file_kwargs = {'files': {'file': (fname, fobj)}}
         return RCRequest(self.url, pl, 'imp_file').execute(**file_kwargs)[0]
+
+    def delete_file(self, record, field, return_format='json', event=None):
+        self._check_file_field(field)
+        # Load up payload
+        pl = self.__basepl(content='file', format=return_format)
+        del pl['format']
+        pl['returnFormat'] = return_format
+        pl['action'] = 'delete'
+        pl['record'] = record
+        pl['field'] = field
+        if event:
+            pl['event'] = event
+        return RCRequest(self.url, pl, 'del_file').execute()[0]
+
+    def _check_file_field(self, field):
+        """Check that field exists and is a file field"""
+        is_field = field in self.field_names
+        is_file = self.__meta_metadata(field, 'field_type') == 'file'
+        if not (is_field and is_file):
+            msg = "'%s' is not a field or not a 'file' field" % field
+            raise ValueError(msg)
+        else:
+            return True
+
+    def export_users(self, format='json'):
+        """Export the users of the Project
+
+        Each user will have the following keys:
+        firstname: User's first name
+        lastname: User's last name
+        email: Email address
+        username: User's username
+        expiration: Project access expiration date
+        data_access_group: data access group ID
+        data_export: (0=no access, 2=De-Identified, 1=Full Data Set)
+        forms: a list of dicts with a single key as the form name and
+            value is an integer describing that user's form rights,
+            where: 0=no access, 1=view records/responses and edit
+            records (survey responses are read-only), 2=read only, and
+            3=edit survey responses,
+
+
+        Parameters
+        ----------
+        format: 'json' (default)|'csv'|'xml', response return format
+
+        Returns
+        -------
+        list of users dicts when format=json, otherwise a string
+        """
+        pl = self.__basepl(content='user', format=format)
+        return RCRequest(self.url, pl, 'exp_user').execute()[0]
