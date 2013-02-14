@@ -6,8 +6,11 @@ Copyright (c) 2011, Scott Burns
 All rights reserved.
 """
 
-import requests
+from requests import post, RequestException
 import json
+
+
+RedcapError = RequestException
 
 
 class RCAPIError(Exception):
@@ -100,7 +103,7 @@ class RCRequest(object):
         Return data object from JSON decoding process if format=='json',
         else return raw string (ie format=='csv'|'xml')
         """
-        r = requests.post(self.url, data=self.payload, **kwargs)
+        r = post(self.url, data=self.payload, **kwargs)
         # Raise if we need to
         self.raise_for_status(r)
         content = self.get_content(r)
