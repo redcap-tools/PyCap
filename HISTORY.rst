@@ -1,6 +1,18 @@
 HISTORY
 -------
 
+0.8.0 (2013-02-14)
+++++++++++++++++++
+
+* Added rest of API methods: Project.export_users, Project.delete_file. Almost
+    all API methods are implemented within ``Project`` in some way, shape or form.
+* Fix file import bug.
+* Now use relaxed JSON decoding because REDCap doesn't always send strict JSON.
+* File export, import and delete methods will raise ``redcap.RedcapError`` when the
+    methods don't succeed on the server.
+* Low-level content handling has been cleaned up.
+
+
 0.7.0 (2013-01-18)
 ++++++++++++++++++
 

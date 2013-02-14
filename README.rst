@@ -17,6 +17,8 @@ Currently, these API calls are available:
 -   Import Records
 -   Export File
 -   Import File
+-   Delete File
+-   Export Users
 
 Events and Arms are automatically exported for longitudinal projects (see below).
 
@@ -52,6 +54,25 @@ Usage
     >>> print project.arm_names
     ...
 
+    # Import files
+    >>> fname = 'your_file_to_upload.txt'
+    >>> with open(fname, 'r') as fobj:
+    ...     project.import_file('1', 'file_field', fname, fobj)
+
+    # Export files
+    >>> file_contents, headers = project.export_file('1', 'file_field')
+    >>> with open('other_file.txt', 'w') as f:
+    ...     f.write(file_contents)
+
+    # Delete files
+    >>> try:
+    ...     project.delete_file('1', 'file_field')
+    ... except redcap.RedcapError:
+    ...     # This throws if an error occured on the server
+    ... except ValueError:
+    ...     # This throws if you made a bad request, e.g. tried to delete a field
+    ...     # that isn't a file
+
 Installation
 ------------
 ::
@@ -67,5 +88,4 @@ Installation
 TODO
 ----
 
--   More Tests
--   User API call
+-   Clean up some method defaults and prepare for the stable 1.0
