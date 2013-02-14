@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import unittest
-from redcap import Project, HTTPError
+from redcap import Project, RedcapError
 
 skip_pd = False
 try:
@@ -89,9 +89,9 @@ class ProjectTests(unittest.TestCase):
         # needs to raise ValueError for exporting non-file fields
         with self.assertRaises(ValueError):
             self.reg_proj.export_file(record=record, field='dob')
-        # Delete and make sure we get an HTTPError with next export
+        # Delete and make sure we get an RedcapError with next export
         self.reg_proj.delete_file(record, field)
-        with self.assertRaises(HTTPError):
+        with self.assertRaises(RedcapError):
             self.reg_proj.export_file(record, field)
 
     def import_file(self):
@@ -107,11 +107,11 @@ class ProjectTests(unittest.TestCase):
 
     def test_file_import(self):
         "Test file import"
-        # Make sure a well-formed request doesn't throw HTTPError
+        # Make sure a well-formed request doesn't throw RedcapError
         try:
             response = self.import_file()
-        except HTTPError:
-            self.fail("Shouldn't throw HTTPError for successful imports")
+        except RedcapError:
+            self.fail("Shouldn't throw RedcapError for successful imports")
         self.assertTrue('error' not in response)
         # Test importing a file to a non-file field raises a ValueError
         fname = self.upload_fname()
@@ -129,8 +129,8 @@ class ProjectTests(unittest.TestCase):
         # make sure deleting doesn't raise
         try:
             self.reg_proj.delete_file('1', 'file')
-        except HTTPError:
-            self.fail("Shouldn't throw HTTPError for successful deletes")
+        except RedcapError:
+            self.fail("Shouldn't throw RedcapError for successful deletes")
 
     def test_user_export(self):
         "Test user export"
