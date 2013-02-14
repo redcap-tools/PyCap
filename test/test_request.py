@@ -3,8 +3,7 @@
 
 import unittest
 
-from requests import ConnectionError
-from redcap import RCRequest, RCAPIError
+from redcap import RCRequest, RCAPIError, RedcapError
 
 
 class TestClass(unittest.TestCase):
@@ -25,11 +24,11 @@ class TestClass(unittest.TestCase):
         pass
 
     def test_badurl(self):
-        """Assert we get a ConnectionError with a bad URL"""
+        """Assert we get a RedcapError with a bad URL"""
         pl = self.base
         pl['content'] = 'metadata'
         req = RCRequest('http://www.qewri2-.com', pl, 'metadata')
-        self.assertRaises(ConnectionError, req.execute, *[])
+        self.assertRaises(RedcapError, req.execute, *[])
 
     def test_md_content(self):
         """Test that RCRequest throws correctly for malformed payloads"""
