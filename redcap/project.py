@@ -14,12 +14,13 @@ from .request import RCRequest
 class Project(object):
     """Main class representing a RedCap Project"""
 
-    def __init__(self, url, token, name=''):
+    def __init__(self, url, token, name='', verify_ssl=True):
         """Must init with your token"""
 
         self.token = token
         self.name = name
         self.url = url
+        self.verify = verify_ssl
 
         self.metadata = self.__md()
         self.field_names = self.filter_metadata('field_name')
@@ -28,16 +29,14 @@ class Project(object):
         self.field_labels = self.filter_metadata('field_label')
         self.forms = tuple(set(c['form_name'] for c in self.metadata))
         # determine whether longitudinal
-        ev_data = RCRequest(self.url, self.__basepl('event'),
-            'exp_event').execute()[0]
+        ev_data = self._call_api(self.__basepl('event'), 'exp_event')[0]
         if 'error' in ev_data:
             events = tuple([])
             arm_nums = tuple([])
             arm_names = tuple([])
         else:
             events = ev_data
-            arm_data = RCRequest(self.url, self.__basepl('arm'),
-                'exp_arm').execute()[0]
+            arm_data = self._call_api(self.__basepl('arm'), 'exp_arm')[0]
             arm_nums = tuple([a['arm_num'] for a in arm_data])
             arm_names = tuple([a['name'] for a in arm_data])
         self.events = events
@@ -48,11 +47,11 @@ class Project(object):
         """Return the project's metadata structure"""
         p_l = self.__basepl('metadata')
         p_l['content'] = 'metadata'
-        return RCRequest(self.url, p_l, 'metadata').execute()[0]
+        return self._call_api(p_l, 'metadata')[0]
 
     def __basepl(self, content, rec_type='flat', format='json'):
         """Return a dictionary which can be used as is or added to for
-        RCRequest payloads"""
+        payloads"""
         d = {'token': self.token, 'content': content, 'format': format}
         if content not in ['metadata', 'file']:
             d['type'] = rec_type
@@ -71,6 +70,18 @@ class Project(object):
         if len(filtered) == 0:
             raise KeyError("Key not found in metadata")
         return filtered
+
+    def _kwargs(self):
+        """Private method to build a dict for sending to RCRequest
+
+        Other default kwargs to the http library should go here"""
+        return {'verify': self.verify}
+
+    def _call_api(self, payload, typpe, **kwargs):
+        request_kwargs = self._kwargs()
+        request_kwargs.update(kwargs)
+        rcr = RCRequest(self.url, payload, typpe)
+        return rcr.execute(**request_kwargs)
 
     def export_metadata(self, fields=None, forms=None, format='obj',
             df_kwargs=None):
@@ -102,7 +113,7 @@ class Project(object):
         for key, data in zip(str_add, to_add):
             if data:
                 pl[key] = ','.join(data)
-        response = RCRequest(self.url, pl, 'metadata').execute()[0]
+        response, _ = self._call_api(pl, 'metadata')
         if format in ('obj', 'csv', 'xml'):
             return response
         elif format == 'df':
@@ -164,7 +175,7 @@ class Project(object):
                     pl[key] = ','.join(data)
                 else:
                     pl[key] = data
-        response = RCRequest(self.url, pl, 'exp_record').execute()[0]
+        response, _ = self._call_api(pl, 'exp_record')
         if format in ('obj', 'csv', 'xml'):
             return response
         elif format == 'df':
@@ -253,7 +264,7 @@ class Project(object):
         pl = self.__basepl('record')
         pl['overwriteBehavior'] = overwrite
         pl['data'] = json.dumps(to_import, separators=(',', ':'))
-        return RCRequest(self.url, pl, 'imp_record').execute()[0]
+        return self._call_api(pl, 'imp_record')[0]
 
     def export_file(self, record, field, event=None, return_format='json'):
         """ Export the contents of a file stored for a particular record
@@ -283,7 +294,7 @@ class Project(object):
         pl['record'] = record
         if event:
             pl['event'] = event
-        content, headers = RCRequest(self.url, pl, 'exp_file').execute()
+        content, headers = self._call_api(pl, 'exp_file')
         #REDCap adds some useful things in content-type
         if 'content-type' in headers:
             splat = [kv.strip() for kv in headers['content-type'].split(';')]
@@ -325,7 +336,7 @@ class Project(object):
         if event:
             pl['event'] = event
         file_kwargs = {'files': {'file': (fname, fobj)}}
-        return RCRequest(self.url, pl, 'imp_file').execute(**file_kwargs)[0]
+        return self._call_api(pl, 'imp_file', **file_kwargs)[0]
 
     def delete_file(self, record, field, return_format='json', event=None):
         self._check_file_field(field)
@@ -338,7 +349,7 @@ class Project(object):
         pl['field'] = field
         if event:
             pl['event'] = event
-        return RCRequest(self.url, pl, 'del_file').execute()[0]
+        return self._call_api(pl, 'del_file')[0]
 
     def _check_file_field(self, field):
         """Check that field exists and is a file field"""
@@ -377,4 +388,4 @@ class Project(object):
         list of users dicts when format=json, otherwise a string
         """
         pl = self.__basepl(content='user', format=format)
-        return RCRequest(self.url, pl, 'exp_user').execute()[0]
+        return self._call_api(pl, 'exp_user')[0]
