@@ -17,6 +17,8 @@ class ProjectTests(unittest.TestCase):
         self.url = 'https://redcap.vanderbilt.edu/api/'
         self.long_proj = Project(self.url, '1387872621BBF1C17CC47FD8AE25FF54')
         self.reg_proj = Project(self.url, '8E66DB6844D58E990075AFB51658A002')
+        self.ssl_proj = Project(self.url, '8E66DB6844D58E990075AFB51658A002',
+            verify_ssl=False)
 
     def tearDown(self):
         pass
@@ -25,6 +27,7 @@ class ProjectTests(unittest.TestCase):
         """Ensure basic instantiation """
         self.assertIsInstance(self.long_proj, Project)
         self.assertIsInstance(self.reg_proj, Project)
+        self.assertIsInstance(self.ssl_proj, Project)
 
     def test_normal_attrs(self):
         """Ensure projects are created with all normal attrs"""
@@ -143,6 +146,18 @@ class ProjectTests(unittest.TestCase):
         for user in users:
             for key in req_keys:
                 self.assertIn(key, user)
+
+    def test_verify_ssl(self):
+        """Test argument making for SSL verification"""
+        # Test we won't verify SSL cert for non-verified project
+        post_kwargs = self.ssl_proj._kwargs()
+        self.assertIn('verify', post_kwargs)
+        self.assertFalse(post_kwargs['verify'])
+        # Test we do verify SSL cert in normal project
+        post_kwargs = self.reg_proj._kwargs()
+        self.assertIn('verify', post_kwargs)
+        self.assertTrue(post_kwargs['verify'])
+
 
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     def test_metadata_to_df(self):

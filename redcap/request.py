@@ -44,11 +44,11 @@ class RCRequest(object):
         self.payload = payload
         self.type = qtype
         if qtype:
-            self.validate_pl()
+            self.validate()
         fmt_key = 'returnFormat' if 'returnFormat' in payload else 'format'
         self.fmt = payload[fmt_key]
 
-    def validate_pl(self):
+    def validate(self):
         """Check that at least required params exist
 
         """
@@ -74,7 +74,7 @@ class RCRequest(object):
                 'Exporting form-event mappings but content != formEventMapping'),
             'exp_user': (['format'], 'user',
                 'Exporting users but content is not user')
-            }
+        }
         extra, req_content, err_msg = valid_data[self.type]
         required.extend(extra)
         required = set(required)
