@@ -57,6 +57,12 @@ class Project(object):
             d['type'] = rec_type
         return d
 
+    def is_longitudinal(self):
+        """Return boolean whether this project is longitudinal or not"""
+        return len(self.events) > 0 and \
+            len(self.arm_nums) > 0 and \
+            len(self.arm_names) > 0
+
     def filter_metadata(self, key):
         """Return a list values for the key in each field from the project's
         metadata.
@@ -84,7 +90,7 @@ class Project(object):
         return rcr.execute(**request_kwargs)
 
     def export_metadata(self, fields=None, forms=None, format='obj',
-            df_kwargs=None):
+                        df_kwargs=None):
         """Export the project's metadata
 
         Parameters
@@ -122,8 +128,8 @@ class Project(object):
             return read_csv(StringIO(response), **df_kwargs)
 
     def export_records(self, records=None, fields=None, forms=None,
-                events=None, raw_or_label='raw', event_name='label',
-                format='obj', df_kwargs=None):
+                       events=None, raw_or_label='raw', event_name='label',
+                       format='obj', df_kwargs=None):
         """Return data
 
         High level function of Project
@@ -165,9 +171,9 @@ class Project(object):
             ret_format = 'csv'
         pl = self.__basepl('record', format=ret_format)
         keys_to_add = (records, fields, forms, events,
-                        raw_or_label, event_name)
+                       raw_or_label, event_name)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
-                'eventName')
+                    'eventName')
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 #  Make a url-ok string
@@ -180,20 +186,24 @@ class Project(object):
             return response
         elif format == 'df':
             if not df_kwargs:
-                df_kwargs = {'index_col': self.def_field}
+                if self.is_longitudinal():
+                    df_kwargs = {'index_col': [self.def_field,
+                                               'redcap_event_name']}
+                else:
+                    df_kwargs = {'index_col': self.def_field}
             return read_csv(StringIO(response), **df_kwargs)
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
         return self.__meta_metadata(field_name,
-            'text_validation_type_or_show_slider_number')
+                                    'text_validation_type_or_show_slider_number')
 
     def __meta_metadata(self, field, key):
         """Return the value for key for the field in the metadata"""
         mf = ''
         try:
             mf = str([f[key] for f in self.metadata
-                            if f['field_name'] == field][0])
+                     if f['field_name'] == field][0])
         except IndexError:
             print("%s not in metadata field:%s" % (key, field))
             return mf
@@ -299,14 +309,14 @@ class Project(object):
         if 'content-type' in headers:
             splat = [kv.strip() for kv in headers['content-type'].split(';')]
             kv = [(kv.split('=')[0], kv.split('=')[1].replace('"', '')) for kv
-                in splat if '=' in kv]
+                  in splat if '=' in kv]
             content_map = dict(kv)
         else:
             content_map = {}
         return content, content_map
 
     def import_file(self, record, field, fname, fobj, event=None,
-            return_format='json'):
+                    return_format='json'):
         """Import the contents of a file represented by fobj to a
         particular records field
 
