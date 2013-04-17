@@ -1,6 +1,12 @@
 HISTORY
 -------
 
+0.8.1 (Unreleased)
+++++++++++++++++++
+
+* By default, in longitudinal projects when exporting records as a data frame, the index will be a MultiIndex of the project's primary field and ``redcap_event_name``.
+
+
 0.8.0 (2013-02-14)
 ++++++++++++++++++
 
