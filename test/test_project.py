@@ -41,6 +41,11 @@ class ProjectTests(unittest.TestCase):
         self.assertIsNotNone(self.long_proj.arm_names)
         self.assertIsNotNone(self.long_proj.arm_nums)
 
+    def test_is_longitudinal(self):
+        "Test the is_longitudinal method"
+        self.assertFalse(self.reg_proj.is_longitudinal())
+        self.assertTrue(self.long_proj.is_longitudinal())
+
     def test_regular_attrs(self):
         """proj.events/arm_names/arm_nums should be empty tuples"""
         for attr in 'events', 'arm_names', 'arm_nums':
@@ -170,6 +175,11 @@ class ProjectTests(unittest.TestCase):
         """Test export --> DataFrame"""
         df = self.reg_proj.export_records(format='df')
         self.assertIsInstance(df, pd.DataFrame)
+        # Test it's a normal index
+        self.assertTrue(hasattr(df.index, 'name'))
+        # Test for a MultiIndex on longitudinal df
+        long_df = self.long_proj.export_records(format='df', event_name='raw')
+        self.assertTrue(hasattr(long_df.index, 'names'))
 
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     def test_export_df_kwargs(self):
