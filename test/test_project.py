@@ -196,3 +196,15 @@ class ProjectTests(unittest.TestCase):
             df_kwargs={'index_col': 'field_label'})
         self.assertEqual(df.index.name, 'field_label')
         self.assertTrue('field_name' in df)
+
+    @unittest.skipIf(skip_pd, "Couldn't import pandas")
+    def test_import_dataframe(self):
+        """Test importing a pandas.DataFrame"""
+        df = self.reg_proj.export_records(format='df')
+        response = self.reg_proj.import_records(df)
+        self.assertIn('count', response)
+        self.assertNotIn('error', response)
+        long_df = self.long_proj.export_records(event_name='raw', format='df')
+        response = self.long_proj.import_records(long_df)
+        self.assertIn('count', response)
+        self.assertNotIn('error', response)
