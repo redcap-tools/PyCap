@@ -191,7 +191,10 @@ class Project(object):
                                                'redcap_event_name']}
                 else:
                     df_kwargs = {'index_col': self.def_field}
-            return read_csv(StringIO(response), **df_kwargs)
+            buf = StringIO(response)
+            df = read_csv(buf, **df_kwargs)
+            buf.close()
+            return df
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
@@ -255,25 +258,57 @@ class Project(object):
                 print('%s --> %s' % (str(name), str(label)))
         return self.field_names, self.field_labels
 
-    def import_records(self, to_import, overwrite='normal'):
+    def import_records(self, to_import, overwrite='normal', format='json',
+                       return_format='json', return_content='count'):
         """ Import data into the RedCap Project
 
         Parameters
         ----------
-        to_import: seq of dicts
-            List of dictionaries describing the data you wish to import_records
+        to_import: seq of dicts | csv/xml string | pandas.DataFrame
+            List of dictionaries describing the data you wish to
+            import_records, csv/xml string represenation of your data or
+            a pandas.DataFrame
             Note:
                 Keys of the dictionaries should be subset of project's,
                 fields, but this isn't a requirement. If you provide keys
                 that aren't defined fields, the returned response will
-                contain and 'error' key.
-        overwrite: 'normal' | 'overwrite'
+                contain an 'error' key.
+        overwrite: ('normal') | 'overwrite'
             'overwrite' will erase values previously stored in the database if
             not specified in the to_import dictionaries
+        format: ('json') | 'xml' | 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        return_format: ('json') | 'csv' | 'xml'
+            Response format. By default, response will be json-decoded.
+        return_content: ('count') | 'ids' | 'nothing'
+            By default, the response contains a 'count' key with the number of
+                records just imported. By specifying 'ids', a list of ids
+                imported will be returned. 'nothing' will only return
+                the HTTP status code and no message.
         """
         pl = self.__basepl('record')
+        if hasattr(to_import, 'to_csv'):
+            # We'll assume it's a df
+            from StringIO import StringIO
+            buf = StringIO()
+            if self.is_longitudinal():
+                csv_kwargs = {'index_label': [self.def_field,
+                                              'redcap_event_name']}
+            else:
+                csv_kwargs = {'index_label': self.def_field}
+            to_import.to_csv(buf, **csv_kwargs)
+            pl['data'] = buf.getvalue()
+            buf.close()
+            format = 'csv'
+        elif format == 'json':
+            pl['data'] = json.dumps(to_import, separators=(',', ':'))
+        else:
+            # don't do anything to csv/xml
+            pl['data'] = to_import
         pl['overwriteBehavior'] = overwrite
-        pl['data'] = json.dumps(to_import, separators=(',', ':'))
+        pl['format'] = format
+        pl['returnFormat'] = return_format
+        pl['returnContent'] = return_content
         return self._call_api(pl, 'imp_record')[0]
 
     def export_file(self, record, field, event=None, return_format='json'):
