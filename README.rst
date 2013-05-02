@@ -19,6 +19,7 @@ Currently, these API calls are available:
 -   Import File
 -   Delete File
 -   Export Users
+-   Export Form Event Mappings
 
 Events and Arms are automatically exported for longitudinal projects (see below).
 
@@ -72,6 +73,10 @@ Usage
     ... except ValueError:
     ...     # This throws if you made a bad request, e.g. tried to delete a field
     ...     # that isn't a file
+
+    # Export form event mappings
+    >>> fem = project.export_fem()
+    ...
 
 Installation
 ------------
