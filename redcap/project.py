@@ -89,6 +89,41 @@ class Project(object):
         rcr = RCRequest(self.url, payload, typpe)
         return rcr.execute(**request_kwargs)
 
+    def export_fem(self, arms=None, format='obj', df_kwargs=None):
+        """Export the project's form to event mapping
+
+        Parameters
+        ----------
+        arms: list
+            Limit exported form event mappings to these arm numbers
+        format: {'obj', 'csv', 'xml', 'df'}, default obj
+            Return the form event mappings in native objects, 
+            csv or xml, df will return a pandas.DataFrame
+        df_kwargs: dict [default: {'index_col': 'field_name'}]
+            Passed to pandas.read_csv to control construction of
+            returned DataFrame
+        """
+        ret_format = format
+        if format == 'obj':
+            ret_format = 'json'
+        if format == 'df':
+            from StringIO import StringIO
+            from pandas import read_csv
+            ret_format = 'csv'
+        pl = self.__basepl('formEventMapping', format=ret_format)
+        to_add = [arms]
+        str_add = ['arms']
+        for key, data in zip(str_add, to_add):
+            if data:
+                pl[key] = ','.join(data)
+        response, _ = self._call_api(pl, 'exp_fem')
+        if format in ('obj', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            if not df_kwargs:
+                df_kwargs = {'index_col': 'field_name'}
+            return read_csv(StringIO(response), **df_kwargs)
+
     def export_metadata(self, fields=None, forms=None, format='obj',
                         df_kwargs=None):
         """Export the project's metadata
