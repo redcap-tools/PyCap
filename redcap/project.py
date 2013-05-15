@@ -96,10 +96,10 @@ class Project(object):
         ----------
         arms: list
             Limit exported form event mappings to these arm numbers
-        format: {'obj', 'csv', 'xml', 'df'}, default obj
+        format: {'obj', 'csv', 'xml'} default obj
             Return the form event mappings in native objects, 
             csv or xml, df will return a pandas.DataFrame
-        df_kwargs: dict [default: {'index_col': 'field_name'}]
+        df_kwargs: dict
             Passed to pandas.read_csv to control construction of
             returned DataFrame
         """
@@ -121,8 +121,9 @@ class Project(object):
             return response
         elif format == 'df':
             if not df_kwargs:
-                df_kwargs = {'index_col': 'field_name'}
-            return read_csv(StringIO(response), **df_kwargs)
+                return read_csv(StringIO(response))
+            else:
+                return read_csv(StringIO(response), **df_kwargs)
 
     def export_metadata(self, fields=None, forms=None, format='obj',
                         df_kwargs=None):
