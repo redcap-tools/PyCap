@@ -1,11 +1,13 @@
 HISTORY
 -------
 
-0.8.1 (Unreleased)
+0.8.1 (2013-05-16)
 ++++++++++++++++++
 
 * By default, in longitudinal projects when exporting records as a data frame, the index will be a MultiIndex of the project's primary field and ``redcap_event_name``.
-
+* DataFrames can be passed to ``Project.import_records``.
+* Added ``Project.export_fem`` to export Form-Event Mappings from the Project.
+* The SSL certificate on REDCap server can be ignored if need be.
 
 0.8.0 (2013-02-14)
 ++++++++++++++++++
