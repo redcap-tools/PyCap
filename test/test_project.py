@@ -15,9 +15,11 @@ class ProjectTests(unittest.TestCase):
 
     def setUp(self):
         self.url = 'https://redcap.vanderbilt.edu/api/'
+        self.bad_url = 'https://redcap.vanderbilt.edu/api'
+        self.reg_token = '8E66DB6844D58E990075AFB51658A002'
         self.long_proj = Project(self.url, '1387872621BBF1C17CC47FD8AE25FF54')
-        self.reg_proj = Project(self.url, '8E66DB6844D58E990075AFB51658A002')
-        self.ssl_proj = Project(self.url, '8E66DB6844D58E990075AFB51658A002',
+        self.reg_proj = Project(self.url, self.reg_token)
+        self.ssl_proj = Project(self.url, self.reg_token,
             verify_ssl=False)
 
     def tearDown(self):
@@ -82,6 +84,13 @@ class ProjectTests(unittest.TestCase):
         """Test valid metadata csv export"""
         csv = self.reg_proj.export_metadata(format='csv')
         self.assertTrue(self.is_good_csv(csv))
+
+    def test_bad_creds(self):
+        "Test that exceptions are raised with bad URL or tokens"
+        with self.assertRaises(RedcapError):
+            Project(self.bad_url, self.reg_token)
+        with self.assertRaises(RedcapError):
+            Project(self.url, '1')
 
     def test_fem_export(self):
         """ Test fem export in obj format gives list of dicts"""
