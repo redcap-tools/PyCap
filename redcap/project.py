@@ -8,7 +8,7 @@ All rights reserved.
 
 import json
 
-from .request import RCRequest
+from .request import RCRequest, RedcapError, RequestException
 
 
 class Project(object):
@@ -21,8 +21,10 @@ class Project(object):
         self.name = name
         self.url = url
         self.verify = verify_ssl
-
-        self.metadata = self.__md()
+        try:
+            self.metadata = self.__md()
+        except RequestException:
+            raise RedcapError("Exporting metadata failed. Check your URL and token.")
         self.field_names = self.filter_metadata('field_name')
         # we'll use the first field as the default id for each row
         self.def_field = self.field_names[0]
