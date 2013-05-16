@@ -143,5 +143,5 @@ class RCRequest(object):
 
         Raising for everything wouldn't let the user see the
         (hopefully helpful) error  message"""
-        if self.type in ('exp_file', 'imp_file', 'del_file'):
+        if self.type in ('metadata', 'exp_file', 'imp_file', 'del_file'):
             r.raise_for_status()
