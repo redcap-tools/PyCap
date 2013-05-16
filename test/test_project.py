@@ -83,6 +83,13 @@ class ProjectTests(unittest.TestCase):
         csv = self.reg_proj.export_metadata(format='csv')
         self.assertTrue(self.is_good_csv(csv))
 
+    def test_fem_export(self):
+        """ Test fem export in obj format gives list of dicts"""
+        fem = self.long_proj.export_fem(format='obj')
+        self.assertIsInstance(fem, list)
+        for arm in fem:
+            self.assertIsInstance(arm, dict)
+
     def test_file_export(self):
         """Test file export and proper content-type parsing"""
         record, field = '1', 'file'
