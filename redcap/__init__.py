@@ -13,6 +13,8 @@ in conjunction with your Project to filter your data.
 """
 
 from .project import Project
+import warnings
+warnings.warn("Query & QueryGroup will be removed at 1.0.", DeprecationWarning)
 from .query import Query, QueryGroup
 from .request import RCRequest, RCAPIError, RedcapError
 from .version import VERSION as __version__
