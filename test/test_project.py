@@ -71,6 +71,22 @@ class ProjectTests(unittest.TestCase):
         for record in data:
             self.assertIsInstance(record, dict)
 
+    def test_import_records(self):
+        "Test record import"
+        data = self.reg_proj.export_records()
+        response = self.reg_proj.import_records(data)
+        self.assertIn('count', response)
+        self.assertNotIn('error', response)
+
+    def test_import_exception(self):
+        "Test record import throws RedcapError for bad import"
+        data = self.reg_proj.export_records()
+        data[0]['non_existent_key'] = 'foo'
+        with self.assertRaises(RedcapError) as cm:
+            self.reg_proj.import_records(data)
+        exc = cm.exception
+        self.assertIn('error', exc.args[0])
+
     def is_good_csv(self, csv_string):
         "Helper to test csv strings"
         return isinstance(csv_string, basestring)

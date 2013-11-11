@@ -99,7 +99,7 @@ class Project(object):
         arms: list
             Limit exported form event mappings to these arm numbers
         format: {'obj', 'csv', 'xml'} default obj
-            Return the form event mappings in native objects, 
+            Return the form event mappings in native objects,
             csv or xml, df will return a pandas.DataFrame
         df_kwargs: dict
             Passed to pandas.read_csv to control construction of
@@ -347,7 +347,10 @@ class Project(object):
         pl['format'] = format
         pl['returnFormat'] = return_format
         pl['returnContent'] = return_content
-        return self._call_api(pl, 'imp_record')[0]
+        response = self._call_api(pl, 'imp_record')[0]
+        if 'error' in response:
+            raise RedcapError(str(response))
+        return response
 
     def export_file(self, record, field, event=None, return_format='json'):
         """ Export the contents of a file stored for a particular record
