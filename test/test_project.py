@@ -19,14 +19,13 @@ class ProjectTests(unittest.TestCase):
         self.reg_token = '8E66DB6844D58E990075AFB51658A002'
         self.long_proj = Project(self.url, '1387872621BBF1C17CC47FD8AE25FF54')
         self.reg_proj = Project(self.url, self.reg_token)
-        self.ssl_proj = Project(self.url, self.reg_token,
-            verify_ssl=False)
+        self.ssl_proj = Project(self.url, self.reg_token, verify_ssl=False)
 
     def tearDown(self):
         pass
 
     def test_good_init(self):
-        """Ensure basic instantiation """
+        """Ensure basic instantiation"""
         self.assertIsInstance(self.long_proj, Project)
         self.assertIsInstance(self.reg_proj, Project)
         self.assertIsInstance(self.ssl_proj, Project)
@@ -34,17 +33,18 @@ class ProjectTests(unittest.TestCase):
     def test_normal_attrs(self):
         """Ensure projects are created with all normal attrs"""
         for attr in ('metadata', 'field_names', 'field_labels', 'forms',
-            'events', 'arm_names', 'arm_nums', 'def_field'):
+                     'events', 'arm_names', 'arm_nums', 'def_field'):
             self.assertTrue(hasattr(self.reg_proj, attr))
 
     def test_long_attrs(self):
-        "proj.events/arm_names/arm_nums should not be empty in long projects"
+        """proj.events/arm_names/arm_nums should not be empty in long
+        projects"""
         self.assertIsNotNone(self.long_proj.events)
         self.assertIsNotNone(self.long_proj.arm_names)
         self.assertIsNotNone(self.long_proj.arm_nums)
 
     def test_is_longitudinal(self):
-        "Test the is_longitudinal method"
+        """Test the is_longitudinal method"""
         self.assertFalse(self.reg_proj.is_longitudinal())
         self.assertTrue(self.long_proj.is_longitudinal())
 
@@ -72,14 +72,14 @@ class ProjectTests(unittest.TestCase):
             self.assertIsInstance(record, dict)
 
     def test_import_records(self):
-        "Test record import"
+        """Test record import"""
         data = self.reg_proj.export_records()
         response = self.reg_proj.import_records(data)
         self.assertIn('count', response)
         self.assertNotIn('error', response)
 
     def test_import_exception(self):
-        "Test record import throws RedcapError for bad import"
+        """Test record import throws RedcapError for bad import"""
         data = self.reg_proj.export_records()
         data[0]['non_existent_key'] = 'foo'
         with self.assertRaises(RedcapError) as cm:
@@ -88,7 +88,7 @@ class ProjectTests(unittest.TestCase):
         self.assertIn('error', exc.args[0])
 
     def is_good_csv(self, csv_string):
-        "Helper to test csv strings"
+        """Helper to test csv strings"""
         return isinstance(csv_string, basestring)
 
     def test_csv_export(self):
@@ -102,7 +102,7 @@ class ProjectTests(unittest.TestCase):
         self.assertTrue(self.is_good_csv(csv))
 
     def test_bad_creds(self):
-        "Test that exceptions are raised with bad URL or tokens"
+        """Test that exceptions are raised with bad URL or tokens"""
         with self.assertRaises(RedcapError):
             Project(self.bad_url, self.reg_token)
         with self.assertRaises(RedcapError):
@@ -126,10 +126,10 @@ class ProjectTests(unittest.TestCase):
         # We should at least get the filename in the headers
         for key in ['name']:
             self.assertIn(key, headers)
-        # needs to raise ValueError for exporting non-file fields
+            # needs to raise ValueError for exporting non-file fields
         with self.assertRaises(ValueError):
             self.reg_proj.export_file(record=record, field='dob')
-        # Delete and make sure we get an RedcapError with next export
+            # Delete and make sure we get an RedcapError with next export
         self.reg_proj.delete_file(record, field)
         with self.assertRaises(RedcapError):
             self.reg_proj.export_file(record, field)
@@ -137,16 +137,18 @@ class ProjectTests(unittest.TestCase):
     def import_file(self):
         upload_fname = self.upload_fname()
         with open(upload_fname, 'r') as fobj:
-            response = self.reg_proj.import_file('1', 'file', upload_fname, fobj)
+            response = self.reg_proj.import_file('1', 'file', upload_fname,
+                                                 fobj)
         return response
 
     def upload_fname(self):
         import os
+
         this_dir, this_fname = os.path.split(__file__)
         return os.path.join(this_dir, 'data.txt')
 
     def test_file_import(self):
-        "Test file import"
+        """Test file import"""
         # Make sure a well-formed request doesn't throw RedcapError
         try:
             response = self.import_file()
@@ -158,22 +160,22 @@ class ProjectTests(unittest.TestCase):
         with open(fname, 'r') as fobj:
             with self.assertRaises(ValueError):
                 response = self.reg_proj.import_file('1', 'first_name',
-                    fname, fobj)
+                                                     fname, fobj)
 
     def test_file_delete(self):
-        "Test file deletion"
+        """Test file deletion"""
         # upload a file
         fname = self.upload_fname()
         with open(fname, 'r') as fobj:
             self.reg_proj.import_file('1', 'file', fname, fobj)
-        # make sure deleting doesn't raise
+            # make sure deleting doesn't raise
         try:
             self.reg_proj.delete_file('1', 'file')
         except RedcapError:
             self.fail("Shouldn't throw RedcapError for successful deletes")
 
     def test_user_export(self):
-        "Test user export"
+        """Test user export"""
         users = self.reg_proj.export_users()
         # A project must have at least one user
         self.assertTrue(len(users) > 0)
@@ -217,7 +219,8 @@ class ProjectTests(unittest.TestCase):
     def test_export_df_kwargs(self):
         """Test passing kwargs to export DataFrame construction"""
         df = self.reg_proj.export_records(format='df',
-            df_kwargs={'index_col': 'first_name'})
+                                          df_kwargs={'index_col':
+                                                     'first_name'})
         self.assertEqual(df.index.name, 'first_name')
         self.assertTrue('study_id' in df)
 
@@ -225,7 +228,8 @@ class ProjectTests(unittest.TestCase):
     def test_metadata_df_kwargs(self):
         """Test passing kwargs to metadata DataFrame construction"""
         df = self.reg_proj.export_metadata(format='df',
-            df_kwargs={'index_col': 'field_label'})
+                                           df_kwargs={'index_col':
+                                                      'field_label'})
         self.assertEqual(df.index.name, 'field_label')
         self.assertTrue('field_name' in df)
 
