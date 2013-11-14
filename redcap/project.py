@@ -14,20 +14,27 @@ from .request import RCRequest, RedcapError, RequestException
 class Project(object):
     """Main class representing a RedCap Project"""
 
-    def __init__(self, url, token, name='', verify_ssl=True):
+    def __init__(self, url, token, name='', verify_ssl=True, use_meta=True):
         """Must init with your token"""
 
         self.token = token
         self.name = name
         self.url = url
         self.verify = verify_ssl
-        try:
-            self.metadata = self.__md()
-        except RequestException:
-            raise RedcapError("Exporting metadata failed. Check your URL and token.")
+        self.has_meta = use_meta
+        if use_meta:
+            try:
+                self.metadata = self.__md()
+            except RequestException:
+                raise RedcapError("Exporting metadata failed. Check your URL and token.")
+        else:
+            self.metadata = dict()
         self.field_names = self.filter_metadata('field_name')
         # we'll use the first field as the default id for each row
-        self.def_field = self.field_names[0]
+        if self.has_meta:
+            self.def_field = self.field_names[0]
+        else:
+            self.def_field = {}
         self.field_labels = self.filter_metadata('field_label')
         self.forms = tuple(set(c['form_name'] for c in self.metadata))
         # determine whether longitudinal
@@ -74,8 +81,8 @@ class Project(object):
         key: str
             A known key in the metadata structure
         """
-        filtered = [field[key] for field in self.metadata if key in field]
-        if len(filtered) == 0:
+        filtered = [field.get(key) for field in self.metadata if key in field]
+        if len(filtered) == 0 and self.has_meta:
             raise KeyError("Key not found in metadata")
         return filtered
 
@@ -83,7 +90,8 @@ class Project(object):
         """Private method to build a dict for sending to RCRequest
 
         Other default kwargs to the http library should go here"""
-        return {'verify': self.verify}
+        kwargs = {'verify': self.verify}
+        return kwargs
 
     def _call_api(self, payload, typpe, **kwargs):
         request_kwargs = self._kwargs()
