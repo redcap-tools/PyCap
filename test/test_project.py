@@ -20,6 +20,7 @@ class ProjectTests(unittest.TestCase):
         self.long_proj = Project(self.url, '1387872621BBF1C17CC47FD8AE25FF54')
         self.reg_proj = Project(self.url, self.reg_token)
         self.ssl_proj = Project(self.url, self.reg_token, verify_ssl=False)
+        self.meta_proj = Project(self.url, self.reg_token, use_meta=False)
 
     def tearDown(self):
         pass
@@ -32,7 +33,7 @@ class ProjectTests(unittest.TestCase):
 
     def test_normal_attrs(self):
         """Ensure projects are created with all normal attrs"""
-        for attr in ('metadata', 'field_names', 'field_labels', 'forms',
+        for attr in ('field_names', 'field_labels', 'forms',
                      'events', 'arm_names', 'arm_nums', 'def_field'):
             self.assertTrue(hasattr(self.reg_proj, attr))
 
@@ -196,6 +197,12 @@ class ProjectTests(unittest.TestCase):
         post_kwargs = self.reg_proj._kwargs()
         self.assertIn('verify', post_kwargs)
         self.assertTrue(post_kwargs['verify'])
+
+    def test_use_meta(self):
+        """Test argument for disabling use of project metadata"""
+        # Test that we can disable project metadata api calls
+        self.assertFalse(self.meta_proj.has_meta)
+        self.assertFalse(self.meta_proj.metadata)
 
 
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
