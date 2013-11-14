@@ -9,3 +9,4 @@ README
 build/
 docs/_build/
 _site/
+.idea/
