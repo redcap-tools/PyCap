@@ -167,7 +167,8 @@ class Project(object):
 
     def export_records(self, records=None, fields=None, forms=None,
                        events=None, raw_or_label='raw', event_name='label',
-                       format='obj', df_kwargs=None):
+                       format='obj', export_survey_fields=False,
+                       export_data_access_groups=False, df_kwargs=None):
         """Return data
 
         High level function of Project
@@ -196,6 +197,18 @@ class Project(object):
             Format of returned data. 'obj' returns json-decoded objects
             'csv' and 'xml' return other formats. 'df' will attempt to
             return a pandas.DataFrame.
+        export_survey_fields: True | False [default]
+            specifies whether or not to export the survey identifier
+            field (e.g., "redcap_survey_identifier") or survey timestamp
+             fields (e.g., form_name+"_timestamp") when surveys are
+             utilized in the project.
+        export_data_access_groups: True | False [default]
+            specifies whether or not to export the
+            "redcap_data_access_group" field when data access groups
+            are utilized in the project. NOTE: This flag is only viable
+             if the user whose token is being used to make the API
+              request is *not* in a data access group. If the user is
+              in a group, then this flag will revert to its default value.
         df_kwargs: dict [default: {'index_col': self.def_field}]
             Passed to pandas.read_csv to control construction of
             returned DataFrame
@@ -209,9 +222,10 @@ class Project(object):
             ret_format = 'csv'
         pl = self.__basepl('record', format=ret_format)
         keys_to_add = (records, fields, forms, events,
-                       raw_or_label, event_name)
+                       raw_or_label, event_name, export_survey_fields,
+                       export_data_access_groups)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
-                    'eventName')
+                    'eventName', 'exportSurveyFields', 'exportDataAccessGroups')
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 #  Make a url-ok string
