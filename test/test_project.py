@@ -13,15 +13,15 @@ except ImportError:
 class ProjectTests(unittest.TestCase):
     """docstring for ProjectTests"""
 
-    def setUp(self):
-        self.url = 'https://redcap.vanderbilt.edu/api/'
-        self.bad_url = 'https://redcap.vanderbilt.edu/api'
-        self.reg_token = '8E66DB6844D58E990075AFB51658A002'
-        self.long_proj = Project(self.url, '1387872621BBF1C17CC47FD8AE25FF54')
-        self.reg_proj = Project(self.url, self.reg_token)
-        self.ssl_proj = Project(self.url, self.reg_token,
-            verify_ssl=False)
+    url = 'https://redcap.vanderbilt.edu/api/'
+    bad_url = 'https://redcap.vanderbilt.edu/api'
+    reg_token = '8E66DB6844D58E990075AFB51658A002'
+    long_proj = Project(url, '1387872621BBF1C17CC47FD8AE25FF54')
+    reg_proj = Project(url, reg_token)
+    ssl_proj = Project(url, reg_token, verify_ssl=False)
 
+    def setUp(self):
+        pass
     def tearDown(self):
         pass
 
