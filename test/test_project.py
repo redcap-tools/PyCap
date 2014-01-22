@@ -19,6 +19,7 @@ class ProjectTests(unittest.TestCase):
     long_proj = Project(url, '1387872621BBF1C17CC47FD8AE25FF54')
     reg_proj = Project(url, reg_token)
     ssl_proj = Project(url, reg_token, verify_ssl=False)
+    survey_proj = Project(url, '37CAB1ABC2FEB3BB9D821DF13BA38A7B')
 
     def setUp(self):
         pass
@@ -195,6 +196,33 @@ class ProjectTests(unittest.TestCase):
         self.assertIn('verify', post_kwargs)
         self.assertTrue(post_kwargs['verify'])
 
+    def test_export_data_access_groups(self):
+        """Test we get 'redcap_data_access_group' in exported data"""
+        records = self.reg_proj.export_records(export_data_access_groups=True)
+        for record in records:
+            self.assertIn('redcap_data_access_group', record)
+        # When not passed, that key shouldn't be there
+        records = self.reg_proj.export_records()
+        for record in records:
+            self.assertNotIn('redcap_data_access_group', record)
+
+    def test_export_survey_fields(self):
+        """Test that we get the appropriate survey keys in the exported
+        data.
+
+        Note that the 'demographics' form has been setup as the survey
+        in the `survey_proj` project. The _timestamp field will vary for
+        users as their survey form will be named differently"""
+        records = self.survey_proj.export_records(export_survey_fields=True)
+        for record in records:
+            self.assertIn('redcap_survey_identifier', record)
+            self.assertIn('demographics_timestamp', record)
+        # The regular project doesn't have a survey setup. Users should
+        # be able this argument as True but it winds up a no-op.
+        records = self.reg_proj.export_records(export_survey_fields=True)
+        for record in records:
+            self.assertNotIn('redcap_survey_identifier', record)
+            self.assertNotIn('demographics_timestamp', record)
 
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     def test_metadata_to_df(self):
