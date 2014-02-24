@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (c) 2011, Scott Burns
-All rights reserved.
 """
+
+__author__ = 'Scott Burns'
+__copyright__ = ' Copyright 2014, Vanderbilt University'
+
 
 from requests import post, RequestException
 import json
@@ -19,25 +21,29 @@ class RCAPIError(Exception):
 
 
 class RCRequest(object):
-    """Private class wrapping the REDCap API
+    """
+    Private class wrapping the REDCap API. Decodes response from redcap
+    and returns it.
 
-    see https://redcap.vanderbilt.edu/api/help/
+    References
+    ----------
+    https://redcap.vanderbilt.edu/api/help/
 
-    Decodes response from redcap and returns it.
-
-    Users shouldn't really need to use this, the Project class will use this.
+    Users shouldn't really need to use this, the Project class is the
+    biggest consumer.
     """
 
     def __init__(self, url, payload, qtype):
-        """Constructor
+        """
+        Constructor
 
         Parameters
         ----------
-        url: str
+        url : str
             REDCap API URL
-        payload: dict
+        payload : dict
             key,values corresponding to the REDCap API
-        qtype: 'imp_record' | 'exp_record' | 'metadata'
+        qtype : str
             Used to validate payload contents against API
         """
         self.url = url
@@ -49,9 +55,7 @@ class RCRequest(object):
         self.fmt = payload[fmt_key]
 
     def validate(self):
-        """Check that at least required params exist
-
-        """
+        """Checks that at least required params exist"""
         required = ['token', 'content']
         valid_data = {
             'exp_record': (['type', 'format'], 'record',
@@ -96,12 +100,14 @@ class RCRequest(object):
 
         Parameters
         ----------
-        kwargs: passed to requests.post()
+        kwargs :
+            passed to requests.post()
 
         Returns
         -------
-        Return data object from JSON decoding process if format=='json',
-        else return raw string (ie format=='csv'|'xml')
+        response : list, str
+            data object from JSON decoding process if format=='json',
+            else return raw string (ie format=='csv'|'xml')
         """
         r = post(self.url, data=self.payload, **kwargs)
         # Raise if we need to
@@ -142,6 +148,6 @@ class RCRequest(object):
         need to do the testing ourself
 
         Raising for everything wouldn't let the user see the
-        (hopefully helpful) error  message"""
+        (hopefully helpful) error message"""
         if self.type in ('metadata', 'exp_file', 'imp_file', 'del_file'):
             r.raise_for_status()

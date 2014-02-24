@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (c) 2011, Scott Burns
-All rights reserved.
 """
+
+__author__ = 'Scott Burns'
+__copyright__ = ' Copyright 2014, Vanderbilt University'
 
 import json
 
@@ -12,10 +13,21 @@ from .request import RCRequest, RedcapError, RequestException
 
 
 class Project(object):
-    """Main class representing a RedCap Project"""
+    """Main class for interacting with REDCap projects"""
 
     def __init__(self, url, token, name='', verify_ssl=True):
-        """Must init with your token"""
+        """
+        Parameters
+        ----------
+        url : str
+            API URL to your REDCap server
+        token : str
+            API token to your project
+        name : str, optional
+            name for project
+        verify_ssl : boolean
+            Verify SSL, default True
+        """
 
         self.token = token
         self.name = name
@@ -60,19 +72,30 @@ class Project(object):
         return d
 
     def is_longitudinal(self):
-        """Return boolean whether this project is longitudinal or not"""
+        """
+        Returns
+        -------
+        boolean :
+            longitudinal status of this project
+        """
         return len(self.events) > 0 and \
             len(self.arm_nums) > 0 and \
             len(self.arm_names) > 0
 
     def filter_metadata(self, key):
-        """Return a list values for the key in each field from the project's
-        metadata.
+        """
+        Return a list of values for the metadata key from each field
+        of the project's metadata.
 
         Parameters
         ----------
         key: str
             A known key in the metadata structure
+
+        Returns
+        -------
+        filtered :
+            attribute list from each field
         """
         filtered = [field[key] for field in self.metadata if key in field]
         if len(filtered) == 0:
@@ -92,18 +115,24 @@ class Project(object):
         return rcr.execute(**request_kwargs)
 
     def export_fem(self, arms=None, format='obj', df_kwargs=None):
-        """Export the project's form to event mapping
+        """
+        Export the project's form to event mapping
 
         Parameters
         ----------
-        arms: list
+        arms : list
             Limit exported form event mappings to these arm numbers
-        format: {'obj', 'csv', 'xml'} default obj
+        format : (``'obj'``), ``'csv'``, ``'xml'``
             Return the form event mappings in native objects,
-            csv or xml, df will return a pandas.DataFrame
-        df_kwargs: dict
+            csv or xml, ``'df''`` will return a ``pandas.DataFrame``
+        df_kwargs : dict
             Passed to pandas.read_csv to control construction of
             returned DataFrame
+
+        Returns
+        -------
+        fem : list, str, ``pandas.DataFrame``
+            form-event mapping for the project
         """
         ret_format = format
         if format == 'obj':
@@ -128,21 +157,28 @@ class Project(object):
                 return read_csv(StringIO(response), **df_kwargs)
 
     def export_metadata(self, fields=None, forms=None, format='obj',
-                        df_kwargs=None):
-        """Export the project's metadata
+            df_kwargs=None):
+        """
+        Export the project's metadata
 
         Parameters
         ----------
-        fields: list
+        fields : list
             Limit exported metadata to these fields
-        forms: list
+        forms : list
             Limit exported metadata to these forms
-        format: {'obj', 'csv', 'xml', 'df'}, default obj
-            Return the metadata in native objects, csv or xml
-            df will return a pandas.DataFrame
-        df_kwargs: dict [default: {'index_col': 'field_name'}]
-            Passed to pandas.read_csv to control construction of
-            returned DataFrame
+        format : (``'obj'``), ``'csv'``, ``'xml'``, ``'df'``
+            Return the metadata in native objects, csv or xml.
+            ``'df'`` will return a ``pandas.DataFrame``.
+        df_kwargs : dict
+            Passed to ``pandas.read_csv`` to control construction of
+            returned DataFrame.
+            by default ``{'index_col': 'field_name'}``
+
+        Returns
+        -------
+        metadata : list, str, ``pandas.DataFrame``
+            metadata sttructure for the project.
         """
         ret_format = format
         if format == 'obj':
@@ -166,52 +202,60 @@ class Project(object):
             return read_csv(StringIO(response), **df_kwargs)
 
     def export_records(self, records=None, fields=None, forms=None,
-                       events=None, raw_or_label='raw', event_name='label',
-                       format='obj', export_survey_fields=False,
-                       export_data_access_groups=False, df_kwargs=None):
-        """Return data
-
-        High level function of Project
+            events=None, raw_or_label='raw', event_name='label',
+            format='obj', export_survey_fields=False,
+            export_data_access_groups=False, df_kwargs=None):
+        """
+        Export data from the REDCap project.
 
         Parameters
         ----------
-        records: list
-            an array of record names specifying specific records you wish to
-            pull (by default, all records are pulled)
-        fields: list
-            an array of field names specifying specific fields you wish to
-            pull (by default, all fields are pulled)
-        forms: list
-            an array of form names you wish to pull records for. If the form
+        records : list
+            array of record names specifying specific records to export.
+            by default, all records are exported
+        fields : list
+            array of field names specifying specific fields to pull
+            by default, all fields are exported
+        forms : list
+            array of form names to export. If in the web UI, the form
             name has a space in it, replace the space with an underscore
-            (by default, all records are pulled)
-        events: list
-            an array of unique event names that you wish to pull records for -
-            only for longitudinal projects
-        raw_or_label: 'raw' [default] |  'label' | 'both'
+            by default, all forms are exported
+        events : list
+            an array of unique event names from which to export records
+
+            :note: this only applies to longitudinal projects
+        raw_or_label : (``'raw'``), ``'label'``, ``'both'``
             export the raw coded values or labels for the options of
-            multiple choice fields
-        event_name: 'label' | 'unique'
+            multiple choice fields, or both
+        event_name : (``'label'``), ``'unique'``
              export the unique event name or the event label
-        format: 'obj' [default] | 'csv' | 'xml' | 'df'
-            Format of returned data. 'obj' returns json-decoded objects
-            'csv' and 'xml' return other formats. 'df' will attempt to
-            return a pandas.DataFrame.
-        export_survey_fields: True | False [default]
+        format : (``'obj'``), ``'csv'``, ``'xml'``, ``'df'``
+            Format of returned data. ``'obj'`` returns json-decoded
+            objects while ``'csv'`` and ``'xml'`` return other formats.
+            ``'df'`` will attempt to return a ``pandas.DataFrame``.
+        export_survey_fields : (``False``), True
             specifies whether or not to export the survey identifier
             field (e.g., "redcap_survey_identifier") or survey timestamp
-             fields (e.g., form_name+"_timestamp") when surveys are
-             utilized in the project.
-        export_data_access_groups: True | False [default]
+            fields (e.g., form_name+"_timestamp") when surveys are
+            utilized in the project.
+        export_data_access_groups : (``False``), ``True``
             specifies whether or not to export the
-            "redcap_data_access_group" field when data access groups
-            are utilized in the project. NOTE: This flag is only viable
-             if the user whose token is being used to make the API
-              request is *not* in a data access group. If the user is
-              in a group, then this flag will revert to its default value.
-        df_kwargs: dict [default: {'index_col': self.def_field}]
-            Passed to pandas.read_csv to control construction of
-            returned DataFrame
+            ``"redcap_data_access_group"`` field when data access groups
+            are utilized in the project.
+
+            :note: This flag is only viable if the user whose token is
+                being used to make the API request is *not* in a data
+                access group. If the user is in a group, then this flag
+                will revert to its default value.
+        df_kwargs : dict
+            Passed to ``pandas.read_csv`` to control construction of
+            returned DataFrame.
+            by default, ``{'index_col': self.def_field}``
+
+        Returns
+        -------
+        data : list, str, ``pandas.DataFrame``
+            exported data
         """
         ret_format = format
         if format == 'obj':
@@ -304,7 +348,7 @@ class Project(object):
             return []
 
     def names_labels(self, do_print=False):
-        """ Simple helper function to get all field names and labels """
+        """Simple helper function to get all field names and labels """
         if do_print:
             for name, label in zip(self.field_names, self.field_labels):
                 print('%s --> %s' % (str(name), str(label)))
@@ -312,31 +356,37 @@ class Project(object):
 
     def import_records(self, to_import, overwrite='normal', format='json',
                        return_format='json', return_content='count'):
-        """ Import data into the RedCap Project
+        """
+        Import data into the RedCap Project
 
         Parameters
         ----------
-        to_import: seq of dicts | csv/xml string | pandas.DataFrame
-            List of dictionaries describing the data you wish to
-            import_records, csv/xml string represenation of your data or
-            a pandas.DataFrame
-            Note:
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+            :note:
                 Keys of the dictionaries should be subset of project's,
                 fields, but this isn't a requirement. If you provide keys
                 that aren't defined fields, the returned response will
-                contain an 'error' key.
-        overwrite: ('normal') | 'overwrite'
-            'overwrite' will erase values previously stored in the database if
-            not specified in the to_import dictionaries
-        format: ('json') | 'xml' | 'csv'
+                contain an ``'error'`` key.
+        overwrite : ('normal'), 'overwrite'
+            ``'overwrite'`` will erase values previously stored in the
+            database if not specified in the to_import dictionaries.
+        format : ('json'),  'xml', 'csv'
             Format of incoming data. By default, to_import will be json-encoded
-        return_format: ('json') | 'csv' | 'xml'
+        return_format : ('json'), 'csv', 'xml'
             Response format. By default, response will be json-decoded.
-        return_content: ('count') | 'ids' | 'nothing'
+        return_content : ('count'), 'ids', 'nothing'
             By default, the response contains a 'count' key with the number of
-                records just imported. By specifying 'ids', a list of ids
-                imported will be returned. 'nothing' will only return
-                the HTTP status code and no message.
+            records just imported. By specifying 'ids', a list of ids
+            imported will be returned. 'nothing' will only return
+            the HTTP status code and no message.
+
+        Returns
+        -------
+        response : dict, str
+            response from REDCap API, json-decoded if ``return_format`` == ``'json'``
         """
         pl = self.__basepl('record')
         if hasattr(to_import, 'to_csv'):
@@ -367,21 +417,30 @@ class Project(object):
         return response
 
     def export_file(self, record, field, event=None, return_format='json'):
-        """ Export the contents of a file stored for a particular record
+        """
+        Export the contents of a file stored for a particular record
 
-        Note: unlike export_records and import_records, this method
-        works on a single record at a time.
+        Notes
+        -----
+        Unlike other export methods, this works on a single record.
 
         Parameters
         ----------
-        record: record ID
-        field: field name containing the file to be exported.
-        event: for longitudinal projects, specify the unique event here
-        return_format: {'json' (default), 'csv', 'xml'}, format of error
-            message
+        record : str
+            record ID
+        field : str
+            field name containing the file to be exported.
+        event: str
+            for longitudinal projects, specify the unique event here
+        return_format: ('json'), 'csv', 'xml'
+            format of error message
+
         Returns
         -------
-        two-tuple of the content of the file and content-type data
+        content : bytes
+            content of the file
+        content_map : dict
+            content-type dictionary
         """
         self._check_file_field(field)
         # load up payload
@@ -406,23 +465,30 @@ class Project(object):
         return content, content_map
 
     def import_file(self, record, field, fname, fobj, event=None,
-                    return_format='json'):
-        """Import the contents of a file represented by fobj to a
+            return_format='json'):
+        """
+        Import the contents of a file represented by fobj to a
         particular records field
 
         Parameters
         ----------
-        record: record ID
-        field: field name where the file will go
-        fname: file name visible in REDCap UI
-        fobj: file object as returned by `open`
-        event: for longitudinal projects, specify the unique event here
-        return_format: {'json' (default), 'csv', 'xml'}, format of error
-            message
+        record : str
+            record ID
+        field : str
+            field name where the file will go
+        fname : str
+            file name visible in REDCap UI
+        fobj : file object
+            file object as returned by `open`
+        event : str
+            for longitudinal projects, specify the unique event here
+        return_format : ('json'), 'csv', 'xml'
+            format of error message
 
         Returns
         -------
-        response: response from server as specified by `return_format`
+        response :
+            response from server as specified by ``return_format``
         """
         self._check_file_field(field)
         # load up payload
@@ -439,6 +505,29 @@ class Project(object):
         return self._call_api(pl, 'imp_file', **file_kwargs)[0]
 
     def delete_file(self, record, field, return_format='json', event=None):
+        """
+        Delete a file from REDCap
+
+        Notes
+        -----
+        There is no undo button to this.
+
+        Parameters
+        ----------
+        record : str
+            record ID
+        field : str
+            field name
+        return_format : (``'json'``), ``'csv'``, ``'xml'``
+            return format for error message
+        event : str
+            If longitudinal project, event to delete file from
+
+        Returns
+        -------
+        response : dict, str
+            response from REDCap after deleting file
+        """
         self._check_file_field(field)
         # Load up payload
         pl = self.__basepl(content='file', format=return_format)
@@ -462,30 +551,37 @@ class Project(object):
             return True
 
     def export_users(self, format='json'):
-        """Export the users of the Project
+        """
+        Export the users of the Project
 
+        Notes
+        -----
         Each user will have the following keys:
-        firstname: User's first name
-        lastname: User's last name
-        email: Email address
-        username: User's username
-        expiration: Project access expiration date
-        data_access_group: data access group ID
-        data_export: (0=no access, 2=De-Identified, 1=Full Data Set)
-        forms: a list of dicts with a single key as the form name and
-            value is an integer describing that user's form rights,
-            where: 0=no access, 1=view records/responses and edit
-            records (survey responses are read-only), 2=read only, and
-            3=edit survey responses,
+
+            * ``'firstname'`` : User's first name
+            * ``'lastname'`` : User's last name
+            * ``'email'`` : Email address
+            * ``'username'`` : User's username
+            * ``'expiration'`` : Project access expiration date
+            * ``'data_access_group'`` : data access group ID
+            * ``'data_export'`` : (0=no access, 2=De-Identified, 1=Full Data Set)
+            * ``'forms'`` : a list of dicts with a single key as the form name and
+                value is an integer describing that user's form rights,
+                where: 0=no access, 1=view records/responses and edit
+                records (survey responses are read-only), 2=read only, and
+                3=edit survey responses,
 
 
         Parameters
         ----------
-        format: 'json' (default)|'csv'|'xml', response return format
+        format : (``'json'``), ``'csv'``, ``'xml'``
+            response return format
 
         Returns
         -------
-        list of users dicts when format=json, otherwise a string
+        users: list, str
+            list of users dicts when ``'format'='json'``,
+            otherwise a string
         """
         pl = self.__basepl(content='user', format=format)
         return self._call_api(pl, 'exp_user')[0]
