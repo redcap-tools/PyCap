@@ -13,8 +13,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   intro
+   install
+   quickstart
+   deep
+   api
 
-.. automodule:: redcap
-   :members: Project
 
-New

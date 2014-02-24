@@ -3,7 +3,7 @@
 __author__ = 'Scott Burns <scott.s.burns@gmail.com>'
 __license__ = 'BSD 3-Clause'
 
-from fabric.api import local
+from fabric.api import local, lcd
 
 
 def upload():
@@ -27,3 +27,7 @@ def clean():
 
 def test():
     local('nosetests -v -w test/')
+
+def doc():
+    with lcd('docs'):
+        local('make html')
