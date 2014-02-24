@@ -268,3 +268,24 @@ class ProjectTests(unittest.TestCase):
         response = self.long_proj.import_records(long_df)
         self.assertIn('count', response)
         self.assertNotIn('error', response)
+
+    def test_date_formatting(self):
+        """Test date_format parameter"""
+
+        def import_factory(date_string):
+            return [{'study_id': '1',
+                     'dob': date_string}]
+
+        # Default YMD with dashes
+        import_ymd = import_factory('2000-01-01')
+        response = self.reg_proj.import_records(import_ymd)
+        self.assertEqual(response['count'], 1)
+
+        # DMY with /
+        import_dmy = import_factory('31/01/2000')
+        response = self.reg_proj.import_records(import_dmy, date_format='DMY')
+        self.assertEqual(response['count'], 1)
+
+        import_mdy = import_factory('12/31/2000')
+        response = self.reg_proj.import_records(import_mdy, date_format='MDY')
+        self.assertEqual(response['count'], 1)

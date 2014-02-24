@@ -355,7 +355,8 @@ class Project(object):
         return self.field_names, self.field_labels
 
     def import_records(self, to_import, overwrite='normal', format='json',
-                       return_format='json', return_content='count'):
+            return_format='json', return_content='count',
+            date_format='YMD'):
         """
         Import data into the RedCap Project
 
@@ -382,6 +383,12 @@ class Project(object):
             records just imported. By specifying 'ids', a list of ids
             imported will be returned. 'nothing' will only return
             the HTTP status code and no message.
+        date_format : ('YMD'), 'DMY', 'MDY'
+            Describes the formatting of dates. By default, date strings
+            are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
+            strings are formatted as 'MM/DD/YYYY' set this parameter as
+            'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
+            other formattings are allowed.
 
         Returns
         -------
@@ -411,6 +418,7 @@ class Project(object):
         pl['format'] = format
         pl['returnFormat'] = return_format
         pl['returnContent'] = return_content
+        pl['dateFormat'] = date_format
         response = self._call_api(pl, 'imp_record')[0]
         if 'error' in response:
             raise RedcapError(str(response))
