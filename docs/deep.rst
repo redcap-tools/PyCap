@@ -134,6 +134,15 @@ PyCap aims to make importing as easy as exporting::
     # PyCap will convert a DataFrame to csv and import it automatically
     response = project.import_records(df)
 
+Date String Formatting
+^^^^^^^^^^^^^^^^^^^^^^
+
+If the REDCap server you're working with is older than version 5.9 (look at the footer on the main page of your site to find your version), date strings to be imported can be formatted as either ``'YYYY-MM-DD'`` **or** ``'MM/DD/YYYY'``. Beginning with v5.9, the API will **only** accept ``'YYYY-MM-DD'`` formatting unless you specify the ``date_format`` parameter in the ``import_records`` call. Possible values are ``'YMD'`` (default), ``'DMY'`` or ``'MDY'``::
+
+    to_import = [{'record': '1', 'date_of_birth': '02/14/2000'}]
+    response = project.import_records(to_import, date_format='MDY')
+
+
 Working with Files
 ------------------
 
