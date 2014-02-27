@@ -4,6 +4,7 @@ HISTORY
 0.9 (In Development)
 ++++++++++++++++
 
+* Update docs about passing CA_BUNDLE through ``verify_ssl``.
 * Canonical URL for docs is now `http://pycap.rtfd.org <http://pycap.rtfd.org>`_.
 * Add ``date_format`` argument for ``.import_records``
 * Sphinxification of docs

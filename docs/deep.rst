@@ -27,6 +27,11 @@ If you’re connecting to a REDCap server whose SSL certificate can’t be verif
 
 By default though, the certificate will always be verified. Obviously, use this "feature" at your own risk. You are exposing yourself to man-in-the-middle attacks by using this.
 
+Using a local CA_BUNDLE
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Because PyCap uses `requests <http://python-requests.org>`_ under the hood, you can pass a path to your own CA_BUNDLE in the ``verify_ssl`` argument during ``Project`` instantiation and it will be used.
+
 Project Attributes
 ^^^^^^^^^^^^^^^^^^
 

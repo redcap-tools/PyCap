@@ -5,7 +5,12 @@ Intro
 
 PyCap is a python module exposing the REDCap API through some helpful abstractions. Information about the REDCap project can be found at http://project-redcap.org/.
 
-Available under the BSD (3-clause) license.
+Available under the MIT license.
+
+Documentation
+-------------
+
+Canonical documentation can be found on `ReadTheDocs <http://pycap.rtfd.org>`_.
 
 Features
 --------
@@ -29,7 +34,7 @@ Requirements
 
 -   requests (>= 1.0.0)
 
-    ``$ easy_install requests``
+    ``$ pip install requests``
 
 Usage
 -----

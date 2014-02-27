@@ -23,8 +23,8 @@ class Project(object):
             API token to your project
         name : str, optional
             name for project
-        verify_ssl : boolean
-            Verify SSL, default True
+        verify_ssl : boolean, str
+            Verify SSL, default True. Can pass path to CA_BUNDLE.
         """
 
         self.token = token
