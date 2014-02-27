@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__author__ = 'Scott Burns <scott.s.burns@gmail.com>'
-__license__ = 'BSD 3-Clause'
+
+__author__ = 'Scott Burns <scott.s.burns@vanderbilt.edu>'
+__license__ = 'MIT'
+__copyright__ = '2014, Vanderbilt University'
 
 from fabric.api import local, lcd
 
 
 def upload():
+    local('python setup.py register'
     local('python setup.py sdist upload')
+    local('python setup.py bdist_wheel upload')
 
 
 def rebuild():

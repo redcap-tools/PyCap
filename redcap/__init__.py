@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__author__ = 'Scott Burns <scott.s.burns@vanderbilt.edu>'
+__license__ = 'MIT'
+__copyright__ = '2014, Vanderbilt University'
+
 """
 This module exposes the REDCap API through the Project class. Instantiate the
 class with the URL to your REDCap system along with an API key, probably

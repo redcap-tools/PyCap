@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Copyright (c) 2011, Scott Burns
-All rights reserved.
-"""
+__author__ = 'Scott Burns <scott.s.burns@vanderbilt.edu>'
+__license__ = 'MIT'
+__copyright__ = '2014, Vanderbilt University'
 
 import os
 
@@ -33,7 +32,7 @@ if __name__ == '__main__':
         maintainer='Scott Burns',
         maintainer_email='scott.s.burns@gmail.com',
         description="""PyCap: Python interface to REDCap""",
-        license='BSD (3-clause)',
+        license='MIT',
         url='http://sburns.github.com/PyCap',
         version=get_version(),
         download_url='http://sburns.github.com/PyCap',
@@ -45,6 +44,7 @@ if __name__ == '__main__':
                 'Development Status :: 3 - Beta',
                 'Intended Audience :: Developers',
                 'Intended Audience :: Science/Research',
+                'License :: OSI Approved :: MIT License',
                 'License :: OSI Approved',
                 'Topic :: Software Development',
                 'Topic :: Scientific/Engineering',

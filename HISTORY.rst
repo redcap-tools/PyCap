@@ -1,6 +1,21 @@
 HISTORY
 -------
 
+0.9 (In Development)
+++++++++++++++++
+
+* Canonical URL for docs is now `http://pycap.rtfd.org <http://pycap.rtfd.org>`_.
+* Add ``date_format`` argument for ``.import_records``
+* Sphinxification of docs
+* Add MIT license
+* Add ``export_survey_fields`` & ``export_data_access_groups`` arguments for
+  ``.import_records``
+* Raise for 5XX responses
+* Raise exception for failed imports
+* Deprecate the entire ``redcap.Query`` module. It was a bad idea to begin with.
+* Raise exception during ``Project`` instantiation when the metadata call fails.
+  This is usually indicative of bad credentials.
+
 0.8.1 (2013-05-16)
 ++++++++++++++++++
 
