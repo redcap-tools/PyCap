@@ -1,7 +1,7 @@
 HISTORY
 -------
 
-0.9 (In Development)
+0.9 (2014-02-27)
 ++++++++++++++++
 
 * Update docs about passing CA_BUNDLE through ``verify_ssl``.
