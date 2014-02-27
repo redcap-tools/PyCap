@@ -151,3 +151,7 @@ class RCRequest(object):
         (hopefully helpful) error message"""
         if self.type in ('metadata', 'exp_file', 'imp_file', 'del_file'):
             r.raise_for_status()
+        # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+        # specifically 10.5
+        if 500 <= r.status_code < 600:
+            raise RedcapError(r.content)
