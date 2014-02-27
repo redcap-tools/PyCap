@@ -9,7 +9,7 @@ from fabric.api import local, lcd
 
 
 def upload():
-    local('python setup.py register'
+    local('python setup.py register')
     local('python setup.py sdist upload')
     local('python setup.py bdist_wheel upload')
 
