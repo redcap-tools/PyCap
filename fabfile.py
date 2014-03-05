@@ -26,7 +26,7 @@ def clean():
     local("""find redcap -type f -name "*.pyc" -exec rm {} \;""")
     local("rm -rf build")
     local("rm -rf dist")
-    local("rm -rf Rosie.egg-info")
+    local("rm -rf PyCap.egg-info")
 
 
 def test():

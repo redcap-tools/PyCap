@@ -119,6 +119,59 @@ Previously, PyCap enforced a strict intersection between the passed fields and `
     response = project.export_records(fields=non_fields)
     # response will contain dicts with only the def_field
 
+Dealing with large exports
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:note: If your databases are smaller than about 1 million cells (X records x Y columns), you can safely ignore this section.
+
+Exporting large projects will fail on REDCap's backend and PyCap will throw a ``redcap.RedcapError``. The threshold for failure seems to be around 1 million cells but I haven't studied this empirically. So for large projects, the export call with default values will fail::
+
+    >>> project = Project(url, 'TokenToALargeProject')
+    >>> try:
+    >>>     data = project.export_records()
+    >>> except RedcapError:
+    >>>     print "Failure"
+    Failure
+
+Here's an exporting function that trades speed for robustness::
+
+    def chunked_export(project, chunk_size=100):
+        def chunks(l, n):
+            """Yield successive n-sized chunks from list l"""
+            for i in xrange(0, len(l), n):
+                yield l[i:i+n]
+        record_list = project.export_records(fields=[project.def_field])
+        records = [r[project.def_field] for r in record_list]
+        try:
+            response = []
+            for record_chunk in chunks(records, chunk_size):
+                chunked_response = project.export_records(records=record_chunk)
+                response.extend(chunked_response)
+        except RedcapError:
+            msg = "Chunked export failed for chunk_size={:d}".format(chunk_size)
+            raise ValueError(msg)
+        else:
+            return response
+
+The gist of the function:
+
+* Define a sub-function that will yield successive n-sized chunks from a list.
+* Export only the record identifiers. If this times out because you have a million records in your project, you effectively can't interact with the project through the API. Sorry.
+* Build a list of just the record identifiers and iterate on the chunks:
+    * Export the data for just this chunk of identifiers.
+    * Extend an ongoing list of responses with this list of data.
+* If any ``export_records`` call fails during the loop, a ``ValueError`` is raised. You should try again with a smaller chunk size. Otherwise, the list of responses is returned.
+
+Caveats:
+
+* You can do this with json responses because each chunked response is a list of dictionaries with no structure between records. This becomes much more difficult if you want csv or xml as there is much more structure in these responses.
+* You could also do this with ``pandas.DataFrame`` but you'll want to ``.append`` the chunked dataframe, not extend.
+
+I'm hesitant to include this as a method on ``Project`` because of these issues. I'm also not sure how often this is encountered in the real world. But feel free to use this function if you need it.
+
+Regardless, you should remember that the REDCap instance you're working with is most likely a shared resource and you should always try to limit your API export requests to just the information you need at that point in time.
+
+
 Importing Data
 --------------
 
