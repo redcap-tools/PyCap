@@ -1,5 +1,5 @@
 Sphinx==1.2.1
 nose==1.2.1
 numpydoc==0.4
-requests==1.1.0
+requests>=1.1.0
 wheel==0.22.0
