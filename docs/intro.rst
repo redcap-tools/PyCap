@@ -14,3 +14,11 @@ License
 -------
 
 PyCap is licensed under the `MIT license <http://opensource.org/licenses/MIT>`_.
+
+Citing
+------
+
+If you use PyCap in your research, please consider citing the software:
+
+    Burns, S. S., Davis, G. N., Rimrodt, S. L., & Cutting, L. E. PyCap (Version 1.0) [Computer Software].
+    Nashville, TN: Vanderbilt University. Available from https://github.com/sburns/PyCap. doi:10.5281/zenodo.9917
