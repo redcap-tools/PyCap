@@ -3,7 +3,7 @@
 
 import unittest
 
-from redcap import RCRequest, RCAPIError, RedcapError
+from redcap import RCRequest, RCAPIError
 
 
 class TestClass(unittest.TestCase):
@@ -22,13 +22,6 @@ class TestClass(unittest.TestCase):
 
     def tearDown(self):
         pass
-
-    def test_badurl(self):
-        """Assert we get a RedcapError with a bad URL"""
-        pl = self.base
-        pl['content'] = 'metadata'
-        req = RCRequest('http://www.qewri2-.com', pl, 'metadata')
-        self.assertRaises(RedcapError, req.execute, *[])
 
     def test_md_content(self):
         """Test that RCRequest throws correctly for malformed payloads"""

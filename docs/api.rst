@@ -3,6 +3,10 @@ API
 
 PyCap is structured into two layers: a high level that exposes ``redcap.Project`` and a low-level, ``redcap.request``. Users (like yourself) should generally only worry about working the ``redcap.Project`` class.
 
+JSON Handling
++++++++++++++
+
+For any request with a ``format='json'`` argument, the API will respond with a JSON-formatted string representation of the response. This is automatically decoded by PyCap into a list of python dictionaries. This is the default format for all requests.
 
 High-Level
 ----------

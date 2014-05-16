@@ -1,6 +1,13 @@
 HISTORY
 -------
 
+1.0 (2014-05-16)
+++++++++++++++++
+
+* Normalize all ``format`` argument to default to ``json``, not ``obj``. This better follows the official REDCap API. This breaks backwards compatibility, hence the 1.0 release.
+* Remove the ``redcap.query`` and associated tests. If you need filtering functionality, `Pandas <http://pandas.pydata.org>`_ is **highly** recommended.
+* Update documentation re: how PyCap implicitly decodes JSON responses.
+
 0.9 (2014-02-27)
 ++++++++++++++++
 

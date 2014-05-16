@@ -56,7 +56,7 @@ class ProjectTests(unittest.TestCase):
             self.assertIsNotNone(attr_obj)
             self.assertEqual(len(attr_obj), 0)
 
-    def test_obj_export(self):
+    def test_json_export(self):
         """ Make sure we get a list of dicts"""
         data = self.reg_proj.export_records()
         self.assertIsInstance(data, list)
@@ -110,8 +110,8 @@ class ProjectTests(unittest.TestCase):
             Project(self.url, '1')
 
     def test_fem_export(self):
-        """ Test fem export in obj format gives list of dicts"""
-        fem = self.long_proj.export_fem(format='obj')
+        """ Test fem export in json format gives list of dicts"""
+        fem = self.long_proj.export_fem(format='json')
         self.assertIsInstance(fem, list)
         for arm in fem:
             self.assertIsInstance(arm, dict)
@@ -261,6 +261,9 @@ class ProjectTests(unittest.TestCase):
     def test_import_dataframe(self):
         """Test importing a pandas.DataFrame"""
         df = self.reg_proj.export_records(format='df')
+        # grrr coerce implicilty converted floats to str(int())
+        for col in ['matrix1', 'matrix2', 'matrix3', 'sex']:
+            df[col] = map(lambda x: str(int(x)) if pd.notnull(x) else '', df[col])
         response = self.reg_proj.import_records(df)
         self.assertIn('count', response)
         self.assertNotIn('error', response)
