@@ -41,7 +41,7 @@ if __name__ == '__main__':
         install_requires=required,
         platforms='any',
         classifiers=(
-                'Development Status :: 3 - Beta',
+                'Development Status :: 5 - Production',
                 'Intended Audience :: Developers',
                 'Intended Audience :: Science/Research',
                 'License :: OSI Approved :: MIT License',
