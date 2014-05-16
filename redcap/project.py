@@ -112,7 +112,7 @@ class Project(object):
         rcr = RCRequest(self.url, payload, typpe)
         return rcr.execute(**request_kwargs)
 
-    def export_fem(self, arms=None, format='obj', df_kwargs=None):
+    def export_fem(self, arms=None, format='json', df_kwargs=None):
         """
         Export the project's form to event mapping
 
@@ -120,7 +120,7 @@ class Project(object):
         ----------
         arms : list
             Limit exported form event mappings to these arm numbers
-        format : (``'obj'``), ``'csv'``, ``'xml'``
+        format : (``'json'``), ``'csv'``, ``'xml'``
             Return the form event mappings in native objects,
             csv or xml, ``'df''`` will return a ``pandas.DataFrame``
         df_kwargs : dict
@@ -133,8 +133,6 @@ class Project(object):
             form-event mapping for the project
         """
         ret_format = format
-        if format == 'obj':
-            ret_format = 'json'
         if format == 'df':
             from StringIO import StringIO
             from pandas import read_csv
@@ -146,7 +144,7 @@ class Project(object):
             if data:
                 pl[key] = ','.join(data)
         response, _ = self._call_api(pl, 'exp_fem')
-        if format in ('obj', 'csv', 'xml'):
+        if format in ('json', 'csv', 'xml'):
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -154,7 +152,7 @@ class Project(object):
             else:
                 return read_csv(StringIO(response), **df_kwargs)
 
-    def export_metadata(self, fields=None, forms=None, format='obj',
+    def export_metadata(self, fields=None, forms=None, format='json',
             df_kwargs=None):
         """
         Export the project's metadata
@@ -165,7 +163,7 @@ class Project(object):
             Limit exported metadata to these fields
         forms : list
             Limit exported metadata to these forms
-        format : (``'obj'``), ``'csv'``, ``'xml'``, ``'df'``
+        format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
             Return the metadata in native objects, csv or xml.
             ``'df'`` will return a ``pandas.DataFrame``.
         df_kwargs : dict
@@ -179,8 +177,6 @@ class Project(object):
             metadata sttructure for the project.
         """
         ret_format = format
-        if format == 'obj':
-            ret_format = 'json'
         if format == 'df':
             from StringIO import StringIO
             from pandas import read_csv
@@ -192,7 +188,7 @@ class Project(object):
             if data:
                 pl[key] = ','.join(data)
         response, _ = self._call_api(pl, 'metadata')
-        if format in ('obj', 'csv', 'xml'):
+        if format in ('json', 'csv', 'xml'):
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -201,7 +197,7 @@ class Project(object):
 
     def export_records(self, records=None, fields=None, forms=None,
             events=None, raw_or_label='raw', event_name='label',
-            format='obj', export_survey_fields=False,
+            format='json', export_survey_fields=False,
             export_data_access_groups=False, df_kwargs=None):
         """
         Export data from the REDCap project.
@@ -227,8 +223,8 @@ class Project(object):
             multiple choice fields, or both
         event_name : (``'label'``), ``'unique'``
              export the unique event name or the event label
-        format : (``'obj'``), ``'csv'``, ``'xml'``, ``'df'``
-            Format of returned data. ``'obj'`` returns json-decoded
+        format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
+            Format of returned data. ``'json'`` returns json-decoded
             objects while ``'csv'`` and ``'xml'`` return other formats.
             ``'df'`` will attempt to return a ``pandas.DataFrame``.
         export_survey_fields : (``False``), True
@@ -256,8 +252,6 @@ class Project(object):
             exported data
         """
         ret_format = format
-        if format == 'obj':
-            ret_format = 'json'
         if format == 'df':
             from pandas import read_csv
             from StringIO import StringIO
@@ -276,7 +270,7 @@ class Project(object):
                 else:
                     pl[key] = data
         response, _ = self._call_api(pl, 'exp_record')
-        if format in ('obj', 'csv', 'xml'):
+        if format in ('json', 'csv', 'xml'):
             return response
         elif format == 'df':
             if not df_kwargs:
