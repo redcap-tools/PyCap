@@ -285,7 +285,7 @@ class Project(object):
             return df
 
     def metadata_type(self, field_name):
-        """If the given field_name is validated by REDCap, return it's type"""
+        """If the given field_name is validated by REDCap, return its type"""
         return self.__meta_metadata(field_name,
                                     'text_validation_type_or_show_slider_number')
 
