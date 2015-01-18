@@ -1,3 +1,5 @@
+**I am no longer actively developing this code base. Please continue to submit bugs and I'll do my best to tackle them.**
+
 .. image:: https://secure.travis-ci.org/sburns/PyCap.png?branch=master
 .. image:: https://zenodo.org/badge/3886/sburns/PyCap.png
 
