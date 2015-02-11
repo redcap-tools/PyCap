@@ -20,7 +20,10 @@ def get_version():
         exec(f.read())
         return VERSION
 
-required = ['requests>=1.0.0']
+required = [
+    'requests>=1.0.0',
+    'semantic-version==2.3.1'
+]
 
 if __name__ == '__main__':
     if os.path.exists('MANIFEST'):

@@ -2,6 +2,7 @@
 
 import unittest
 from redcap import Project, RedcapError
+import semantic_version
 
 skip_pd = False
 try:
@@ -292,3 +293,7 @@ class ProjectTests(unittest.TestCase):
         import_mdy = import_factory('12/31/2000')
         response = self.reg_proj.import_records(import_mdy, date_format='MDY')
         self.assertEqual(response['count'], 1)
+
+    def test_get_version(self):
+	"""Testing retrieval of REDCap version associated with Project"""
+	self.assertTrue(isinstance(semantic_version.Version('1.0.0'), type(self.long_proj.redcap_version)))

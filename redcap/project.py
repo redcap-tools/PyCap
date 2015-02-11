@@ -6,9 +6,10 @@ __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
 
 import json
+import warnings
 
 from .request import RCRequest, RedcapError, RequestException
-
+import semantic_version
 
 class Project(object):
     """Main class for interacting with REDCap projects"""
@@ -35,6 +36,10 @@ class Project(object):
             self.metadata = self.__md()
         except RequestException:
             raise RedcapError("Exporting metadata failed. Check your URL and token.")
+        try:
+            self.redcap_version = self.__rcv()
+        except:
+            raise RedcapError("Determination of REDCap version failed")
         self.field_names = self.filter_metadata('field_name')
         # we'll use the first field as the default id for each row
         self.def_field = self.field_names[0]
@@ -68,6 +73,17 @@ class Project(object):
         if content not in ['metadata', 'file']:
             d['type'] = rec_type
         return d
+
+    def __rcv(self):
+        p_l = self.__basepl('version')
+        rcv = self._call_api(p_l, 'version')[0]
+        if 'error' in rcv:
+            warnings.warn('Version information not available for this REDCap instance')
+            return ''
+        if semantic_version.validate(rcv):
+            return semantic_version.Version(rcv)
+        else:
+            return rcv
 
     def is_longitudinal(self):
         """
