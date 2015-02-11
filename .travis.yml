@@ -3,15 +3,12 @@ python:
   - "2.7"
 # command to install dependencies
 install:
-  # Install conda
-  - sudo pip install conda
-  # install deps
-  - sudo conda init
-  - sudo conda update conda --yes
-  - conda create -p $HOME/py --yes pip numpy pandas requests nose numpydoc sphinx "python=$TRAVIS_PYTHON_VERSION"
-  - export PATH=$HOME/py/bin:$PATH
+  # install numpy and pandas for full-suite testing
+  - pip install numpy
+  - pip install pandas
+  - pip install -r requirements.txt
   # install pycap
-  - python setup.py install
+  - pip install -e .
 script:
 - "nosetests -w test/ -v"
 - "cd docs && make html"
