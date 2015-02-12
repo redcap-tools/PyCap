@@ -301,7 +301,7 @@ class Project(object):
             return df
 
     def metadata_type(self, field_name):
-        """If the given field_name is validated by REDCap, return it's type"""
+        """If the given field_name is validated by REDCap, return its type"""
         return self.__meta_metadata(field_name,
                                     'text_validation_type_or_show_slider_number')
 
@@ -363,7 +363,7 @@ class Project(object):
         return self.field_names, self.field_labels
 
     def import_records(self, to_import, overwrite='normal', format='json',
-            return_format='json', return_content='count',
+            return_format='json', return_content='count', rec_type='flat',
             date_format='YMD'):
         """
         Import data into the RedCap Project
@@ -403,7 +403,7 @@ class Project(object):
         response : dict, str
             response from REDCap API, json-decoded if ``return_format`` == ``'json'``
         """
-        pl = self.__basepl('record')
+        pl = self.__basepl('record', rec_type=rec_type)
         if hasattr(to_import, 'to_csv'):
             # We'll assume it's a df
             from StringIO import StringIO
