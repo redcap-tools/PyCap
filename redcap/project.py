@@ -214,7 +214,8 @@ class Project(object):
     def export_records(self, records=None, fields=None, forms=None,
             events=None, raw_or_label='raw', event_name='label',
             format='json', export_survey_fields=False,
-            export_data_access_groups=False, df_kwargs=None):
+            export_data_access_groups=False, df_kwargs=None,
+            export_checkbox_labels=False):
         """
         Export data from the REDCap project.
 
@@ -261,6 +262,9 @@ class Project(object):
             Passed to ``pandas.read_csv`` to control construction of
             returned DataFrame.
             by default, ``{'index_col': self.def_field}``
+        export_checkbox_labels : (``False``), ``True``
+            specify whether to export checkbox values as their label on
+            export.
 
         Returns
         -------
@@ -275,9 +279,10 @@ class Project(object):
         pl = self.__basepl('record', format=ret_format)
         keys_to_add = (records, fields, forms, events,
                        raw_or_label, event_name, export_survey_fields,
-                       export_data_access_groups)
+                       export_data_access_groups, export_checkbox_labels)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
-                    'eventName', 'exportSurveyFields', 'exportDataAccessGroups')
+                    'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
+                    'exportCheckboxLabel')
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 #  Make a url-ok string
