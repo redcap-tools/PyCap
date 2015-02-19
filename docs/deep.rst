@@ -44,6 +44,7 @@ When creating a ``Project`` object, PyCap goes ahead and makes some useful API c
 * ``events``: Unique event names (longitudinal projects)
 * ``arm_nums``: Unique arm numbers (longitudinal projects)
 * ``arm_names``: Unique arm names (longitudinal projects)
+* ``redcap_version``: version of REDCap the project is associated with.
 
 For non-longitudinal projects, ``events``, ``arm_nums``, and ``arm_names`` are empty tuples.
 
@@ -110,6 +111,9 @@ Finally, you can tweak the how the data is labeled or formatted::
     # quickly make a pandas.DataFrame
     data_frame = project.export_records(format='df')
     other_df = project.export_records(format='df', df_kwargs={'index_col': project.field_names[1]})
+
+    # export checkbox field labels as values (necessary in REDCap >= 6.0 to retrieve checkbox labels)
+    data = project.export_records(raw_or_label='label', export_checkbox_labels=True)  # note you will still have to set raw_or_label to `label`
 
 When you request a ``DataFrame``, PyCap exports the data as csv and passes it to the ``pandas.read_csv`` function. The ``df_kwargs`` dict can be used to guide the conversion from csv to ``DataFrame``.
 

@@ -295,5 +295,14 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(response['count'], 1)
 
     def test_get_version(self):
-	"""Testing retrieval of REDCap version associated with Project"""
-	self.assertTrue(isinstance(semantic_version.Version('1.0.0'), type(self.long_proj.redcap_version)))
+        """Testing retrieval of REDCap version associated with Project"""
+        self.assertTrue(isinstance(semantic_version.Version('1.0.0'), type(self.long_proj.redcap_version)))
+
+    def test_export_checkbox_labels(self):
+        """Testing the export of checkbox labels as field values"""
+        self.assertEqual(
+            self.reg_proj.export_records(
+                raw_or_label='label',
+                export_checkbox_labels=True)[0]['matcheck1___1'],
+                'Foo'
+        )

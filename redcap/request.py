@@ -84,9 +84,9 @@ class RCRequest(object):
             'exp_fem': (['format'], 'formEventMapping',
                 'Exporting form-event mappings but content != formEventMapping'),
             'exp_user': (['format'], 'user',
-		'Exporting users but content is not user'),
-	    'version': (['format'], 'version',
-		'Requesting version but content != version')
+                'Exporting users but content is not user'),
+                'version': (['format'], 'version',
+                'Requesting version but content != version')
         }
         extra, req_content, err_msg = valid_data[self.type]
         required.extend(extra)
@@ -129,8 +129,8 @@ class RCRequest(object):
         if self.type == 'exp_file':
             # don't use the decoded r.text
             return r.content
-	elif self.type == 'version':
-	    return r.content
+        elif self.type == 'version':
+            return r.content
         else:
             if self.fmt == 'json':
                 content = {}
