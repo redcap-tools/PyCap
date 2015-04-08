@@ -14,7 +14,7 @@ import semantic_version
 class Project(object):
     """Main class for interacting with REDCap projects"""
 
-    def __init__(self, url, token, name='', verify_ssl=True):
+    def __init__(self, url, token, name='', verify_ssl=True, lazy=False):
         """
         Parameters
         ----------
@@ -32,6 +32,22 @@ class Project(object):
         self.name = name
         self.url = url
         self.verify = verify_ssl
+	self.metadata = None
+	self.redcap_version = None
+	self.field_names = None
+	# We'll use the first field as the default id for each row
+	self.def_field = None
+	self.field_labels = None
+	self.forms = None
+	self.events = None
+	self.arm_nums = None
+	self.arm_names = None
+	self.configured = False
+
+	if not lazy:
+	    self.configure()
+
+    def configure(self):
         try:
             self.metadata = self.__md()
         except RequestException:
@@ -59,6 +75,7 @@ class Project(object):
         self.events = events
         self.arm_nums = arm_nums
         self.arm_names = arm_names
+	self.configured = True
 
     def __md(self):
         """Return the project's metadata structure"""
@@ -212,10 +229,10 @@ class Project(object):
             return read_csv(StringIO(response), **df_kwargs)
 
     def export_records(self, records=None, fields=None, forms=None,
-            events=None, raw_or_label='raw', event_name='label',
-            format='json', export_survey_fields=False,
-            export_data_access_groups=False, df_kwargs=None,
-            export_checkbox_labels=False):
+	events=None, raw_or_label='raw', event_name='label',
+	format='json', export_survey_fields=False,
+	export_data_access_groups=False, df_kwargs=None,
+	export_checkbox_labels=False):
         """
         Export data from the REDCap project.
 
@@ -279,11 +296,11 @@ class Project(object):
         pl = self.__basepl('record', format=ret_format)
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
-                       raw_or_label, event_name, export_survey_fields,
-                       export_data_access_groups, export_checkbox_labels)
+	    raw_or_label, event_name, export_survey_fields,
+	    export_data_access_groups, export_checkbox_labels)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
-                    'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
-                    'exportCheckboxLabel')
+	    'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
+	    'exportCheckboxLabel')
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 #  Make a url-ok string
@@ -307,7 +324,7 @@ class Project(object):
             return df
 
     def metadata_type(self, field_name):
-        """If the given field_name is validated by REDCap, return its type"""
+	"""If the given field_name is validated by REDCap, return it's type"""
         return self.__meta_metadata(field_name,
                                     'text_validation_type_or_show_slider_number')
 
@@ -393,7 +410,7 @@ class Project(object):
         return self.field_names, self.field_labels
 
     def import_records(self, to_import, overwrite='normal', format='json',
-            return_format='json', return_content='count', rec_type='flat',
+	    return_format='json', return_content='count',
             date_format='YMD'):
         """
         Import data into the RedCap Project
@@ -433,7 +450,7 @@ class Project(object):
         response : dict, str
             response from REDCap API, json-decoded if ``return_format`` == ``'json'``
         """
-        pl = self.__basepl('record', rec_type=rec_type)
+	pl = self.__basepl('record')
         if hasattr(to_import, 'to_csv'):
             # We'll assume it's a df
             from StringIO import StringIO

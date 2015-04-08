@@ -85,7 +85,7 @@ class RCRequest(object):
                 'Exporting form-event mappings but content != formEventMapping'),
             'exp_user': (['format'], 'user',
                 'Exporting users but content is not user'),
-                'version': (['format'], 'version',
+	    'version': (['format'], 'version',
                 'Requesting version but content != version')
         }
         extra, req_content, err_msg = valid_data[self.type]

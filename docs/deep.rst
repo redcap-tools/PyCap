@@ -48,6 +48,8 @@ When creating a ``Project`` object, PyCap goes ahead and makes some useful API c
 
 For non-longitudinal projects, ``events``, ``arm_nums``, and ``arm_names`` are empty tuples.
 
+:note: To disable calls to the API on initialization you can set ``lazy=True``.
+
 Metadata
 ^^^^^^^^
 
