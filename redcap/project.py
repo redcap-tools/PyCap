@@ -277,6 +277,7 @@ class Project(object):
             from StringIO import StringIO
             ret_format = 'csv'
         pl = self.__basepl('record', format=ret_format)
+        fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
                        raw_or_label, event_name, export_survey_fields,
                        export_data_access_groups, export_checkbox_labels)
@@ -321,6 +322,30 @@ class Project(object):
             return mf
         else:
             return mf
+
+    def backfill_fields(self, fields, forms):
+        """ Properly backfill fields to explicitly request specific
+        keys. The issue is that >6.X servers *only* return requested fields
+        so to improve backwards compatiblity for PyCap clients, add specific fields
+        when required.
+
+        Parameters
+        ----------
+            fields: list
+                requested fields
+            forms: list
+                requested forms
+        Returns:
+            new fields, forms
+        """
+        if forms and not fields:
+            new_fields = [self.def_field]
+        if fields and self.def_field not in fields:
+            new_fields = list(fields)
+            new_fields.append(self.def_field)
+        if not fields:
+            new_fields = self.field_names
+        return new_fields
 
     def filter(self, query, output_fields=None):
         """Query the database and return subject information for those

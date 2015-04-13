@@ -306,3 +306,19 @@ class ProjectTests(unittest.TestCase):
                 export_checkbox_labels=True)[0]['matcheck1___1'],
                 'Foo'
         )
+
+    def test_export_always_include_def_field(self):
+        """ Ensure def_field always comes in the output even if not explicity
+        given in a requested form """
+        # If we just ask for a form, must also get def_field in there
+        records = self.reg_proj.export_records(forms=['imaging'])
+        for record in records:
+            self.assertIn(self.reg_proj.def_field, record)
+        # , still need it def_field even if not asked for in form and fields
+        records = self.reg_proj.export_records(forms=['imaging'], fields=['foo_score'])
+        for record in records:
+            self.assertIn(self.reg_proj.def_field, record)
+        # If we just ask for some fields, still need def_field
+        records = self.reg_proj.export_records(fields=['foo_score'])
+        for record in records:
+            self.assertIn(self.reg_proj.def_field, record)
