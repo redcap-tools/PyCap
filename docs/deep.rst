@@ -48,6 +48,8 @@ When creating a ``Project`` object, PyCap goes ahead and makes some useful API c
 
 For non-longitudinal projects, ``events``, ``arm_nums``, and ``arm_names`` are empty tuples.
 
+:note: To disable calls to the API on initialization you can set ``lazy=True``. This prevents much of the metadata associated with a project from being requested at `Project` initialization. Accessing these values prior to `Project.configure()` being run will result in the return of Null values. This might be useful if you're implementing PyCap into a service-based architecture. For example, On each request to the service you might want to initialize a different Project with each request to the service and use PyCap's methods to pull records without having to initialize the project's entire metadata on each service request.
+
 Metadata
 ^^^^^^^^
 
