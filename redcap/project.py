@@ -32,20 +32,20 @@ class Project(object):
         self.name = name
         self.url = url
         self.verify = verify_ssl
-	self.metadata = None
-	self.redcap_version = None
-	self.field_names = None
-	# We'll use the first field as the default id for each row
-	self.def_field = None
-	self.field_labels = None
-	self.forms = None
-	self.events = None
-	self.arm_nums = None
-	self.arm_names = None
-	self.configured = False
+        self.metadata = None
+        self.redcap_version = None
+        self.field_names = None
+        # We'll use the first field as the default id for each row
+        self.def_field = None
+        self.field_labels = None
+        self.forms = None
+        self.events = None
+        self.arm_nums = None
+        self.arm_names = None
+        self.configured = False
 
-	if not lazy:
-	    self.configure()
+        if not lazy:
+            self.configure()
 
     def configure(self):
         try:
@@ -63,19 +63,23 @@ class Project(object):
         self.forms = tuple(set(c['form_name'] for c in self.metadata))
         # determine whether longitudinal
         ev_data = self._call_api(self.__basepl('event'), 'exp_event')[0]
-        if 'error' in ev_data:
+        arm_data = self._call_api(self.__basepl('arm'), 'exp_arm')[0]
+
+        if isinstance(ev_data, dict) and ('error' in ev_data.keys()):
             events = tuple([])
+        else:
+            events = ev_data
+            
+        if isinstance(arm_data, dict) and ('error' in arm_data.keys()):
             arm_nums = tuple([])
             arm_names = tuple([])
         else:
-            events = ev_data
-            arm_data = self._call_api(self.__basepl('arm'), 'exp_arm')[0]
             arm_nums = tuple([a['arm_num'] for a in arm_data])
             arm_names = tuple([a['name'] for a in arm_data])
         self.events = events
         self.arm_nums = arm_nums
         self.arm_names = arm_names
-	self.configured = True
+        self.configured = True
 
     def __md(self):
         """Return the project's metadata structure"""
@@ -93,7 +97,7 @@ class Project(object):
 
     def __rcv(self):
         p_l = self.__basepl('version')
-        rcv = self._call_api(p_l, 'version')[0]
+        rcv = self._call_api(p_l, 'version')[0].decode('utf-8')
         if 'error' in rcv:
             warnings.warn('Version information not available for this REDCap instance')
             return ''
@@ -167,7 +171,10 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from StringIO import StringIO
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
             from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('formEventMapping', format=ret_format)
@@ -211,7 +218,10 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from StringIO import StringIO
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
             from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('metadata', format=ret_format)
@@ -229,10 +239,10 @@ class Project(object):
             return read_csv(StringIO(response), **df_kwargs)
 
     def export_records(self, records=None, fields=None, forms=None,
-	events=None, raw_or_label='raw', event_name='label',
-	format='json', export_survey_fields=False,
-	export_data_access_groups=False, df_kwargs=None,
-	export_checkbox_labels=False):
+    events=None, raw_or_label='raw', event_name='label',
+    format='json', export_survey_fields=False,
+    export_data_access_groups=False, df_kwargs=None,
+    export_checkbox_labels=False):
         """
         Export data from the REDCap project.
 
@@ -291,16 +301,19 @@ class Project(object):
         ret_format = format
         if format == 'df':
             from pandas import read_csv
-            from StringIO import StringIO
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
             ret_format = 'csv'
         pl = self.__basepl('record', format=ret_format)
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
-	    raw_or_label, event_name, export_survey_fields,
-	    export_data_access_groups, export_checkbox_labels)
+        raw_or_label, event_name, export_survey_fields,
+        export_data_access_groups, export_checkbox_labels)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
-	    'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
-	    'exportCheckboxLabel')
+        'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
+        'exportCheckboxLabel')
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 #  Make a url-ok string
@@ -324,7 +337,7 @@ class Project(object):
             return df
 
     def metadata_type(self, field_name):
-	"""If the given field_name is validated by REDCap, return it's type"""
+        """If the given field_name is validated by REDCap, return it's type"""
         return self.__meta_metadata(field_name,
                                     'text_validation_type_or_show_slider_number')
 
@@ -412,7 +425,7 @@ class Project(object):
         return self.field_names, self.field_labels
 
     def import_records(self, to_import, overwrite='normal', format='json',
-	    return_format='json', return_content='count',
+        return_format='json', return_content='count',
             date_format='YMD'):
         """
         Import data into the RedCap Project
@@ -452,7 +465,7 @@ class Project(object):
         response : dict, str
             response from REDCap API, json-decoded if ``return_format`` == ``'json'``
         """
-	pl = self.__basepl('record')
+        pl = self.__basepl('record')
         if hasattr(to_import, 'to_csv'):
             # We'll assume it's a df
             from StringIO import StringIO
