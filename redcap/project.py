@@ -362,6 +362,8 @@ class Project(object):
             new_fields.append(self.def_field)
         if not fields:
             new_fields = self.field_names
+        else:
+            new_fields = list(fields)
         return new_fields
 
     def filter(self, query, output_fields=None):
