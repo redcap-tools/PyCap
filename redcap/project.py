@@ -357,11 +357,13 @@ class Project(object):
         """
         if forms and not fields:
             new_fields = [self.def_field]
-        if fields and self.def_field not in fields:
+        elif fields and self.def_field not in fields:
             new_fields = list(fields)
             new_fields.append(self.def_field)
-        if not fields:
+        elif not fields:
             new_fields = self.field_names
+        else:
+            new_fields = list(fields)
         return new_fields
 
     def filter(self, query, output_fields=None):
