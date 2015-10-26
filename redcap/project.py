@@ -370,10 +370,11 @@ class Project(object):
         """
         if forms and not fields:
             new_fields = [self.def_field]
-        if fields and self.def_field not in fields:
+        if fields:
             new_fields = list(fields)
-            new_fields.append(self.def_field)
-        if not fields:
+            if self.def_field not in fields:
+                new_fields.append(self.def_field)
+        else:
             new_fields = self.field_names
         return new_fields
 
