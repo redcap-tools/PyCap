@@ -373,7 +373,7 @@ class Project(object):
         elif fields and self.def_field not in fields:
             new_fields = list(fields)
             if self.def_field not in fields:
-            new_fields.append(self.def_field)
+                new_fields.append(self.def_field)
         elif not fields:
             new_fields = self.field_names
         else:
