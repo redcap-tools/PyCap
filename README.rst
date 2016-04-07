@@ -15,6 +15,8 @@ Documentation
 
 Canonical documentation can be found on `ReadTheDocs <http://pycap.rtfd.org>`_.
 
+A list of changes made to the REDCap API since PyCap 1.0 was released can be found here `API_Changelog <API_Changelog.rst>`_.
+
 Features
 --------
 
