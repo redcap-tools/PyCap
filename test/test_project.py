@@ -18,6 +18,7 @@ class ProjectTests(unittest.TestCase):
     bad_url = 'https://redcap.vanderbilt.edu/api'
     reg_token = '8E66DB6844D58E990075AFB51658A002'
     long_proj = Project(url, '1387872621BBF1C17CC47FD8AE25FF54')
+    #supertoken = "[64 character string]"
     reg_proj = Project(url, reg_token)
     ssl_proj = Project(url, reg_token, verify_ssl=False)
     survey_proj = Project(url, '37CAB1ABC2FEB3BB9D821DF13BA38A7B')
@@ -322,3 +323,20 @@ class ProjectTests(unittest.TestCase):
         records = self.reg_proj.export_records(fields=['foo_score'])
         for record in records:
             self.assertIn(self.reg_proj.def_field, record)
+
+    def test_export_project(self):
+        """Test project info export"""
+        project = self.reg_proj.export_project()
+        # Project must exist
+        self.assertTrue(len(project) > 0)
+        # Test for some required keys
+        req_keys = ['creation_time','is_longitudinal','project_id','purpose','project_title']
+        for key in req_keys:
+            self.assertIn(key,project)
+
+    def test_create_project(self):
+        """Test project info export"""
+        """NOTE: No Supertoken, placeholder test for now"""
+        #new_project_token = self.Project.create(url = url, supertoken =  supertoken, data = project_data_1, verify_ssl = False)
+        new_project_token = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456"
+        self.assertTrue(len(new_project_token) == 32)
