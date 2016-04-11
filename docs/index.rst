@@ -51,4 +51,5 @@ Contents:
    quickstart
    deep
    api
+   api_changelog
    contributing
