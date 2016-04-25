@@ -16,6 +16,11 @@ try:
 except ImportError:
     from io import StringIO
 
+try:
+    from pandas import read_csv
+except ImportError:
+    read_csv = None
+
 class Project(object):
     """Main class for interacting with REDCap projects"""
 
@@ -162,24 +167,9 @@ class Project(object):
         rcr = RCRequest(self.url, payload, typpe)
         return rcr.execute(**request_kwargs)
 
-    def __toggle_dataframe(self,format):
-        ret_format = format
-        if format == 'df':
-            try:
-                from StringIO import StringIO
-            except ImportError:
-                from io import StringIO
-            from pandas import read_csv
-
-            # make accessible elswhere
-            global StringIO
-            global read_csv
-            ret_format = 'csv'
-        return ret_format
-
     def export_project(self, format='json',df_kwargs=None):
         """
-        Export the project's information
+        Export the project's information (REDCap >= 6.5.0)
 
         Parameters
         ----------
@@ -197,7 +187,9 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('project')
         response, _ = self._call_api(pl, 'exp_project')
@@ -210,9 +202,9 @@ class Project(object):
             else:
                 return read_csv(StringIO(response), **df_kwargs)   
 
-    def export_report(self, report_id, format='json',raw_or_label='raw',raw_or_label_headers='raw',export_checkbox_labels=False,df_kwargs=None):
+    def export_report(self, report_id, format='json', raw_or_label='raw', raw_or_label_headers='raw', export_checkbox_labels=False, df_kwargs=None):
         """
-        Export the project's report
+        Export the project's report (REDCap >= 6.0.0)
 
         Parameters
         ----------
@@ -241,12 +233,14 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('report')
 
-        to_add = (report_id,raw_or_label,raw_or_label_headers,export_checkbox_labels)
-        str_add = ('report_id','rawOrLabel','rawOrLabelHeadHeaders','exportCheckboxLabel')
+        to_add = (report_id, raw_or_label, raw_or_label_headers, export_checkbox_labels)
+        str_add = ('report_id', 'rawOrLabel', 'rawOrLabelHeadHeaders', 'exportCheckboxLabel')
         for key, data in zip(str_add, to_add):
             if data:
                 pl[key] = data
@@ -261,7 +255,7 @@ class Project(object):
             else:
                 return read_csv(StringIO(response), **df_kwargs)  
 
-    def export_instruments(self, format='json',df_kwargs=None):
+    def export_instruments(self, format='json', df_kwargs=None):
         """
         Export the project's instruments
 
@@ -279,8 +273,11 @@ class Project(object):
         instruments: list, str, ``pandas.DataFrame``
             list of data collection instruments
         """
+
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('instrument')
         response, _ = self._call_api(pl, 'exp_instrument')
@@ -293,9 +290,9 @@ class Project(object):
             else:
                 return read_csv(StringIO(response), **df_kwargs)   
 
-    def export_pdf(self, format='json',record=None,event=None,instrument=None,all_records=None,df_kwargs=None):
+    def export_pdf(self, format='json', record=None, event=None, instrument=None, all_records=None, df_kwargs=None):
         """
-        Export the project's instrument data as pdf
+        Export the project's instrument data as pdf (REDCap >= 6.4.0)
 
         Parameters
         ----------
@@ -325,12 +322,14 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('pdf')
 
-        to_add = (record,event,instrument,all_records)
-        str_add = ("record","event","instrument","allrecords")
+        to_add = (record, event, instrument, all_records)
+        str_add = ("record", "event", "instrument", "allrecords")
         for key, data in zip(str_add, to_add):
             if data:
                 pl[key] = data
@@ -348,10 +347,9 @@ class Project(object):
             content_map = {}
         return content, content_map
 
-
     def export_survey_link(self, record, instrument, event=None, format='json'):
         """
-        Export unique survey link for specific record and instrument
+        Export unique survey link for specific record and instrument (REDCap >= 6.4.0)
 
         Parameters
         ----------
@@ -375,7 +373,9 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('surveyLink')
 
@@ -386,8 +386,8 @@ class Project(object):
         else:  
             event = "filler"
 
-        to_add = (record,instrument,event)
-        str_add = ("record","instrument","event")
+        to_add = (record, instrument, event)
+        str_add = ("record", "instrument", "event")
         for key, data in zip(str_add, to_add):
             if data:
                 pl[key] = data
@@ -404,7 +404,7 @@ class Project(object):
 
     def export_survey_queue_link(self, record, format='json'):
         """
-        Export unique survey queue link for specific record
+        Export unique survey queue link for specific record  (REDCap >= 6.4.0)
 
         Parameters
         ----------
@@ -425,7 +425,9 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('surveyQueueLink')
 
@@ -443,7 +445,7 @@ class Project(object):
 
     def export_survey_return_code(self, record, instrument, event=None, format='json'):
         """
-        Export survey return code for specific record and instrument
+        Export survey return code for specific record and instrument  (REDCap >= 6.4.0)
 
         Parameters
         ----------
@@ -467,7 +469,9 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('surveyReturnCode')
 
@@ -478,8 +482,8 @@ class Project(object):
         else:  
             event = "filler"
 
-        to_add = (record,instrument,event)
-        str_add = ("record","instrument","event")
+        to_add = (record, instrument, event)
+        str_add = ("record", "instrument", "event")
         for key, data in zip(str_add, to_add):
             if data:
                 pl[key] = data
@@ -494,9 +498,9 @@ class Project(object):
             else:
                 return read_csv(StringIO(response), **df_kwargs)   
 
-    def export_participant_list(self, instrument, event=None, format='json',df_kwargs=None):
+    def export_participant_list(self, instrument, event=None, format='json', df_kwargs=None):
         """
-        Export survey participant list for specific instrument
+        Export survey participant list for specific instrument  (REDCap >= 6.4.0)
 
         Parameters
         ----------
@@ -518,7 +522,9 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('participantList')
 
@@ -529,8 +535,8 @@ class Project(object):
         else:  
             event = "filler"
 
-        to_add = (instrument,event)
-        str_add = ("instrument","event")
+        to_add = (instrument, event)
+        str_add = ("instrument", "event")
         for key, data in zip(str_add, to_add):
             if data:
                 pl[key] = data
@@ -545,9 +551,9 @@ class Project(object):
             else:
                 return read_csv(StringIO(response), **df_kwargs) 
 
-    def export_fieldnames(self, format='json',field=None,df_kwargs=None):
+    def export_fieldnames(self, format='json', field=None, df_kwargs=None):
         """
-        Export list of import/export-specific field names
+        Export list of import/export-specific field names  (REDCap >= 6.4.0)
 
         Parameters
         ----------
@@ -563,8 +569,11 @@ class Project(object):
         instruments: list, str, ``pandas.DataFrame``
             list of field names
         """
+        
         # Check for dataframe usage
-        ret_format = self.__toggle_dataframe(format)
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
 
         pl = self.__basepl('exportFieldNames')
         pl["field"] = field
@@ -599,11 +608,14 @@ class Project(object):
         fem : list, str, ``pandas.DataFrame``
             form-event mapping for the project
         """
-        ret_format = format
-        if format == 'df':
-            from pandas import read_csv
-            ret_format = 'csv'
-        pl = self.__basepl('formEventMapping', format=ret_format)
+
+        # Check for dataframe usage
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
+
+        pl = self.__basepl('formEventMapping', format=format)
+
         to_add = [arms]
         str_add = ['arms']
         for key, data in zip(str_add, to_add):
@@ -642,11 +654,14 @@ class Project(object):
         metadata : list, str, ``pandas.DataFrame``
             metadata sttructure for the project.
         """
-        ret_format = format
-        if format == 'df':
-            from pandas import read_csv
-            ret_format = 'csv'
-        pl = self.__basepl('metadata', format=ret_format)
+
+        # Check for dataframe usage
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
+
+        pl = self.__basepl('metadata', format=format)
+
         to_add = [fields, forms]
         str_add = ['fields', 'forms']
         for key, data in zip(str_add, to_add):
@@ -720,11 +735,14 @@ class Project(object):
         data : list, str, ``pandas.DataFrame``
             exported data
         """
-        ret_format = format
-        if format == 'df':
-            from pandas import read_csv
-            ret_format = 'csv'
-        pl = self.__basepl('record', format=ret_format)
+
+        # Check for dataframe usage
+        if not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            format = 'csv'
+
+        pl = self.__basepl('record', format=format)
+        
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
         raw_or_label, event_name, export_survey_fields,
