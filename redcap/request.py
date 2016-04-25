@@ -85,8 +85,26 @@ class RCRequest(object):
                 'Exporting form-event mappings but content != formEventMapping'),
             'exp_user': (['format'], 'user',
                 'Exporting users but content is not user'),
-	    'version': (['format'], 'version',
-                'Requesting version but content != version')
+	        'version': (['format'], 'version',
+                'Requesting version but content != version'),
+            'exp_project': (['format'], 'project',
+                'Requesting project info but content is not project'),
+            'exp_report': (['report_id','format'], 'report',
+                'Exporting report but content is not report'),
+            'exp_instrument': (['format'],'instrument',
+                'Exporting instruments but content is not instrument'),
+            'exp_pdf': (['format'],'pdf',
+                'Exporting pdf but content is not pdf'),
+            'exp_surveyLink': (['record','instrument','event'],'surveyLink',
+                'Exporting survey link but content is not surveyLink'),
+            'exp_surveyQueueLink': (['record'],'surveyQueueLink',
+                'Exporting survey queue link but content is not surveyQueueLink'),
+            'exp_surveyReturnCode': (['instrument','event'],'surveyReturnCode',
+                'Exporting survey return code but content is not surveyReturnCode'),
+            'exp_participantList': (['instrument','event','format'],'participantList',
+                'Exporting survey participant list but content is not participantList'),
+            'exp_exportFieldNames': (['format'],'exportFieldNames',
+                'Exporting field names but content is not exportFieldNames')
         }
         extra, req_content, err_msg = valid_data[self.type]
         required.extend(extra)
