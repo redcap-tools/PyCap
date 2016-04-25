@@ -322,3 +322,13 @@ class ProjectTests(unittest.TestCase):
         records = self.reg_proj.export_records(fields=['foo_score'])
         for record in records:
             self.assertIn(self.reg_proj.def_field, record)
+
+    def test_export_project(self):
+        """Test project info export"""
+        project = self.reg_proj.export_project()
+        # Project must exist
+        self.assertTrue(len(project) > 0)
+        # Test for some required keys
+        req_keys = ['creation_time','is_longitudinal','project_id','purpose','project_title']
+        for key in req_keys:
+            self.assertIn(key,project)
