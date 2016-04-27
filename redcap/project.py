@@ -188,15 +188,29 @@ class Project(object):
         """
 
         # Check for dataframe usage
+<<<<<<< HEAD
         if not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             format = 'csv'
 
         pl = self.__basepl('project')
+=======
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
+
+        pl = self.__basepl('project',format=ret_format)
+>>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         response, _ = self._call_api(pl, 'exp_project')
 
         if format in ('json', 'csv', 'xml'):
             return response
+<<<<<<< HEAD
+=======
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            return response
+>>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         elif format == 'df':
             if not df_kwargs:
                 return read_csv(StringIO(response))
@@ -234,11 +248,19 @@ class Project(object):
         """
 
         # Check for dataframe usage
+<<<<<<< HEAD
         if not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             format = 'csv'
 
         pl = self.__basepl('report')
+=======
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
+
+        pl = self.__basepl('report',format=ret_format)
+>>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
 
         to_add = (report_id, raw_or_label, raw_or_label_headers, export_checkbox_labels)
         str_add = ('report_id', 'rawOrLabel', 'rawOrLabelHeadHeaders', 'exportCheckboxLabel')
@@ -250,6 +272,12 @@ class Project(object):
 
         if format in ('json', 'csv', 'xml'):
             return response
+<<<<<<< HEAD
+=======
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            return response
+>>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         elif format == 'df':
             if not df_kwargs:
                 return read_csv(StringIO(response))
@@ -276,15 +304,29 @@ class Project(object):
         """
 
         # Check for dataframe usage
+<<<<<<< HEAD
         if not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             format = 'csv'
 
         pl = self.__basepl('instrument')
+=======
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
+
+        pl = self.__basepl('instrument',format=ret_format)
+>>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         response, _ = self._call_api(pl, 'exp_instrument')
 
         if format in ('json', 'csv', 'xml'):
             return response
+<<<<<<< HEAD
+=======
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            return response
+>>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         elif format == 'df':
             if not df_kwargs:
                 return read_csv(StringIO(response))
@@ -322,12 +364,12 @@ class Project(object):
             content-type dictionary
         """
 
-        # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        # Check for dataframe usage (convert silently)
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('pdf')
+        pl = self.__basepl('pdf',format=ret_format)
 
         to_add = (record, event, instrument, all_records)
         str_add = ("record", "event", "instrument", "allrecords")
@@ -374,11 +416,11 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('surveyLink')
+        pl = self.__basepl('surveyLink',format=ret_format)
 
         # Require event if project is longitudinal
         if self.is_longitudinal() == True and event is None:
@@ -396,6 +438,9 @@ class Project(object):
         response, _ = self._call_api(pl, 'exp_surveyLink')
 
         if format in ('json', 'csv', 'xml'):
+            return response
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -426,17 +471,20 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('surveyQueueLink')
+        pl = self.__basepl('surveyQueueLink',format=ret_format)
 
         pl["record"] = record
 
         response, _ = self._call_api(pl, 'exp_surveyQueueLink')
 
         if format in ('json', 'csv', 'xml'):
+            return response
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -470,11 +518,11 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('surveyReturnCode')
+        pl = self.__basepl('surveyReturnCode',format=ret_format)
 
         # Require event if project is longitudinal
         if self.is_longitudinal() == True and event is None:
@@ -492,6 +540,9 @@ class Project(object):
         response, _ = self._call_api(pl, 'exp_surveyReturnCode')
 
         if format in ('json', 'csv', 'xml'):
+            return response
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -523,11 +574,11 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('participantList')
+        pl = self.__basepl('participantList',format=ret_format)
 
         # Require event if project is longitudinal
         if self.is_longitudinal() == True and event is None:
@@ -545,6 +596,9 @@ class Project(object):
         response, _ = self._call_api(pl, 'exp_participantList')
 
         if format in ('json', 'csv', 'xml'):
+            return response
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -572,16 +626,18 @@ class Project(object):
         """
         
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('exportFieldNames')
+        pl = self.__basepl('exportFieldNames',format=ret_format)
         pl["field"] = field
         
         response, _ = self._call_api(pl, 'exp_exportFieldNames')
 
         if format in ('json', 'csv', 'xml'):
+            return response        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -611,11 +667,11 @@ class Project(object):
         """
         
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('formEventMapping', format=format)
+        pl = self.__basepl('formEventMapping', format=ret_format)
         to_add = [arms]
         str_add = ['arms']
         for key, data in zip(str_add, to_add):
@@ -623,6 +679,9 @@ class Project(object):
                 pl[key] = ','.join(data)
         response, _ = self._call_api(pl, 'exp_fem')
         if format in ('json', 'csv', 'xml'):
+            return response
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
             if not df_kwargs:
@@ -655,11 +714,11 @@ class Project(object):
             metadata sttructure for the project.
         """
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('metadata', format=format)
+        pl = self.__basepl('metadata', format=ret_format)
         to_add = [fields, forms]
         str_add = ['fields', 'forms']
         for key, data in zip(str_add, to_add):
@@ -668,9 +727,13 @@ class Project(object):
         response, _ = self._call_api(pl, 'metadata')
         if format in ('json', 'csv', 'xml'):
             return response
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
+            return response
         elif format == 'df':
             if not df_kwargs:
                 df_kwargs = {'index_col': 'field_name'}
+            print(response)
             return read_csv(StringIO(response), **df_kwargs)
 
     def export_records(self, records=None, fields=None, forms=None,
@@ -734,11 +797,11 @@ class Project(object):
             exported data
         """
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('record', format=format)
+        pl = self.__basepl('record', format=ret_format)
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
         raw_or_label, event_name, export_survey_fields,
@@ -755,6 +818,9 @@ class Project(object):
                     pl[key] = data
         response, _ = self._call_api(pl, 'exp_record')
         if format in ('json', 'csv', 'xml'):
+            return response
+        elif not read_csv and format == 'df':
+            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
             if not df_kwargs:
