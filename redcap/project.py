@@ -188,29 +188,18 @@ class Project(object):
         """
 
         # Check for dataframe usage
-<<<<<<< HEAD
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
-
-        pl = self.__basepl('project')
-=======
         ret_format = format
         if format == 'df':
             ret_format = 'csv'
 
         pl = self.__basepl('project',format=ret_format)
->>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         response, _ = self._call_api(pl, 'exp_project')
 
         if format in ('json', 'csv', 'xml'):
             return response
-<<<<<<< HEAD
-=======
         elif not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
->>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         elif format == 'df':
             if not df_kwargs:
                 return read_csv(StringIO(response))
@@ -248,19 +237,11 @@ class Project(object):
         """
 
         # Check for dataframe usage
-<<<<<<< HEAD
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
-
-        pl = self.__basepl('report')
-=======
         ret_format = format
         if format == 'df':
             ret_format = 'csv'
 
         pl = self.__basepl('report',format=ret_format)
->>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
 
         to_add = (report_id, raw_or_label, raw_or_label_headers, export_checkbox_labels)
         str_add = ('report_id', 'rawOrLabel', 'rawOrLabelHeadHeaders', 'exportCheckboxLabel')
@@ -272,12 +253,9 @@ class Project(object):
 
         if format in ('json', 'csv', 'xml'):
             return response
-<<<<<<< HEAD
-=======
         elif not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
->>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         elif format == 'df':
             if not df_kwargs:
                 return read_csv(StringIO(response))
@@ -304,29 +282,18 @@ class Project(object):
         """
 
         # Check for dataframe usage
-<<<<<<< HEAD
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
-
-        pl = self.__basepl('instrument')
-=======
         ret_format = format
         if format == 'df':
             ret_format = 'csv'
 
         pl = self.__basepl('instrument',format=ret_format)
->>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         response, _ = self._call_api(pl, 'exp_instrument')
 
         if format in ('json', 'csv', 'xml'):
             return response
-<<<<<<< HEAD
-=======
         elif not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
->>>>>>> 907426c1c6383ed7c3df18e9db9bb5e329ec9004
         elif format == 'df':
             if not df_kwargs:
                 return read_csv(StringIO(response))
@@ -636,7 +603,8 @@ class Project(object):
         response, _ = self._call_api(pl, 'exp_exportFieldNames')
 
         if format in ('json', 'csv', 'xml'):
-            return response        elif not read_csv and format == 'df':
+            return response        
+        elif not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             return response
         elif format == 'df':
@@ -689,8 +657,7 @@ class Project(object):
             else:
                 return read_csv(StringIO(response), **df_kwargs)
 
-    def export_metadata(self, fields=None, forms=None, format='json',
-            df_kwargs=None):
+    def export_metadata(self, fields=None, forms=None, format='json', df_kwargs=None):
         """
         Export the project's metadata
 
@@ -736,11 +703,7 @@ class Project(object):
             print(response)
             return read_csv(StringIO(response), **df_kwargs)
 
-    def export_records(self, records=None, fields=None, forms=None,
-    events=None, raw_or_label='raw', event_name='label',
-    format='json', export_survey_fields=False,
-    export_data_access_groups=False, df_kwargs=None,
-    export_checkbox_labels=False):
+    def export_records(self, records=None, fields=None, forms=None, events=None, raw_or_label='raw', event_name='label', format='json', export_survey_fields=False, export_data_access_groups=False, df_kwargs=None, export_checkbox_labels=False):
         """
         Export data from the REDCap project.
 
@@ -845,8 +808,7 @@ class Project(object):
                 If you pass a csv or xml string, you should use the
                 ``format`` parameter appropriately.
             :note:
-                Keys of the dictionaries should be subset of project's,
-                fields, but this isn't a requirement. If you provide keys
+                Keys of the dictionaries should 'arm_num' and 'name'. If you provide keys
                 that aren't defined fields, the returned response will
                 contain an ``'error'`` key.
         override : ('0'-False), '1'-True
@@ -862,6 +824,10 @@ class Project(object):
         response : dict, str
             Number of Arms imported to EDCap, json-decoded if ``return_format`` == ``'json'``
         """
+        # Check for dataframe usage
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
         pl = self.__basepl('arm')
         if hasattr(to_import, 'to_csv'):
@@ -884,7 +850,6 @@ class Project(object):
             pl['data'] = to_import
         pl['override'] = override
         pl['action'] = action
-        print(pl['content'])
         pl['format'] = format
         pl['returnFormat'] = return_format
         response = self._call_api(pl, 'imp_arm')[0]
@@ -894,8 +859,7 @@ class Project(object):
         elif format == 'df':
             if not df_kwargs:
                 if self.is_longitudinal():
-                    df_kwargs = {'index_col': [self.def_field,
-                                               'redcap_event_name']}
+                    df_kwargs = {'index_col': [self.def_field, 'redcap_arm_name']}
                 else:
                     df_kwargs = {'index_col': self.def_field}
             buf = StringIO(response)
@@ -903,21 +867,332 @@ class Project(object):
             buf.close()
             return df
 
+    def import_events(self, to_import, override=0, action="import", format='json', return_format='json',df_kwargs=None):
+        """
+        Import events into the RedCap Project
 
-            # imp_arm': (['override','action','format','data'],'arm',
-            #     'Importing arms but content is not arm'),
-            # 'imp_event': (['action','override','format','data'],'event',
-            #     'Importing events but content is not event'),
-            # 'imp_fem': (['format','data'],'formEventMapping',
-            #     'Importing instrument, form-event mapping but conent is not formEventMapping'),
-            # 'imp_metadata': (['format','data'],'metadata',
-            #     'Importing metadata but content is not metadata'),
-            # 'imp_users': (['format','data'],'user',
-            #     'Importing users but conent is not user'),
-            # 'del_arm': (['action','arms'],'arm',
-            #     'Deleting arms but content is not arm'),
-            # 'del_event': (['action','events'],'event',
-            #     'Deleting events but content is not event')
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+            :note:
+                Keys of the dictionaries should be subset of project's,
+                event fields, but this isn't a requirement. 
+                    Required Keys:
+                        'event_name'
+                        'arm_num'
+                    Optional Keys:
+                        'unique_event_name' (to modify existing event)
+                        'day_offset'
+                        'offset_min'
+                        'offset_max'
+                If you provide keys
+                that aren't defined fields, the returned response will
+                contain an ``'error'`` key.
+        override : ('0'-False), '1'-True
+            ``'1'`` will erase values previously stored in the
+            database if not specified in the to_import dictionaries.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        return_format : ('json'), 'csv', 'xml'
+            Response format. By default, response will be json-decoded.
+
+        Returns
+        -------
+        response : dict, str
+            Response from REDCap API, json-decoded if ``return_format`` == ``'json'``
+        """
+
+        # Check for dataframe usage
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
+
+        pl = self.__basepl('event')
+        if hasattr(to_import, 'to_csv'):
+            # We'll assume it's a df
+            from StringIO import StringIO
+            buf = StringIO()
+            if self.is_longitudinal():
+                csv_kwargs = {'event_name': [self.def_field, 'redcap_arm_num']}
+            else:
+                csv_kwargs = {'event_name': self.def_field}
+            to_import.to_csv(buf, **csv_kwargs)
+            pl['data'] = buf.getvalue()
+            buf.close()
+            format = 'csv'
+        elif format == 'json':
+            pl['data'] = json.dumps(to_import, separators=(',', ':'))
+        else:
+            # don't do anything to csv/xml
+            pl['data'] = to_import
+        pl['override'] = override
+        pl['action'] = action
+        pl['format'] = format
+        pl['returnFormat'] = return_format
+        response = self._call_api(pl, 'imp_event')[0]
+
+        if format in ('json', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            if not df_kwargs:
+                if self.is_longitudinal():
+                    df_kwargs = {'index_col': [self.def_field, 'redcap_arm_num']}
+                else:
+                    df_kwargs = {'index_col': self.def_field}
+            buf = StringIO(response)
+            df = read_csv(buf, **df_kwargs)
+            buf.close()
+            return df
+
+    def import_fem(self, to_import, format='json', return_format='json',df_kwargs=None):
+        """
+        Import form-event mappings into the RedCap Project
+
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+            :note:
+                Keys of the dictionaries should be subset of project's,
+                form-event fields, but this isn't a requirement. 
+                    Required Keys:
+                        'event_name'
+                        'arm_num'
+                    Optional Keys:
+                If you provide keys
+                that aren't defined fields, the returned response will
+                contain an ``'error'`` key.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        return_format : ('json'), 'csv', 'xml'
+            Response format. By default, response will be json-decoded.
+
+        Returns
+        -------
+        response : dict, str
+            Number of instrument-event mappings from REDCap API, json-decoded if ``return_format`` == ``'json'``
+        """
+
+        # Check for dataframe usage
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
+
+        pl = self.__basepl('formEventMapping')
+        if hasattr(to_import, 'to_csv'):
+            # We'll assume it's a df
+            from StringIO import StringIO
+            buf = StringIO()
+            if self.is_longitudinal():
+                csv_kwargs = {'event_name': [self.def_field, 'redcap_arm_num']}
+            else:
+                csv_kwargs = {'event_name': self.def_field}
+            to_import.to_csv(buf, **csv_kwargs)
+            pl['data'] = buf.getvalue()
+            buf.close()
+            format = 'csv'
+        elif format == 'json':
+            pl['data'] = json.dumps(to_import, separators=(',', ':'))
+        else:
+            # don't do anything to csv/xml
+            pl['data'] = to_import
+        pl['format'] = format
+        pl['returnFormat'] = return_format
+        response = self._call_api(pl, 'imp_fem')[0]
+
+        if format in ('json', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            if not df_kwargs:
+                if self.is_longitudinal():
+                    df_kwargs = {'index_col': [self.def_field, 'redcap_arm_num']}
+                else:
+                    df_kwargs = {'index_col': self.def_field}
+            buf = StringIO(response)
+            df = read_csv(buf, **df_kwargs)
+            buf.close()
+            return df
+
+    def import_metadata(self, to_import, format='json', return_format='json',df_kwargs=None):
+        """
+        Import metadata into the RedCap Project
+
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+            :note:
+                If you provide keys that aren't defined fields, the returned response will
+                contain an ``'error'`` key.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        return_format : ('json'), 'csv', 'xml'
+            Response format. By default, response will be json-decoded.
+
+        Returns
+        -------
+        response : dict, str
+            Number of fields imported from REDCap API, json-decoded if ``return_format`` == ``'json'``
+        """
+
+        # Check for dataframe usage
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
+
+        pl = self.__basepl('metadata')
+        if hasattr(to_import, 'to_csv'):
+            # We'll assume it's a df
+            from StringIO import StringIO
+            buf = StringIO()
+            if self.is_longitudinal():
+                csv_kwargs = {'event_name': [self.def_field, 'redcap_arm_num']}
+            else:
+                csv_kwargs = {'event_name': self.def_field}
+            to_import.to_csv(buf, **csv_kwargs)
+            pl['data'] = buf.getvalue()
+            buf.close()
+            format = 'csv'
+        elif format == 'json':
+            pl['data'] = json.dumps(to_import, separators=(',', ':'))
+        else:
+            # don't do anything to csv/xml
+            pl['data'] = to_import
+        pl['format'] = format
+        pl['returnFormat'] = return_format
+        response = self._call_api(pl, 'imp_metadata')[0]
+
+        if format in ('json', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            if not df_kwargs:
+                if self.is_longitudinal():
+                    df_kwargs = {'index_col': [self.def_field, 'redcap_arm_num']}
+                else:
+                    df_kwargs = {'index_col': self.def_field}
+            buf = StringIO(response)
+            df = read_csv(buf, **df_kwargs)
+            buf.close()
+            return df
+
+    def import_users(self, to_import, format='json', return_format='json',df_kwargs=None):
+        """
+        Import metadata into the RedCap Project
+
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+            :note:
+                If you provide keys that aren't defined fields, the returned response will
+                contain an ``'error'`` key.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        return_format : ('json'), 'csv', 'xml'
+            Response format. By default, response will be json-decoded.
+
+        Returns
+        -------
+        response : dict, str
+            Number of fields imported from REDCap API, json-decoded if ``return_format`` == ``'json'``
+        """
+
+        # Check for dataframe usage
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
+
+        pl = self.__basepl('users')
+        if hasattr(to_import, 'to_csv'):
+            # We'll assume it's a df
+            from StringIO import StringIO
+            buf = StringIO()
+            if self.is_longitudinal():
+                csv_kwargs = {'event_name': [self.def_field, 'redcap_arm_num']}
+            else:
+                csv_kwargs = {'event_name': self.def_field}
+            to_import.to_csv(buf, **csv_kwargs)
+            pl['data'] = buf.getvalue()
+            buf.close()
+            format = 'csv'
+        elif format == 'json':
+            pl['data'] = json.dumps(to_import, separators=(',', ':'))
+        else:
+            # don't do anything to csv/xml
+            pl['data'] = to_import
+        pl['format'] = format
+        pl['returnFormat'] = return_format
+        response = self._call_api(pl, 'imp_users')[0]
+
+        if format in ('json', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            if not df_kwargs:
+                if self.is_longitudinal():
+                    df_kwargs = {'index_col': [self.def_field, 'redcap_arm_num']}
+                else:
+                    df_kwargs = {'index_col': self.def_field}
+            buf = StringIO(response)
+            df = read_csv(buf, **df_kwargs)
+            buf.close()
+            return df
+
+    def delete_arms(self, arms, action='delete'):
+        """
+        Deletes arms from REDCap Project
+
+        Notes
+        -----
+        Only available for projects in Development status
+
+        Parameters
+        ----------
+        action : ``delete``
+        arms: an array of arm numbers that you wish to delete
+
+        Returns
+        -------
+        response: int, str
+            number of arms deleted
+
+        """
+        pl = self.__basepl(content='arm', format='json')
+        pl['action'] = action
+        pl['arms'] = arms
+        return self._call_api(pl, 'del_arm')[0]
+
+    def delete_event(self, events, action='delete'):
+        """
+        Deletes events from REDCap Project
+
+        Notes
+        -----
+        Only available for projects in Development status
+
+        Parameters
+        ----------
+        action : ``delete``
+        arms: an array of events that you wish to delete
+
+        Returns
+        -------
+        response: int, str
+            number of events deleted
+
+        """
+        pl = self.__basepl(content='event', format='json')
+        pl['action'] = action
+        pl['events'] = events
+        return self._call_api(pl, 'del_event')[0]
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
