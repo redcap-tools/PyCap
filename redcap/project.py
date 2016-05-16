@@ -469,7 +469,10 @@ class Project(object):
         pl = self.__basepl('record')
         if hasattr(to_import, 'to_csv'):
             # We'll assume it's a df
-            from StringIO import StringIO
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
             buf = StringIO()
             if self.is_longitudinal():
                 csv_kwargs = {'index_label': [self.def_field,
