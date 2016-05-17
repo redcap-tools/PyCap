@@ -11,6 +11,11 @@ import warnings
 from .request import RCRequest, RedcapError, RequestException
 import semantic_version
 
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 class Project(object):
     """Main class for interacting with REDCap projects"""
 
@@ -171,10 +176,6 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            try:
-                from StringIO import StringIO
-            except ImportError:
-                from io import StringIO
             from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('formEventMapping', format=ret_format)
@@ -218,10 +219,6 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            try:
-                from StringIO import StringIO
-            except ImportError:
-                from io import StringIO
             from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('metadata', format=ret_format)
@@ -301,10 +298,6 @@ class Project(object):
         ret_format = format
         if format == 'df':
             from pandas import read_csv
-            try:
-                from StringIO import StringIO
-            except ImportError:
-                from io import StringIO
             ret_format = 'csv'
         pl = self.__basepl('record', format=ret_format)
         fields = self.backfill_fields(fields, forms)
@@ -469,7 +462,6 @@ class Project(object):
         pl = self.__basepl('record')
         if hasattr(to_import, 'to_csv'):
             # We'll assume it's a df
-            from StringIO import StringIO
             buf = StringIO()
             if self.is_longitudinal():
                 csv_kwargs = {'index_label': [self.def_field,
