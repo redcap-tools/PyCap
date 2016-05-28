@@ -187,11 +187,13 @@ class Project(object):
         """
 
         # Check for dataframe usage
+
         if not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             format = 'csv'
 
         pl = self.__basepl('project',format=format)
+
         response, _ = self._call_api(pl, 'exp_project')
 
         if format in ('json', 'csv', 'xml'):
@@ -236,6 +238,7 @@ class Project(object):
         """
 
         # Check for dataframe usage
+
         if not read_csv and format == 'df':
             warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
             format = 'csv'
@@ -270,6 +273,7 @@ class Project(object):
         format : (``'json'``), ``'csv'``, ``'xml'``
             Return the list of project instruments in native objects,
             csv or xml, ``'df''`` will return a ``pandas.DataFrame``
+
         df_kwargs : dict
             Passed to pandas.read_csv to control construction of
             returned DataFrame
@@ -281,11 +285,11 @@ class Project(object):
         """
 
         # Check for dataframe usage
-        if not read_csv and format == 'df':
-            warnings.warn('Pandas csv_reader not available, dataframe replaced with csv format')
-            format = 'csv'
+        ret_format = format
+        if format == 'df':
+            ret_format = 'csv'
 
-        pl = self.__basepl('instrument',format=format)
+        pl = self.__basepl('instrument',format=ret_format)
         response, _ = self._call_api(pl, 'exp_instrument')
 
         if format in ('json', 'csv', 'xml'):
@@ -1395,7 +1399,7 @@ class Project(object):
         if event:
             pl['event'] = event
         content, headers = self._call_api(pl, 'exp_file')
-        #REDCap adds some useful things in content-type
+        # REDCap adds some useful things in content-type
         if 'content-type' in headers:
             splat = [kv.strip() for kv in headers['content-type'].split(';')]
             kv = [(kv.split('=')[0], kv.split('=')[1].replace('"', '')) for kv
@@ -1405,8 +1409,7 @@ class Project(object):
             content_map = {}
         return content, content_map
 
-    def import_file(self, record, field, fname, fobj, event=None,
-            return_format='json'):
+    def import_file(self, record, field, fname, fobj, event=None, return_format='json'):
         """
         Import the contents of a file represented by fobj to a
         particular records field
