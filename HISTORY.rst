@@ -1,6 +1,12 @@
 HISTORY
 -------
 
+1.0.1 (2016-10-05)
++++++++++++++++++
+
+* Add a ``Project`` method to export the survey participant list.
+* Update author email.
+
 1.0 (2014-05-16)
 ++++++++++++++++
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Scott Burns <scott.s.burns@vanderbilt.edu>'
+__author__ = 'Scott Burns <scott.s.burnsgmail.com>'
 __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
 
