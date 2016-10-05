@@ -674,7 +674,7 @@ class Project(object):
             Format of returned data
         """
         pl = self.__basepl(content='participantList', format=format)
-        pl['instrument'] = instrumenet
+        pl['instrument'] = instrument
         if event:
             pl['event'] = event
         return self._call_api(pl, 'exp_survey_participant_list')
