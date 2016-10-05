@@ -30,7 +30,7 @@ def clean():
 
 
 def test():
-    local('nosetests -v -w test/')
+    local('nosetests -sv -w test/')
 
 def doc():
     with lcd('docs'):
