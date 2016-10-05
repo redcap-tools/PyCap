@@ -5,4 +5,4 @@ __author__ = 'Scott Burns <scott.s.burns@gmail.com>'
 __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'

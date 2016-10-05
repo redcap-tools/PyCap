@@ -1,6 +1,11 @@
 HISTORY
 -------
 
+1.0.2 (2016-10-05)
++++++++++++++++++
+
+* Fix issue in new survey participant export method.
+
 1.0.1 (2016-10-05)
 +++++++++++++++++
 
