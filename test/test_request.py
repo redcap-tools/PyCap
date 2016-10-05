@@ -43,3 +43,20 @@ class TestClass(unittest.TestCase):
         r = RCRequest(*args).execute()
         self.assertTrue(r is not None)
         self.assertTrue(len(r) > 0)
+
+    def test_survey_participant_list_type(self):
+        payload = {
+            'token': 'foobar',
+            'content': 'participantList',
+            'format': 'json',
+            'instrument': 'bar',
+        }
+        url = 'https://foobarbat.com'
+        typee = 'exp_survey_participant_list'
+        # This should not raise
+        RCRequest(url, payload, typee)
+
+        # This should raise because of a different content
+        payload['content'] = 'foobar'
+        with self.assertRaises(RCAPIError):
+            RCRequest(url, payload, typee)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Scott Burns <scott.s.burns@vanderbilt.edu>'
+__author__ = 'Scott Burns <scott.s.burns@gmail.com>'
 __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
 
@@ -30,7 +30,7 @@ def clean():
 
 
 def test():
-    local('nosetests -v -w test/')
+    local('nosetests -sv -w test/')
 
 def doc():
     with lcd('docs'):

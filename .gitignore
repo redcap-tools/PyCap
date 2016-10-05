@@ -10,3 +10,4 @@ build/
 docs/_build/
 _site/
 .idea/
+*.swp
