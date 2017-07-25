@@ -67,6 +67,8 @@ class RCRequest(object):
         valid_data = {
             'exp_record': (['type', 'format'], 'record',
                 'Exporting record but content is not record'),
+            'del_record': (['format'], 'record',
+                'Deleting record but content is not record'),
             'imp_record': (['type', 'overwriteBehavior', 'data', 'format'],
                 'record', 'Importing record but content is not record'),
             'metadata': (['format'], 'metadata',
