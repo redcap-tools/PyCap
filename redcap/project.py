@@ -236,8 +236,8 @@ class Project(object):
             return read_csv(StringIO(response), **df_kwargs)
 
     def export_records(self, records=None, fields=None, forms=None,
-    events=None, raw_or_label='raw', event_name='label',
-    format='json', export_survey_fields=False,
+    events=None, raw_or_label='raw', event_name='label',  
+    format='json', type='flat', export_survey_fields=False,
     export_data_access_groups=False, df_kwargs=None,
     export_checkbox_labels=False):
         """
@@ -264,6 +264,8 @@ class Project(object):
             multiple choice fields, or both
         event_name : (``'label'``), ``'unique'``
              export the unique event name or the event label
+        type : (``'flat'``), ``'eav'``
+             database output structure type
         format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
             Format of returned data. ``'json'`` returns json-decoded
             objects while ``'csv'`` and ``'xml'`` return other formats.
@@ -299,7 +301,7 @@ class Project(object):
         if format == 'df':
             from pandas import read_csv
             ret_format = 'csv'
-        pl = self.__basepl('record', format=ret_format)
+        pl = self.__basepl('record', format=ret_format, rec_type=type)
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
         raw_or_label, event_name, export_survey_fields,
@@ -325,7 +327,11 @@ class Project(object):
                 else:
                     df_kwargs = {'index_col': self.def_field}
             buf = StringIO(response)
-            df = read_csv(buf, **df_kwargs)
+            df = []
+            if type == 'flat':
+                df = read_csv(buf, **df_kwargs)
+            else:
+                df = read_csv(buf)
             buf.close()
             return df
 

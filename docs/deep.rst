@@ -114,6 +114,10 @@ Finally, you can tweak the how the data is labeled or formatted::
     data_frame = project.export_records(format='df')
     other_df = project.export_records(format='df', df_kwargs={'index_col': project.field_names[1]})
 
+    # It also supports different data model/type configurations
+    data = project.export_records(type='flat') # or format='eav'
+    csv_data = project.export_records(format='csv', type='eav')
+
     # export checkbox field labels as values (necessary in REDCap >= 6.0 to retrieve checkbox labels)
     data = project.export_records(raw_or_label='label', export_checkbox_labels=True)  # note you will still have to set raw_or_label to `label`
 
