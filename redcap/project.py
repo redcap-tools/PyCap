@@ -321,17 +321,17 @@ class Project(object):
             return response
         elif format == 'df':
             if not df_kwargs:
-                if self.is_longitudinal():
-                    df_kwargs = {'index_col': [self.def_field,
-                                               'redcap_event_name']}
+                if type == 'eav':
+                    df_kwargs = {}
                 else:
-                    df_kwargs = {'index_col': self.def_field}
+                    if self.is_longitudinal():
+                        df_kwargs = {'index_col': [self.def_field,
+                                                   'redcap_event_name']}
+                    else:
+                        df_kwargs = {'index_col': self.def_field}
             buf = StringIO(response)
             df = []
-            if type == 'flat':
-                df = read_csv(buf, **df_kwargs)
-            else:
-                df = read_csv(buf)
+            df = read_csv(buf, **df_kwargs)
             buf.close()
             return df
 
