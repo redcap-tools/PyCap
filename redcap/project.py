@@ -239,7 +239,7 @@ class Project(object):
     events=None, raw_or_label='raw', event_name='label',
     format='json', export_survey_fields=False,
     export_data_access_groups=False, df_kwargs=None,
-    export_checkbox_labels=False):
+    export_checkbox_labels=False, filter_logic=None):
         """
         Export data from the REDCap project.
 
@@ -289,6 +289,8 @@ class Project(object):
         export_checkbox_labels : (``False``), ``True``
             specify whether to export checkbox values as their label on
             export.
+        filter_logic : string
+            specify the filterLogic to be sent to the API.
 
         Returns
         -------
@@ -314,6 +316,9 @@ class Project(object):
                     pl[key] = ','.join(data)
                 else:
                     pl[key] = data
+
+        if filter_logic:
+            pl["filterLogic"] = filter_logic
         response, _ = self._call_api(pl, 'exp_record')
         if format in ('json', 'csv', 'xml'):
             return response
