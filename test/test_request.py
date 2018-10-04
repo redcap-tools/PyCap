@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import responses
 
 from redcap import RCRequest, RCAPIError
 
@@ -37,8 +38,12 @@ class TestClass(unittest.TestCase):
         r = RCRequest(*ags)
         self.assertIsInstance(r, RCRequest)
 
+    @responses.activate
     def test_bad_md(self):
         """Test that newlines are appropriately dealt with"""
+
+        responses.add(responses.POST, 'https://redcap.vanderbilt.edu/api/')
+
         args = ['https://redcap.vanderbilt.edu/api/', self.badmd, 'metadata']
         r = RCRequest(*args).execute()
         self.assertTrue(r is not None)
