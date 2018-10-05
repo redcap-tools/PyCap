@@ -37,7 +37,11 @@ class ProjectTests(unittest.TestCase):
             headers = {"Content-Type": "application/json"}
 
             request_type = data["content"][0]
-            if (request_type == "metadata"):
+
+            if "returnContent" in data:
+                resp = {"count": 1}
+
+            elif (request_type == "metadata"):
                 resp = [{
                     'field_name': 'record_id',
                     'field_label': 'Record ID',
@@ -51,7 +55,7 @@ class ProjectTests(unittest.TestCase):
                 return (201, headers, resp)
             elif (request_type == "event"):
                 resp = [{
-                    'unique_event_name': "my_event"
+                    'unique_event_name': "raw"
                 }]
             elif (request_type == "arm"):
                 resp = [{
@@ -59,7 +63,12 @@ class ProjectTests(unittest.TestCase):
                     "name": "test"
                 }]
             elif (request_type in ["record", "formEventMapping"]):
-                resp = [{"field_name":"record_id"}, {"field_name":"test"}]
+                if "csv" in data["format"]:
+                    resp = "record_id,test,redcap_event_name\n1,1,raw"
+                    headers = {'content-type': 'text/csv; charset=utf-8'}
+                    return (201, headers, resp)
+                else:
+                    resp = [{"field_name":"record_id"}, {"field_name":"test"}]
 
             return (201, headers, json.dumps(resp))
 
@@ -89,7 +98,10 @@ class ProjectTests(unittest.TestCase):
                 elif (request_type == "metadata"):
                     if "csv" in data["format"]:
                         resp = "field_name,field_label,form_name,arm_num,name\n"\
-                            "record_id,Record ID,Test Form,1,test"
+                            "record_id,Record ID,Test Form,1,test\n"
+                        headers = {'content-type': 'text/csv; charset=utf-8'}
+                        return (201, headers, resp)
+                        
                     else:
                         resp = [{
                             'field_name': 'record_id',
@@ -127,7 +139,9 @@ class ProjectTests(unittest.TestCase):
                     }
                 elif (request_type == "record"):
                     if "csv" in data["format"]:
-                        resp = "record_id,test\n1,1"
+                        resp = "record_id,test,first_name,study_id\n1,1,Peter,1"
+                        headers = {'content-type': 'text/csv; charset=utf-8'}
+                        return (201, headers, resp)
                     elif "exportDataAccessGroups" in data:
                         resp = [
                             {"field_name":"record_id", "redcap_data_access_group": "group1"}, 
@@ -495,6 +509,7 @@ class ProjectTests(unittest.TestCase):
     def test_export_to_df(self):
         """Test export --> DataFrame"""
         self.add_normalproject_response()
+        self.add_long_project_response()
         df = self.reg_proj.export_records(format='df')
         self.assertIsInstance(df, pd.DataFrame)
         # Test it's a normal index
@@ -531,8 +546,8 @@ class ProjectTests(unittest.TestCase):
         self.add_long_project_response()
         df = self.reg_proj.export_records(format='df')
         # grrr coerce implicilty converted floats to str(int())
-        for col in ['matrix1', 'matrix2', 'matrix3', 'sex']:
-            df[col] = map(lambda x: str(int(x)) if pd.notnull(x) else '', df[col])
+        # for col in ['matrix1', 'matrix2', 'matrix3', 'sex']:
+        #     df[col] = map(lambda x: str(int(x)) if pd.notnull(x) else '', df[col])
         response = self.reg_proj.import_records(df)
         self.assertIn('count', response)
         self.assertNotIn('error', response)
