@@ -101,7 +101,7 @@ class ProjectTests(unittest.TestCase):
                             "record_id,Record ID,Test Form,1,test\n"
                         headers = {'content-type': 'text/csv; charset=utf-8'}
                         return (201, headers, resp)
-                        
+
                     else:
                         resp = [{
                             'field_name': 'record_id',
@@ -144,14 +144,14 @@ class ProjectTests(unittest.TestCase):
                         return (201, headers, resp)
                     elif "exportDataAccessGroups" in data:
                         resp = [
-                            {"field_name":"record_id", "redcap_data_access_group": "group1"}, 
+                            {"field_name":"record_id", "redcap_data_access_group": "group1"},
                             {"field_name":"test", "redcap_data_access_group": "group1"}
                         ]
                     elif "label" in data.get("rawOrLabel"):
                         resp = [{"matcheck1___1": "Foo"}]
                     else:
                         resp = [
-                            {"record_id": "1", "test": "test1"}, 
+                            {"record_id": "1", "test": "test1"},
                             {"record_id": "2", "test": "test"}
                         ]
                 elif (request_type == "file"):
@@ -160,12 +160,12 @@ class ProjectTests(unittest.TestCase):
                 elif (request_type == "user"):
                     resp = [
                         {
-                            'firstname': "test", 
-                            'lastname': "test", 
-                            'email': "test", 
+                            'firstname': "test",
+                            'lastname': "test",
+                            'email': "test",
                             'username': "test",
-                            'expiration': "test", 
-                            'data_access_group': "test", 
+                            'expiration': "test",
+                            'data_access_group': "test",
                             'data_export': "test",
                             'forms': "test"
                         }
@@ -245,7 +245,7 @@ class ProjectTests(unittest.TestCase):
                 }
             elif (request_type == "record"):
                 resp = [
-                    {"field_name":"record_id", "redcap_survey_identifier": "test", "demographics_timestamp": "a_real_date"}, 
+                    {"field_name":"record_id", "redcap_survey_identifier": "test", "demographics_timestamp": "a_real_date"},
                     {"field_name":"test", "redcap_survey_identifier": "test", "demographics_timestamp": "a_real_date"}
                 ]
 
@@ -297,14 +297,14 @@ class ProjectTests(unittest.TestCase):
         "Test the is_longitudinal method"
         self.assertFalse(self.reg_proj.is_longitudinal())
         self.assertTrue(self.long_proj.is_longitudinal())
-    
+
     def test_regular_attrs(self):
         """proj.events/arm_names/arm_nums should be empty tuples"""
         for attr in 'events', 'arm_names', 'arm_nums':
             attr_obj = getattr(self.reg_proj, attr)
             self.assertIsNotNone(attr_obj)
             self.assertEqual(len(attr_obj), 0)
-    
+
     @responses.activate
     def test_json_export(self):
         """ Make sure we get a list of dicts"""
@@ -313,7 +313,7 @@ class ProjectTests(unittest.TestCase):
         self.assertIsInstance(data, list)
         for record in data:
             self.assertIsInstance(record, dict)
-    
+
     @responses.activate
     def test_long_export(self):
         """After determining a unique event name, make sure we get a
@@ -324,7 +324,7 @@ class ProjectTests(unittest.TestCase):
         self.assertIsInstance(data, list)
         for record in data:
             self.assertIsInstance(record, dict)
-    
+
     @responses.activate
     def test_import_records(self):
         "Test record import"
@@ -333,7 +333,7 @@ class ProjectTests(unittest.TestCase):
         response = self.reg_proj.import_records(data)
         self.assertIn('count', response)
         self.assertNotIn('error', response)
-    
+
     @responses.activate
     def test_import_exception(self):
         "Test record import throws RedcapError for bad import"
@@ -344,32 +344,32 @@ class ProjectTests(unittest.TestCase):
             self.reg_proj.import_records(data)
         exc = cm.exception
         self.assertIn('error', exc.args[0])
-    
+
     def is_good_csv(self, csv_string):
         "Helper to test csv strings"
         return isinstance(csv_string, basestring)
-    
+
     @responses.activate
     def test_csv_export(self):
         """Test valid csv export """
         self.add_normalproject_response()
         csv = self.reg_proj.export_records(format='csv')
         self.assertTrue(self.is_good_csv(csv))
-    
+
     @responses.activate
     def test_metadata_export(self):
         """Test valid metadata csv export"""
         self.add_normalproject_response()
         csv = self.reg_proj.export_metadata(format='csv')
         self.assertTrue(self.is_good_csv(csv))
-    
+
     def test_bad_creds(self):
         "Test that exceptions are raised with bad URL or tokens"
         with self.assertRaises(RedcapError):
             Project(self.bad_url, self.reg_token)
         with self.assertRaises(RedcapError):
             Project(self.bad_url, '1')
-    
+
     @responses.activate
     def test_fem_export(self):
         """ Test fem export in json format gives list of dicts"""
@@ -378,7 +378,7 @@ class ProjectTests(unittest.TestCase):
         self.assertIsInstance(fem, list)
         for arm in fem:
             self.assertIsInstance(arm, dict)
-    
+
     @responses.activate
     def test_file_export(self):
         """Test file export and proper content-type parsing"""
@@ -395,22 +395,18 @@ class ProjectTests(unittest.TestCase):
         # needs to raise ValueError for exporting non-file fields
         with self.assertRaises(ValueError):
             self.reg_proj.export_file(record=record, field='dob')
-        # Delete and make sure we get an RedcapError with next export
-        # self.reg_proj.delete_file(record, field)
-        # with self.assertRaises(RedcapError):
-        #     self.reg_proj.export_file(record, field)
-    
+
     def import_file(self):
         upload_fname = self.upload_fname()
         with open(upload_fname, 'r') as fobj:
             response = self.reg_proj.import_file('1', 'file', upload_fname, fobj)
         return response
-    
+
     def upload_fname(self):
         import os
         this_dir, this_fname = os.path.split(__file__)
         return os.path.join(this_dir, 'data.txt')
-    
+
     @responses.activate
     def test_file_import(self):
         "Test file import"
@@ -427,7 +423,7 @@ class ProjectTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 response = self.reg_proj.import_file('1', 'first_name',
                     fname, fobj)
-    
+
     @responses.activate
     def test_file_delete(self):
         "Test file deletion"
@@ -437,7 +433,7 @@ class ProjectTests(unittest.TestCase):
             self.reg_proj.delete_file('1', 'file')
         except RedcapError:
             self.fail("Shouldn't throw RedcapError for successful deletes")
-    
+
     @responses.activate
     def test_user_export(self):
         "Test user export"
@@ -451,7 +447,7 @@ class ProjectTests(unittest.TestCase):
         for user in users:
             for key in req_keys:
                 self.assertIn(key, user)
-    
+
     def test_verify_ssl(self):
         """Test argument making for SSL verification"""
         # Test we won't verify SSL cert for non-verified project
@@ -462,7 +458,7 @@ class ProjectTests(unittest.TestCase):
         post_kwargs = self.reg_proj._kwargs()
         self.assertIn('verify', post_kwargs)
         self.assertTrue(post_kwargs['verify'])
-    
+
     @responses.activate
     def test_export_data_access_groups(self):
         """Test we get 'redcap_data_access_group' in exported data"""
@@ -474,12 +470,12 @@ class ProjectTests(unittest.TestCase):
         records = self.reg_proj.export_records()
         for record in records:
             self.assertNotIn('redcap_data_access_group', record)
-    
+
     @responses.activate
     def test_export_survey_fields(self):
         """Test that we get the appropriate survey keys in the exported
         data.
-    
+
         Note that the 'demographics' form has been setup as the survey
         in the `survey_proj` project. The _timestamp field will vary for
         users as their survey form will be named differently"""
@@ -495,7 +491,7 @@ class ProjectTests(unittest.TestCase):
         for record in records:
             self.assertNotIn('redcap_survey_identifier', record)
             self.assertNotIn('demographics_timestamp', record)
-    
+
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     @responses.activate
     def test_metadata_to_df(self):
@@ -503,7 +499,7 @@ class ProjectTests(unittest.TestCase):
         self.add_normalproject_response()
         df = self.reg_proj.export_metadata(format='df')
         self.assertIsInstance(df, pd.DataFrame)
-    
+
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     @responses.activate
     def test_export_to_df(self):
@@ -517,7 +513,7 @@ class ProjectTests(unittest.TestCase):
         # Test for a MultiIndex on longitudinal df
         long_df = self.long_proj.export_records(format='df', event_name='raw')
         self.assertTrue(hasattr(long_df.index, 'names'))
-    
+
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     @responses.activate
     def test_export_df_kwargs(self):
@@ -527,7 +523,7 @@ class ProjectTests(unittest.TestCase):
             df_kwargs={'index_col': 'first_name'})
         self.assertEqual(df.index.name, 'first_name')
         self.assertTrue('study_id' in df)
-    
+
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     @responses.activate
     def test_metadata_df_kwargs(self):
@@ -537,7 +533,7 @@ class ProjectTests(unittest.TestCase):
             df_kwargs={'index_col': 'field_label'})
         self.assertEqual(df.index.name, 'field_label')
         self.assertTrue('field_name' in df)
-    
+
     @unittest.skipIf(skip_pd, "Couldn't import pandas")
     @responses.activate
     def test_import_dataframe(self):
@@ -545,9 +541,6 @@ class ProjectTests(unittest.TestCase):
         self.add_normalproject_response()
         self.add_long_project_response()
         df = self.reg_proj.export_records(format='df')
-        # grrr coerce implicilty converted floats to str(int())
-        # for col in ['matrix1', 'matrix2', 'matrix3', 'sex']:
-        #     df[col] = map(lambda x: str(int(x)) if pd.notnull(x) else '', df[col])
         response = self.reg_proj.import_records(df)
         self.assertIn('count', response)
         self.assertNotIn('error', response)
@@ -555,34 +548,34 @@ class ProjectTests(unittest.TestCase):
         response = self.long_proj.import_records(long_df)
         self.assertIn('count', response)
         self.assertNotIn('error', response)
-    
+
     @responses.activate
     def test_date_formatting(self):
         """Test date_format parameter"""
         self.add_normalproject_response()
-    
+
         def import_factory(date_string):
             return [{'study_id': '1',
                      'dob': date_string}]
-    
+
         # Default YMD with dashes
         import_ymd = import_factory('2000-01-01')
         response = self.reg_proj.import_records(import_ymd)
         self.assertEqual(response['count'], 1)
-    
+
         # DMY with /
         import_dmy = import_factory('31/01/2000')
         response = self.reg_proj.import_records(import_dmy, date_format='DMY')
         self.assertEqual(response['count'], 1)
-    
+
         import_mdy = import_factory('12/31/2000')
         response = self.reg_proj.import_records(import_mdy, date_format='MDY')
         self.assertEqual(response['count'], 1)
-    
+
     def test_get_version(self):
         """Testing retrieval of REDCap version associated with Project"""
         self.assertTrue(isinstance(semantic_version.Version('1.0.0'), type(self.long_proj.redcap_version)))
-    
+
     @responses.activate
     def test_export_checkbox_labels(self):
         """Testing the export of checkbox labels as field values"""
@@ -593,7 +586,7 @@ class ProjectTests(unittest.TestCase):
                 export_checkbox_labels=True)[0]['matcheck1___1'],
                 'Foo'
         )
-    
+
     @responses.activate
     def test_export_always_include_def_field(self):
         """ Ensure def_field always comes in the output even if not explicity
