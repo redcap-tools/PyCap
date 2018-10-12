@@ -11,3 +11,6 @@ docs/_build/
 _site/
 .idea/
 *.swp
+.vscode/
+ve/
+.noseids
