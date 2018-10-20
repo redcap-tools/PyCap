@@ -425,7 +425,7 @@ class Project(object):
 
     def import_records(self, to_import, overwrite='normal', format='json',
         return_format='json', return_content='count',
-            date_format='YMD'):
+        date_format='YMD', force_auto_number=False):
         """
         Import data into the RedCap Project
 
@@ -458,6 +458,10 @@ class Project(object):
             strings are formatted as 'MM/DD/YYYY' set this parameter as
             'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
             other formattings are allowed.
+        force_auto_number : ('False') Enables automatic assignment of record IDs
+            of imported records by REDCap. If this is set to true, and auto-numbering
+            for records is enabled for the project, auto-numbering of imported records
+            will be enabled.
 
         Returns
         -------
@@ -487,6 +491,7 @@ class Project(object):
         pl['returnFormat'] = return_format
         pl['returnContent'] = return_content
         pl['dateFormat'] = date_format
+        pl['forceAutoNumber'] = force_auto_number
         response = self._call_api(pl, 'imp_record')[0]
         if 'error' in response:
             raise RedcapError(str(response))
