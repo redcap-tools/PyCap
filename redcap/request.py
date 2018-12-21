@@ -87,6 +87,8 @@ class RCRequest(object):
                 'Exporting users but content is not user'),
             'exp_survey_participant_list': (['instrument'], 'participantList',
                 'Exporting Survey Participant List but content != participantList'),
+            'exp_reports': (['report_id','format'], 'report',
+                'Exporting Reports but content is not reports'),
             'version': (['format'], 'version',
                 'Requesting version but content != version')
         }
