@@ -352,7 +352,8 @@ class Project(object):
             return mf
 
     def backfill_fields(self, fields, forms):
-        """ Properly backfill fields to explicitly request specific
+        """
+        Properly backfill fields to explicitly request specific
         keys. The issue is that >6.X servers *only* return requested fields
         so to improve backwards compatiblity for PyCap clients, add specific fields
         when required.
@@ -363,7 +364,9 @@ class Project(object):
                 requested fields
             forms: list
                 requested forms
-        Returns:
+
+        Returns
+        -------
             new fields, forms
         """
         if forms and not fields:
