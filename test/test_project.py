@@ -17,6 +17,12 @@ try:
 except ImportError:
     import urllib.parse as urlparse
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
+
 class ProjectTests(unittest.TestCase):
     """docstring for ProjectTests"""
 
