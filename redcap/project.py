@@ -668,14 +668,15 @@ class Project(object):
         return self._call_api(pl, 'exp_user')[0]
 
     def export_survey_participant_list(self, instrument, event=None, format='json'):
-        """ Export the Survey Participant List
+        """
+        Export the Survey Participant List
 
         Notes
-        ----
+        -----
         The passed instrument must be set up as a survey instrument.
 
         Parameters
-        ---------
+        ----------
         instrument: str
             Name of instrument as seen in second column of Data Dictionary.
         event: str
