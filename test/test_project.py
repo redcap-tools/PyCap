@@ -18,9 +18,16 @@ except ImportError:
     import urllib.parse as urlparse
 
 try:
-    basestring
+    basestring  # attempt to evaluate basestring
+    def is_str(s):
+        return isinstance(s, basestring)
+    def is_bytestring(s):
+        return isinstance(s, basestring)
 except NameError:
-    basestring = str
+    def is_str(s):
+        return isinstance(s, str)
+    def is_bytestring(s):
+        return isinstance(s, bytes)
 
 
 class ProjectTests(unittest.TestCase):
@@ -356,7 +363,7 @@ class ProjectTests(unittest.TestCase):
 
     def is_good_csv(self, csv_string):
         "Helper to test csv strings"
-        return isinstance(csv_string, basestring)
+        return is_str(csv_string)
 
     @responses.activate
     def test_csv_export(self):
@@ -397,7 +404,7 @@ class ProjectTests(unittest.TestCase):
         self.import_file()
         # Now export it
         content, headers = self.reg_proj.export_file(record, field)
-        self.assertIsInstance(content, basestring)
+        self.assertTrue(is_bytestring(content))
         # We should at least get the filename in the headers
         for key in ['name']:
             self.assertIn(key, headers)
