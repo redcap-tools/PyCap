@@ -1,4 +1,4 @@
-Sphinx==1.2.1
+Sphinx==1.8.3
 nose==1.2.1
 numpydoc==0.4
 semantic-version==2.3.1
