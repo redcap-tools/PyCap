@@ -3,7 +3,6 @@
 import unittest
 import responses
 import json
-import urlparse
 from redcap import Project, RedcapError
 import semantic_version
 
@@ -13,6 +12,10 @@ try:
 except ImportError:
     skip_pd = True
 
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 class ProjectTests(unittest.TestCase):
     """docstring for ProjectTests"""
