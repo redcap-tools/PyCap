@@ -360,10 +360,10 @@ class Project(object):
 
         Parameters
         ----------
-            fields: list
-                requested fields
-            forms: list
-                requested forms
+        fields: list
+            requested fields
+        forms: list
+            requested forms
 
         Returns
         -------
