@@ -352,18 +352,21 @@ class Project(object):
             return mf
 
     def backfill_fields(self, fields, forms):
-        """ Properly backfill fields to explicitly request specific
+        """
+        Properly backfill fields to explicitly request specific
         keys. The issue is that >6.X servers *only* return requested fields
         so to improve backwards compatiblity for PyCap clients, add specific fields
         when required.
 
         Parameters
         ----------
-            fields: list
-                requested fields
-            forms: list
-                requested forms
-        Returns:
+        fields: list
+            requested fields
+        forms: list
+            requested forms
+
+        Returns
+        -------
             new fields, forms
         """
         if forms and not fields:
@@ -668,14 +671,15 @@ class Project(object):
         return self._call_api(pl, 'exp_user')[0]
 
     def export_survey_participant_list(self, instrument, event=None, format='json'):
-        """ Export the Survey Participant List
+        """
+        Export the Survey Participant List
 
         Notes
-        ----
+        -----
         The passed instrument must be set up as a survey instrument.
 
         Parameters
-        ---------
+        ----------
         instrument: str
             Name of instrument as seen in second column of Data Dictionary.
         event: str
