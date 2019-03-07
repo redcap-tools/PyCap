@@ -18,9 +18,9 @@ __copyright__ = ' Copyright 2014, Vanderbilt University'
 from requests import post, RequestException, Request, Session
 import json
 
-
 RedcapError = RequestException
 
+_session = Session()
 
 class RCAPIError(Exception):
     """ Errors corresponding to a misuse of the REDCap API """
@@ -40,7 +40,7 @@ class RCRequest(object):
     biggest consumer.
     """
 
-    def __init__(self, url, payload, qtype, session):
+    def __init__(self, url, payload, qtype,session=_session):
         """
         Constructor
 
@@ -56,7 +56,8 @@ class RCRequest(object):
         self.url = url
         self.payload = payload
         self.type = qtype
-	self.session=session
+        self.session=session
+
         if qtype:
             self.validate()
         fmt_key = 'returnFormat' if 'returnFormat' in payload else 'format'
