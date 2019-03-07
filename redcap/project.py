@@ -150,10 +150,10 @@ class Project(object):
         Other default kwargs to the http library should go here"""
         return {'verify': self.verify}
 
-    def _call_api(self, payload, typpe,session=self.session, **kwargs):
+    def _call_api(self, payload, typpe, **kwargs):
         request_kwargs = self._kwargs()
         request_kwargs.update(kwargs)
-        rcr = RCRequest(self.url, payload, typpe,session)
+        rcr = RCRequest(self.url, payload, typpe,self.session)
         return rcr.execute(**request_kwargs)
 
     def export_fem(self, arms=None, format='json', df_kwargs=None):
