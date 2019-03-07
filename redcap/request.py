@@ -15,7 +15,7 @@ __author__ = 'Scott Burns'
 __copyright__ = ' Copyright 2014, Vanderbilt University'
 
 
-from requests import post, RequestException
+from requests import post, RequestException, Request, Session
 import json
 
 
@@ -67,8 +67,6 @@ class RCRequest(object):
         valid_data = {
             'exp_record': (['type', 'format'], 'record',
                 'Exporting record but content is not record'),
-            'del_record': (['format'], 'record',
-                'Deleting record but content is not record'),
             'imp_record': (['type', 'overwriteBehavior', 'data', 'format'],
                 'record', 'Importing record but content is not record'),
             'metadata': (['format'], 'metadata',
@@ -122,10 +120,13 @@ class RCRequest(object):
             data object from JSON decoding process if format=='json',
             else return raw string (ie format=='csv'|'xml')
         """
-        r = post(self.url, data=self.payload, **kwargs)
+        s = Session()
+        r = Request('POST',self.url, data=self.payload)
+        prepped = s.prepare_request(r)
+        response = s.send(prepped,**kwargs)
         # Raise if we need to
-        self.raise_for_status(r)
-        content = self.get_content(r)
+        self.raise_for_status(response)
+        content = self.get_content(response)
         return content, r.headers
 
     def get_content(self, r):
