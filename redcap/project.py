@@ -7,6 +7,7 @@ __copyright__ = '2014, Vanderbilt University'
 
 import json
 import warnings
+from requests import Session
 
 from .request import RCRequest, RedcapError, RequestException
 import semantic_version
@@ -48,6 +49,7 @@ class Project(object):
         self.arm_nums = None
         self.arm_names = None
         self.configured = False
+        self.session=Session()
 
         if not lazy:
             self.configure()
@@ -148,10 +150,10 @@ class Project(object):
         Other default kwargs to the http library should go here"""
         return {'verify': self.verify}
 
-    def _call_api(self, payload, typpe, **kwargs):
+    def _call_api(self, payload, typpe,session=self.session, **kwargs):
         request_kwargs = self._kwargs()
         request_kwargs.update(kwargs)
-        rcr = RCRequest(self.url, payload, typpe)
+        rcr = RCRequest(self.url, payload, typpe,session)
         return rcr.execute(**request_kwargs)
 
     def export_fem(self, arms=None, format='json', df_kwargs=None):

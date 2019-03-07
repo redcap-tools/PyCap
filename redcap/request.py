@@ -40,7 +40,7 @@ class RCRequest(object):
     biggest consumer.
     """
 
-    def __init__(self, url, payload, qtype):
+    def __init__(self, url, payload, qtype, session):
         """
         Constructor
 
@@ -56,6 +56,7 @@ class RCRequest(object):
         self.url = url
         self.payload = payload
         self.type = qtype
+	self.session=session
         if qtype:
             self.validate()
         fmt_key = 'returnFormat' if 'returnFormat' in payload else 'format'
@@ -120,15 +121,12 @@ class RCRequest(object):
             data object from JSON decoding process if format=='json',
             else return raw string (ie format=='csv'|'xml')
         """
-        s = Session()
-        r = Request('POST',self.url, data=self.payload)
-        prepped = s.prepare_request(r)
-        response = s.send(prepped,**kwargs)
+        response = self.session.post(self.url,data=self.payload,**kwargs)
         # Raise if we need to
         self.raise_for_status(response)
         content = self.get_content(response)
-        return content, r.headers
-
+        return content, response.headers
+ 
     def get_content(self, r):
         """Abstraction for grabbing content from a returned response"""
         if self.type == 'exp_file':
