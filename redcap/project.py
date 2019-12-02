@@ -495,7 +495,6 @@ class Project(object):
         pl['returnContent'] = return_content
         pl['dateFormat'] = date_format
         pl['forceAutoNumber'] = force_auto_number
-
         response = self._call_api(pl, 'imp_record')[0]
         if 'error' in response:
             raise RedcapError(str(response))
