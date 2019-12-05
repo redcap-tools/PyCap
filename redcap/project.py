@@ -381,44 +381,6 @@ class Project(object):
             new_fields = list(fields)
         return new_fields
 
-    def filter(self, query, output_fields=None):
-        """Query the database and return subject information for those
-        who match the query logic
-
-        Parameters
-        ----------
-        query: Query or QueryGroup
-            Query(Group) object to process
-        output_fields: list
-            The fields desired for matching subjects
-
-        Returns
-        -------
-        A list of dictionaries whose keys contains at least the default field
-        and at most each key passed in with output_fields, each dictionary
-        representing a surviving row in the database.
-        """
-        query_keys = query.fields()
-        if not set(query_keys).issubset(set(self.field_names)):
-            raise ValueError("One or more query keys not in project keys")
-        query_keys.append(self.def_field)
-        data = self.export_records(fields=query_keys)
-        matches = query.filter(data, self.def_field)
-        if matches:
-            # if output_fields is empty, we'll download all fields, which is
-            # not desired, so we limit download to def_field
-            if not output_fields:
-                output_fields = [self.def_field]
-            #  But if caller passed a string and not list, we need to listify
-            if isinstance(output_fields, basestring):
-                output_fields = [output_fields]
-            return self.export_records(records=matches, fields=output_fields)
-        else:
-            #  If there are no matches, then sending an empty list to
-            #  export_records will actually return all rows, which is not
-            #  what we want
-            return []
-
     def names_labels(self, do_print=False):
         """Simple helper function to get all field names and labels """
         if do_print:
