@@ -654,3 +654,8 @@ class Project(object):
         if event:
             pl['event'] = event
         return self._call_api(pl, 'exp_survey_participant_list')
+
+    def export_project_info(self, format='json'):
+        pl = self.__basepl(content='project', format=format)
+
+        return self._call_api(pl, 'exp_proj')[0]
