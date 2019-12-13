@@ -654,3 +654,8 @@ class Project(object):
         if event:
             pl['event'] = event
         return self._call_api(pl, 'exp_survey_participant_list')
+
+    def generate_next_record_name(self):
+        pl = self.__basepl(content='generateNextRecordName')
+
+        return self._call_api(pl, 'exp_next_id')[0]
