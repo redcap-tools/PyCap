@@ -101,6 +101,8 @@ class ProjectTests(unittest.TestCase):
             data = urlparse.parse_qs(parsed.query)
             headers = {"Content-Type": "application/json"}
 
+            resp = None
+
             if " filename" in data:
                 resp = {}
             else:
@@ -188,6 +190,15 @@ class ProjectTests(unittest.TestCase):
                     ]
                 elif (request_type == "generateNextRecordName"):
                     resp = 123
+                elif (request_type == "project"):
+                    resp = {
+                        'project_id': 123
+                    }
+
+                self.assertIsNotNone(
+                    resp,
+                    msg="No response for request_type '{}'".format(request_type)
+                )
 
             return (201, headers, json.dumps(resp))
 
@@ -631,3 +642,12 @@ class ProjectTests(unittest.TestCase):
         next_name = self.reg_proj.generate_next_record_name()
 
         self.assertEqual(next_name, 123)
+
+    @responses.activate
+    def test_export_project_info(self):
+        "Test export of project information"
+        self.add_normalproject_response()
+
+        info = self.reg_proj.export_project_info()
+
+        self.assertEqual(info['project_id'], 123)

@@ -659,3 +659,17 @@ class Project(object):
         pl = self.__basepl(content='generateNextRecordName')
 
         return self._call_api(pl, 'exp_next_id')[0]
+      
+    def export_project_info(self, format='json'):
+        """
+        Export Project Information
+
+        Parameters
+        ----------
+        format: (json, xml, csv), json by default
+            Format of returned data
+        """
+
+        pl = self.__basepl(content='project', format=format)
+
+        return self._call_api(pl, 'exp_proj')[0]
