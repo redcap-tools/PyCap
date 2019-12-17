@@ -101,6 +101,8 @@ class ProjectTests(unittest.TestCase):
             data = urlparse.parse_qs(parsed.query)
             headers = {"Content-Type": "application/json"}
 
+            resp = None
+
             if " filename" in data:
                 resp = {}
             else:
@@ -186,6 +188,15 @@ class ProjectTests(unittest.TestCase):
                             'forms': "test"
                         }
                     ]
+                elif (request_type == "project"):
+                    resp = {
+                        'project_id': 123
+                    }
+
+                self.assertIsNotNone(
+                    resp,
+                    msg="No response for request_type '{}'".format(request_type)
+                )
 
             return (201, headers, json.dumps(resp))
 
@@ -620,3 +631,11 @@ class ProjectTests(unittest.TestCase):
         records = self.reg_proj.export_records(fields=['foo_score'])
         for record in records:
             self.assertIn(self.reg_proj.def_field, record)
+
+    @responses.activate
+    def test_export_project_info(self):
+        self.add_normalproject_response()
+
+        info = self.reg_proj.export_project_info()
+
+        self.assertEqual(info['project_id'], 123)
