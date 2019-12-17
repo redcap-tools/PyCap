@@ -634,6 +634,7 @@ class ProjectTests(unittest.TestCase):
 
     @responses.activate
     def test_export_project_info(self):
+        "Test export of project information"
         self.add_normalproject_response()
 
         info = self.reg_proj.export_project_info()
