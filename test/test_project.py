@@ -186,6 +186,8 @@ class ProjectTests(unittest.TestCase):
                             'forms': "test"
                         }
                     ]
+                elif (request_type == "generateNextRecordName"):
+                    resp = 123
 
             return (201, headers, json.dumps(resp))
 
@@ -620,3 +622,12 @@ class ProjectTests(unittest.TestCase):
         records = self.reg_proj.export_records(fields=['foo_score'])
         for record in records:
             self.assertIn(self.reg_proj.def_field, record)
+
+    @responses.activate
+    def test_generate_next_record_name(self):
+        "Test exporting the next potential record ID for a project"
+        self.add_normalproject_response()
+
+        next_name = self.reg_proj.generate_next_record_name()
+
+        self.assertEqual(next_name, 123)
