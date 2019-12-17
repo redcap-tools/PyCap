@@ -83,6 +83,8 @@ class RCRequest(object):
                 'Exporting arms but content is not arm'),
             'exp_fem': (['format'], 'formEventMapping',
                 'Exporting form-event mappings but content != formEventMapping'),
+            'exp_proj': (['format'], 'project',
+                'Exporting project info but content is not project'),
             'exp_user': (['format'], 'user',
                 'Exporting users but content is not user'),
             'exp_survey_participant_list': (['instrument'], 'participantList',
