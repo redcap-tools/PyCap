@@ -656,6 +656,15 @@ class Project(object):
         return self._call_api(pl, 'exp_survey_participant_list')
 
     def export_project_info(self, format='json'):
+        """
+        Export Project Information
+
+        Parameters
+        ----------
+        format: (json, xml, csv), json by default
+            Format of returned data
+        """
+
         pl = self.__basepl(content='project', format=format)
 
         return self._call_api(pl, 'exp_proj')[0]
