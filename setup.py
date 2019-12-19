@@ -22,7 +22,7 @@ def get_version():
 
 required = [
     'requests>=1.0.0',
-    'semantic-version==2.3.1'
+    'semantic-version>=2.3.1'
 ]
 
 if __name__ == '__main__':
