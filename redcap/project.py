@@ -511,7 +511,7 @@ class Project(object):
         return content, content_map
 
     def import_file(self, record, field, fname, fobj, event=None,
-            return_format='json'):
+                    repeat_instance=None, return_format='json'):
         """
         Import the contents of a file represented by fobj to a
         particular records field
@@ -528,6 +528,10 @@ class Project(object):
             file object as returned by `open`
         event : str
             for longitudinal projects, specify the unique event here
+        repeat_instance : int
+            (only for projects with repeating instruments/events)
+            The repeat instance number of the repeating event (if longitudinal)
+            or the repeating instrument (if classic or longitudinal).
         return_format : ('json'), 'csv', 'xml'
             format of error message
 
@@ -547,6 +551,8 @@ class Project(object):
         pl['record'] = record
         if event:
             pl['event'] = event
+        if repeat_instance:
+            pl['repeat_instance'] = repeat_instance
         file_kwargs = {'files': {'file': (fname, fobj)}}
         return self._call_api(pl, 'imp_file', **file_kwargs)[0]
 
