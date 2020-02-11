@@ -172,3 +172,6 @@ class RCRequest(object):
         # specifically 10.5
         if 500 <= r.status_code < 600:
             raise RedcapError(r.content)
+
+        if 400 == r.status_code and self.type == 'exp_record':
+            raise RedcapError(r.content)
