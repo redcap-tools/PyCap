@@ -30,6 +30,9 @@ except NameError:
         return isinstance(s, bytes)
 
 
+from unittest import mock
+
+
 class ProjectTests(unittest.TestCase):
     """docstring for ProjectTests"""
 
@@ -392,6 +395,23 @@ class ProjectTests(unittest.TestCase):
         csv = self.reg_proj.export_metadata(format='csv')
         self.assertTrue(self.is_good_csv(csv))
 
+    def test_metadata_export_passes_filters_as_arrays(self):
+        self.reg_proj._call_api = mock.Mock()
+        self.reg_proj._call_api.return_value = (None, None)
+        self.reg_proj.export_metadata(
+            fields=['field0', 'field1', 'field2'],
+            forms=['form0', 'form1', 'form2'],
+        )
+
+        args, _ = self.reg_proj._call_api.call_args
+
+        payload = args[0]
+
+        self.assertEqual(payload['fields[0]'], 'field0')
+        self.assertEqual(payload['fields[1]'], 'field1')
+        self.assertEqual(payload['fields[2]'], 'field2')
+        self.assertEqual(payload['forms[2]'], 'form2')
+
     def test_bad_creds(self):
         "Test that exceptions are raised with bad URL or tokens"
         with self.assertRaises(RedcapError):
@@ -407,6 +427,21 @@ class ProjectTests(unittest.TestCase):
         self.assertIsInstance(fem, list)
         for arm in fem:
             self.assertIsInstance(arm, dict)
+
+    def test_fem_export_passes_filters_as_arrays(self):
+        self.reg_proj._call_api = mock.Mock()
+        self.reg_proj._call_api.return_value = (None, None)
+        self.reg_proj.export_fem(
+            arms=['arm0', 'arm1', 'arm2'],
+        )
+
+        args, _ = self.reg_proj._call_api.call_args
+
+        payload = args[0]
+
+        self.assertEqual(payload['arms[0]'], 'arm0')
+        self.assertEqual(payload['arms[1]'], 'arm1')
+        self.assertEqual(payload['arms[2]'], 'arm2')
 
     @responses.activate
     def test_file_export(self):
@@ -633,6 +668,27 @@ class ProjectTests(unittest.TestCase):
         records = self.reg_proj.export_records(fields=['foo_score'])
         for record in records:
             self.assertIn(self.reg_proj.def_field, record)
+
+    def test_export_passes_filters_as_arrays(self):
+        self.reg_proj._call_api = mock.Mock()
+        self.reg_proj._call_api.return_value = (None, None)
+        self.reg_proj.export_records(
+            records=['record0', 'record1', 'record2'],
+            fields=['field0', 'field1', 'field2'],
+            forms=['form0', 'form1', 'form2'],
+            events=['event0', 'event1', 'event2']
+        )
+
+        args, _ = self.reg_proj._call_api.call_args
+
+        payload = args[0]
+
+        self.assertEqual(payload['records[0]'], 'record0')
+        self.assertEqual(payload['records[1]'], 'record1')
+        self.assertEqual(payload['records[2]'], 'record2')
+        self.assertEqual(payload['fields[1]'], 'field1')
+        self.assertEqual(payload['forms[2]'], 'form2')
+        self.assertEqual(payload['events[0]'], 'event0')
 
     @responses.activate
     def test_generate_next_record_name(self):

@@ -179,11 +179,11 @@ class Project(object):
             from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('formEventMapping', format=ret_format)
-        to_add = [arms]
-        str_add = ['arms']
-        for key, data in zip(str_add, to_add):
-            if data:
-                pl[key] = ','.join(data)
+
+        if arms:
+            for i, value in enumerate(arms):
+                pl["arms[{}]".format(i)] = value
+
         response, _ = self._call_api(pl, 'exp_fem')
         if format in ('json', 'csv', 'xml'):
             return response
@@ -226,7 +226,9 @@ class Project(object):
         str_add = ['fields', 'forms']
         for key, data in zip(str_add, to_add):
             if data:
-                pl[key] = ','.join(data)
+                for i, value in enumerate(data):
+                    pl["{}[{}]".format(key, i)] = value
+
         response, _ = self._call_api(pl, 'metadata')
         if format in ('json', 'csv', 'xml'):
             return response
@@ -311,9 +313,9 @@ class Project(object):
         'exportCheckboxLabel')
         for key, data in zip(str_keys, keys_to_add):
             if data:
-                #  Make a url-ok string
                 if key in ('fields', 'records', 'forms', 'events'):
-                    pl[key] = ','.join(data)
+                    for i, value in enumerate(data):
+                        pl["{}[{}]".format(key, i)] = value
                 else:
                     pl[key] = data
 
@@ -665,7 +667,7 @@ class Project(object):
         pl = self.__basepl(content='generateNextRecordName')
 
         return self._call_api(pl, 'exp_next_id')[0]
-      
+
     def export_project_info(self, format='json'):
         """
         Export Project Information
