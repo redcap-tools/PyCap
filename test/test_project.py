@@ -29,8 +29,10 @@ except NameError:
     def is_bytestring(s):
         return isinstance(s, bytes)
 
-
-from unittest import mock
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 
 class ProjectTests(unittest.TestCase):
