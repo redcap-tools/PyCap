@@ -228,6 +228,11 @@ class Project(object):
             if data:
                 pl[key] = ','.join(data)
         response, _ = self._call_api(pl, 'metadata')
+        l = []
+        for d in response:
+            if (d['form_name'] in forms) | (d['field_name'] in fields):
+                l.append(d)
+        response = l
         if format in ('json', 'csv', 'xml'):
             return response
         elif format == 'df':
