@@ -12,14 +12,6 @@ try:
 except ImportError:
     from distutils.core import setup
 
-
-def get_version():
-    base = os.path.dirname(__file__)
-    with open(os.path.join(base, 'redcap/version.py')) as f:
-        VERSION = None
-        exec(f.read())
-        return VERSION
-
 required = [
     'requests>=1.0.0',
     'semantic-version>=2.3.1'
@@ -37,7 +29,7 @@ if __name__ == '__main__':
         description="""PyCap: Python interface to REDCap""",
         license='MIT',
         url='http://sburns.github.com/PyCap',
-        version=get_version(),
+        version='1.0.2',
         download_url='http://sburns.github.com/PyCap',
         long_description=long_desc,
         packages=['redcap'],

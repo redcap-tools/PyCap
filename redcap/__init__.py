@@ -18,4 +18,3 @@ Other API requests are available, such as exporting users & Form-Event Mappings.
 
 from .project import Project
 from .request import RCRequest, RCAPIError, RedcapError
-from .version import VERSION as __version__
