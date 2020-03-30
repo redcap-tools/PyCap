@@ -352,18 +352,21 @@ class Project(object):
             return mf
 
     def backfill_fields(self, fields, forms):
-        """ Properly backfill fields to explicitly request specific
+        """
+        Properly backfill fields to explicitly request specific
         keys. The issue is that >6.X servers *only* return requested fields
         so to improve backwards compatiblity for PyCap clients, add specific fields
         when required.
 
         Parameters
         ----------
-            fields: list
-                requested fields
-            forms: list
-                requested forms
-        Returns:
+        fields: list
+            requested fields
+        forms: list
+            requested forms
+
+        Returns
+        -------
             new fields, forms
         """
         if forms and not fields:
@@ -377,44 +380,6 @@ class Project(object):
         else:
             new_fields = list(fields)
         return new_fields
-
-    def filter(self, query, output_fields=None):
-        """Query the database and return subject information for those
-        who match the query logic
-
-        Parameters
-        ----------
-        query: Query or QueryGroup
-            Query(Group) object to process
-        output_fields: list
-            The fields desired for matching subjects
-
-        Returns
-        -------
-        A list of dictionaries whose keys contains at least the default field
-        and at most each key passed in with output_fields, each dictionary
-        representing a surviving row in the database.
-        """
-        query_keys = query.fields()
-        if not set(query_keys).issubset(set(self.field_names)):
-            raise ValueError("One or more query keys not in project keys")
-        query_keys.append(self.def_field)
-        data = self.export_records(fields=query_keys)
-        matches = query.filter(data, self.def_field)
-        if matches:
-            # if output_fields is empty, we'll download all fields, which is
-            # not desired, so we limit download to def_field
-            if not output_fields:
-                output_fields = [self.def_field]
-            #  But if caller passed a string and not list, we need to listify
-            if isinstance(output_fields, basestring):
-                output_fields = [output_fields]
-            return self.export_records(records=matches, fields=output_fields)
-        else:
-            #  If there are no matches, then sending an empty list to
-            #  export_records will actually return all rows, which is not
-            #  what we want
-            return []
 
     def names_labels(self, do_print=False):
         """Simple helper function to get all field names and labels """
@@ -546,7 +511,7 @@ class Project(object):
         return content, content_map
 
     def import_file(self, record, field, fname, fobj, event=None,
-            return_format='json'):
+                    repeat_instance=None, return_format='json'):
         """
         Import the contents of a file represented by fobj to a
         particular records field
@@ -563,6 +528,10 @@ class Project(object):
             file object as returned by `open`
         event : str
             for longitudinal projects, specify the unique event here
+        repeat_instance : int
+            (only for projects with repeating instruments/events)
+            The repeat instance number of the repeating event (if longitudinal)
+            or the repeating instrument (if classic or longitudinal).
         return_format : ('json'), 'csv', 'xml'
             format of error message
 
@@ -582,6 +551,8 @@ class Project(object):
         pl['record'] = record
         if event:
             pl['event'] = event
+        if repeat_instance:
+            pl['repeat_instance'] = repeat_instance
         file_kwargs = {'files': {'file': (fname, fobj)}}
         return self._call_api(pl, 'imp_file', **file_kwargs)[0]
 
@@ -668,14 +639,15 @@ class Project(object):
         return self._call_api(pl, 'exp_user')[0]
 
     def export_survey_participant_list(self, instrument, event=None, format='json'):
-        """ Export the Survey Participant List
+        """
+        Export the Survey Participant List
 
         Notes
-        ----
+        -----
         The passed instrument must be set up as a survey instrument.
 
         Parameters
-        ---------
+        ----------
         instrument: str
             Name of instrument as seen in second column of Data Dictionary.
         event: str

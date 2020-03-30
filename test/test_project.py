@@ -3,7 +3,6 @@
 import unittest
 import responses
 import json
-import urlparse
 from redcap import Project, RedcapError
 import semantic_version
 
@@ -12,6 +11,23 @@ try:
     import pandas as pd
 except ImportError:
     skip_pd = True
+
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
+
+try:
+    basestring  # attempt to evaluate basestring
+    def is_str(s):
+        return isinstance(s, basestring)
+    def is_bytestring(s):
+        return isinstance(s, basestring)
+except NameError:
+    def is_str(s):
+        return isinstance(s, str)
+    def is_bytestring(s):
+        return isinstance(s, bytes)
 
 
 class ProjectTests(unittest.TestCase):
@@ -84,6 +100,8 @@ class ProjectTests(unittest.TestCase):
             parsed = urlparse.urlparse("?{}".format(request.body))
             data = urlparse.parse_qs(parsed.query)
             headers = {"Content-Type": "application/json"}
+
+            resp = None
 
             if " filename" in data:
                 resp = {}
@@ -170,6 +188,17 @@ class ProjectTests(unittest.TestCase):
                             'forms': "test"
                         }
                     ]
+                elif (request_type == "generateNextRecordName"):
+                    resp = 123
+                elif (request_type == "project"):
+                    resp = {
+                        'project_id': 123
+                    }
+
+                self.assertIsNotNone(
+                    resp,
+                    msg="No response for request_type '{}'".format(request_type)
+                )
 
             return (201, headers, json.dumps(resp))
 
@@ -347,7 +376,7 @@ class ProjectTests(unittest.TestCase):
 
     def is_good_csv(self, csv_string):
         "Helper to test csv strings"
-        return isinstance(csv_string, basestring)
+        return is_str(csv_string)
 
     @responses.activate
     def test_csv_export(self):
@@ -388,7 +417,7 @@ class ProjectTests(unittest.TestCase):
         self.import_file()
         # Now export it
         content, headers = self.reg_proj.export_file(record, field)
-        self.assertIsInstance(content, basestring)
+        self.assertTrue(is_bytestring(content))
         # We should at least get the filename in the headers
         for key in ['name']:
             self.assertIn(key, headers)
@@ -604,3 +633,21 @@ class ProjectTests(unittest.TestCase):
         records = self.reg_proj.export_records(fields=['foo_score'])
         for record in records:
             self.assertIn(self.reg_proj.def_field, record)
+
+    @responses.activate
+    def test_generate_next_record_name(self):
+        "Test exporting the next potential record ID for a project"
+        self.add_normalproject_response()
+
+        next_name = self.reg_proj.generate_next_record_name()
+
+        self.assertEqual(next_name, 123)
+
+    @responses.activate
+    def test_export_project_info(self):
+        "Test export of project information"
+        self.add_normalproject_response()
+
+        info = self.reg_proj.export_project_info()
+
+        self.assertEqual(info['project_id'], 123)
