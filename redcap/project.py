@@ -660,6 +660,25 @@ class Project(object):
         if event:
             pl['event'] = event
         return self._call_api(pl, 'exp_survey_participant_list')
+    
+    def generate_next_record_name(self):
+        pl = self.__basepl(content='generateNextRecordName')
+
+        return self._call_api(pl, 'exp_next_id')[0]
+      
+    def export_project_info(self, format='json'):
+        """
+        Export Project Information
+
+        Parameters
+        ----------
+        format: (json, xml, csv), json by default
+            Format of returned data
+        """
+
+        pl = self.__basepl(content='project', format=format)
+
+        return self._call_api(pl, 'exp_proj')[0]
 
     def export_reports(self, format='json', report_id=None, returnFormat='json',
             rawOrLabel='raw', rawOrLabelHeaders='raw',
