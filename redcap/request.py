@@ -85,6 +85,10 @@ class RCRequest(object):
                 'Exporting arms but content is not arm'),
             'exp_fem': (['format'], 'formEventMapping',
                 'Exporting form-event mappings but content != formEventMapping'),
+            'exp_next_id': ([], 'generateNextRecordName',
+                'Generating next record name but content is not generateNextRecordName'),
+            'exp_proj': (['format'], 'project',
+                'Exporting project info but content is not project'),
             'exp_user': (['format'], 'user',
                 'Exporting users but content is not user'),
             'exp_survey_participant_list': (['instrument'], 'participantList',
@@ -169,4 +173,7 @@ class RCRequest(object):
         # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
         # specifically 10.5
         if 500 <= r.status_code < 600:
+            raise RedcapError(r.content)
+
+        if 400 == r.status_code and self.type == 'exp_record':
             raise RedcapError(r.content)
