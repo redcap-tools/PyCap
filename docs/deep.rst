@@ -141,6 +141,7 @@ Exporting large projects will fail on REDCap's backend and PyCap will throw a ``
 
 Here's an exporting function that trades speed for robustness::
 
+# Python 3 does not support xrange(), use range() instead
     def chunked_export(project, chunk_size=100):
         def chunks(l, n):
             """Yield successive n-sized chunks from list l"""
