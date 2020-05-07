@@ -22,6 +22,7 @@ Currently, these API calls are available:
 
 -   Export Records
 -   Export Metadata
+-   Delete Records
 -   Import Records
 -   Export File
 -   Import File
@@ -81,6 +82,9 @@ Usage
     ... except ValueError:
     ...     # This throws if you made a bad request, e.g. tried to delete a field
     ...     # that isn't a file
+
+    # Delete record
+    >>> response = project.delete_record('1')
 
     # Export form event mappings
     >>> fem = project.export_fem()
