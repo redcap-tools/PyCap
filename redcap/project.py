@@ -237,21 +237,19 @@ class Project(object):
                 df_kwargs = {'index_col': 'field_name'}
             return read_csv(StringIO(response), **df_kwargs)
 
-    def delete_records(self, records, format='json'):
+    def delete_records(self, records):
         """
         Delete records from the Project.
 
         Parameters
-        __________
+        ----------
         records : list
             List of record IDs that you want to delete from the project
 
-        format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
-            Return the metadata in native objects, csv or xml.
-            ``'df'`` will return a ``pandas.DataFrame``.
         Returns
-        _______
-        None
+        -------
+        response : int
+            Number of records deleted
         """
         pl = dict()
         pl['action'] = 'delete'
@@ -264,9 +262,8 @@ class Project(object):
         pl.update(records_dict)
 
         pl['format'] = format
-        response, _ = self._call_api(pl,'del_record')
-        if format in ('json', 'csv', 'xml'):
-            return response
+        response, _ = self._call_api(pl, 'del_record')
+        return response
 
     def export_records(self, records=None, fields=None, forms=None,
     events=None, raw_or_label='raw', event_name='label',
