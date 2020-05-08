@@ -237,14 +237,14 @@ class Project(object):
                 df_kwargs = {'index_col': 'field_name'}
             return read_csv(StringIO(response), **df_kwargs)
 
-    def delete_record(self, record, format='json'):
+    def delete_records(self, records, format='json'):
         """
-        Delete a record form the Project.
+        Delete records from the Project.
 
         Parameters
         __________
-        record : string
-            The record ID that you wan to delete from the project
+        records : list
+            List of record IDs that you want to delete from the project
 
         format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
             Return the metadata in native objects, csv or xml.
@@ -257,7 +257,12 @@ class Project(object):
         pl['action'] = 'delete'
         pl['content'] = 'record'
         pl['token'] = self.token
-        pl['records[0]'] = record
+        # Turn list of records into dict, and append to payload
+        records_dict = {
+            "records[{}]".format(idx): record for idx, record in enumerate(records)
+        }
+        pl.update(records_dict)
+
         pl['format'] = format
         response, _ = self._call_api(pl,'del_record')
         if format in ('json', 'csv', 'xml'):
