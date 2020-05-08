@@ -5,7 +5,24 @@ __author__ = 'Scott Burns <scott.s.burns@gmail.com>'
 __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
 
+import codecs
 import os
+import re
+
+# Taken from vulture setup.py: https://github.com/jendrikseipp/vulture/blob/master/setup.py
+def read(*parts):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, *parts), "r") as f:
+        return f.read()
+
+def find_version(*file_parts):
+    version_file = read(*file_parts)
+    version_match = re.search(
+        r"^__version__ = ['\"]([^'\"]*)['\"]$", version_file, re.M
+    )
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
 
 try:
     from setuptools import setup
@@ -29,7 +46,7 @@ if __name__ == '__main__':
         description="""PyCap: Python interface to REDCap""",
         license='MIT',
         url='http://sburns.github.com/PyCap',
-        version='1.0.2',
+        version=find_version("redcap", "__init__.py"),
         download_url='http://sburns.github.com/PyCap',
         long_description=long_desc,
         packages=['redcap'],
