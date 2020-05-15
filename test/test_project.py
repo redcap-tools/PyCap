@@ -615,6 +615,24 @@ class ProjectTests(unittest.TestCase):
         self.assertIn('count', response)
         self.assertNotIn('error', response)
 
+    def test_export_records_handles_empty_data_error(self):
+        self.reg_proj._call_api = mock.Mock()
+        self.reg_proj._call_api.return_value = "\n", {}
+        df = self.reg_proj.export_records(format='df')
+        self.assertTrue(df.empty)
+
+    def test_export_fem_handles_empty_data_error(self):
+        self.reg_proj._call_api = mock.Mock()
+        self.reg_proj._call_api.return_value = "\n", {}
+        df = self.reg_proj.export_fem(format='df')
+        self.assertTrue(df.empty)
+
+    def test_export_metadata_handles_empty_data_error(self):
+        self.reg_proj._call_api = mock.Mock()
+        self.reg_proj._call_api.return_value = "\n", {}
+        df = self.reg_proj.export_metadata(format='df')
+        self.assertTrue(df.empty)
+
     @responses.activate
     def test_date_formatting(self):
         """Test date_format parameter"""

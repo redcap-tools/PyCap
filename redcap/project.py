@@ -176,7 +176,6 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('formEventMapping', format=ret_format)
 
@@ -189,9 +188,9 @@ class Project(object):
             return response
         elif format == 'df':
             if not df_kwargs:
-                return read_csv(StringIO(response))
-            else:
-                return read_csv(StringIO(response), **df_kwargs)
+                df_kwargs = {}
+
+            return self.read_csv(StringIO(response), **df_kwargs)
 
     def export_metadata(self, fields=None, forms=None, format='json',
             df_kwargs=None):
@@ -219,7 +218,6 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('metadata', format=ret_format)
         to_add = [fields, forms]
@@ -235,7 +233,7 @@ class Project(object):
         elif format == 'df':
             if not df_kwargs:
                 df_kwargs = {'index_col': 'field_name'}
-            return read_csv(StringIO(response), **df_kwargs)
+            return self.read_csv(StringIO(response), **df_kwargs)
 
     def delete_records(self, records):
         """
@@ -329,7 +327,6 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('record', format=ret_format)
         fields = self.backfill_fields(fields, forms)
@@ -360,9 +357,21 @@ class Project(object):
                 else:
                     df_kwargs = {'index_col': self.def_field}
             buf = StringIO(response)
-            df = read_csv(buf, **df_kwargs)
+            df = self.read_csv(buf, **df_kwargs)
             buf.close()
             return df
+
+    def read_csv(self, buf, **df_kwargs):
+        """Wrapper around pandas read_csv that handles EmptyDataError"""
+        from pandas import DataFrame, read_csv
+        from pandas.errors import EmptyDataError
+
+        try:
+            df = read_csv(buf, **df_kwargs)
+        except EmptyDataError:
+            df = DataFrame()
+
+        return df
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
