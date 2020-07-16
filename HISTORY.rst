@@ -1,13 +1,46 @@
 HISTORY
 -------
 
+1.1.0 (2020-07-16)
++++++++++++++++++++
+
+* API Support
+    - Add `rec_type` support in `import_records()` (#40 @dckc)
+    - Add `export_checkbox_labels` keyword arg to `export_records()` (#48 Tyler Rivera)
+    - Properly backfill requested fields for >6.X servers (#55)
+    - Add Export Survey Participant List method (#71)
+    - Add `filter_logic` to export_records (#85 @erikh360)
+    - Add `forceAutoNumber` parameter to `import_records()` (#86 @CarlosBorroto)
+    - Add Export Project Information (#106 @martinburchell)
+    - Add Generate Next Record Name (#107 @martinburchell)
+    - Add `repeat_instance` parameter to `imp_file` request (#104 @martinburchell)
+    - Add Delete Record (#77 @damonms)
+    - Add Export Reports (#91 @mcarmack)
+
+* Package Improvements
+    - Add redcap_version attribute to Project (#44 Tyler Rivera)
+    - Support lazy loading of Projects (#53 Tyler Rivera)
+    - Add Python 3 support (#67, #92 @jmillxyz, @fonnesbeck)
+    - Remove obsolete Project.filter() (#105 @martinburchell)
+    - Change API parameters from comma-separated to arrays (#110 @martinburchell)
+    - Use single `requests.Session()` for connections (#120 @KarthikMasi)
+
+* Bug Fixes
+    - Allow later versions of semantic-version (#108 @martinburchell)
+    - Fix package version when installing from GitHub (#113)
+    - Handle EmptyData error from pandas read_csv (#118 @martinburchell)
+
+* Documentation
+    - Added REDCap API changelog from 6.0.0 - 6.12.1 (#64 @SlightlyUnorthodox)
+    - Python 3 updates (#115 @sujaypatil96)
+
 1.0.2 (2016-10-05)
-+++++++++++++++++
++++++++++++++++++++
 
 * Fix issue in new survey participant export method.
 
 1.0.1 (2016-10-05)
-+++++++++++++++++
++++++++++++++++++++
 
 * Add a ``Project`` method to export the survey participant list.
 * Update author email.
