@@ -791,6 +791,6 @@ class Project(object):
                 else:
                     df_kwargs = {'index_col': self.def_field}
             buf = StringIO(response)
-            df = read_csv(buf, **df_kwargs)
+            df = self.read_csv(buf, **df_kwargs)
             buf.close()
             return df
