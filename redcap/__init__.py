@@ -4,6 +4,7 @@
 __author__ = 'Scott Burns <scott.s.burns@gmail.com>'
 __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
+__version__ = '1.0.2'
 
 """
 This module exposes the REDCap API through the Project class. Instantiate the
@@ -18,4 +19,3 @@ Other API requests are available, such as exporting users & Form-Event Mappings.
 
 from .project import Project
 from .request import RCRequest, RCAPIError, RedcapError
-from .version import VERSION as __version__

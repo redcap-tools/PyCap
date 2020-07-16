@@ -1,7 +1,7 @@
 **I am no longer actively developing this code base. Please continue to submit bugs and I'll do my best to tackle them.**
 
-.. image:: https://secure.travis-ci.org/sburns/PyCap.png?branch=master
-.. image:: https://zenodo.org/badge/3886/sburns/PyCap.png
+.. image:: https://travis-ci.org/redcap-tools/PyCap.svg?branch=master
+    :target: https://travis-ci.org/redcap-tools/PyCap
 
 Intro
 =====
@@ -29,6 +29,7 @@ Currently, these API calls are available:
 -   Delete File
 -   Export Users
 -   Export Form Event Mappings
+-   Export Reports
 
 Events and Arms are automatically exported for longitudinal projects (see below).
 
@@ -89,6 +90,9 @@ Usage
     # Export form event mappings
     >>> fem = project.export_fem()
     ...
+
+    # Export Reports
+    >>> reports = project.export_reports(['1','2'])
 
 Installation
 ------------

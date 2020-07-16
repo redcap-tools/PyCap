@@ -177,22 +177,21 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('formEventMapping', format=ret_format)
-        to_add = [arms]
-        str_add = ['arms']
-        for key, data in zip(str_add, to_add):
-            if data:
-                pl[key] = ','.join(data)
+
+        if arms:
+            for i, value in enumerate(arms):
+                pl["arms[{}]".format(i)] = value
+
         response, _ = self._call_api(pl, 'exp_fem')
         if format in ('json', 'csv', 'xml'):
             return response
         elif format == 'df':
             if not df_kwargs:
-                return read_csv(StringIO(response))
-            else:
-                return read_csv(StringIO(response), **df_kwargs)
+                df_kwargs = {}
+
+            return self.read_csv(StringIO(response), **df_kwargs)
 
     def export_metadata(self, fields=None, forms=None, format='json',
             df_kwargs=None):
@@ -220,27 +219,56 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('metadata', format=ret_format)
         to_add = [fields, forms]
         str_add = ['fields', 'forms']
         for key, data in zip(str_add, to_add):
             if data:
-                pl[key] = ','.join(data)
+                for i, value in enumerate(data):
+                    pl["{}[{}]".format(key, i)] = value
+
         response, _ = self._call_api(pl, 'metadata')
         if format in ('json', 'csv', 'xml'):
             return response
         elif format == 'df':
             if not df_kwargs:
                 df_kwargs = {'index_col': 'field_name'}
-            return read_csv(StringIO(response), **df_kwargs)
+            return self.read_csv(StringIO(response), **df_kwargs)
+
+    def delete_records(self, records):
+        """
+        Delete records from the Project.
+
+        Parameters
+        ----------
+        records : list
+            List of record IDs that you want to delete from the project
+
+        Returns
+        -------
+        response : int
+            Number of records deleted
+        """
+        pl = dict()
+        pl['action'] = 'delete'
+        pl['content'] = 'record'
+        pl['token'] = self.token
+        # Turn list of records into dict, and append to payload
+        records_dict = {
+            "records[{}]".format(idx): record for idx, record in enumerate(records)
+        }
+        pl.update(records_dict)
+
+        pl['format'] = format
+        response, _ = self._call_api(pl, 'del_record')
+        return response
 
     def export_records(self, records=None, fields=None, forms=None,
     events=None, raw_or_label='raw', event_name='label',
     format='json', export_survey_fields=False,
     export_data_access_groups=False, df_kwargs=None,
-    export_checkbox_labels=False):
+    export_checkbox_labels=False, filter_logic=None):
         """
         Export data from the REDCap project.
 
@@ -290,6 +318,8 @@ class Project(object):
         export_checkbox_labels : (``False``), ``True``
             specify whether to export checkbox values as their label on
             export.
+        filter_logic : string
+            specify the filterLogic to be sent to the API.
 
         Returns
         -------
@@ -298,7 +328,6 @@ class Project(object):
         """
         ret_format = format
         if format == 'df':
-            from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl('record', format=ret_format)
         fields = self.backfill_fields(fields, forms)
@@ -310,11 +339,14 @@ class Project(object):
         'exportCheckboxLabel')
         for key, data in zip(str_keys, keys_to_add):
             if data:
-                #  Make a url-ok string
                 if key in ('fields', 'records', 'forms', 'events'):
-                    pl[key] = ','.join(data)
+                    for i, value in enumerate(data):
+                        pl["{}[{}]".format(key, i)] = value
                 else:
                     pl[key] = data
+
+        if filter_logic:
+            pl["filterLogic"] = filter_logic
         response, _ = self._call_api(pl, 'exp_record')
         if format in ('json', 'csv', 'xml'):
             return response
@@ -326,9 +358,21 @@ class Project(object):
                 else:
                     df_kwargs = {'index_col': self.def_field}
             buf = StringIO(response)
-            df = read_csv(buf, **df_kwargs)
+            df = self.read_csv(buf, **df_kwargs)
             buf.close()
             return df
+
+    def read_csv(self, buf, **df_kwargs):
+        """Wrapper around pandas read_csv that handles EmptyDataError"""
+        from pandas import DataFrame, read_csv
+        from pandas.errors import EmptyDataError
+
+        try:
+            df = read_csv(buf, **df_kwargs)
+        except EmptyDataError:
+            df = DataFrame()
+
+        return df
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
@@ -348,18 +392,21 @@ class Project(object):
             return mf
 
     def backfill_fields(self, fields, forms):
-        """ Properly backfill fields to explicitly request specific
+        """
+        Properly backfill fields to explicitly request specific
         keys. The issue is that >6.X servers *only* return requested fields
         so to improve backwards compatiblity for PyCap clients, add specific fields
         when required.
 
         Parameters
         ----------
-            fields: list
-                requested fields
-            forms: list
-                requested forms
-        Returns:
+        fields: list
+            requested fields
+        forms: list
+            requested forms
+
+        Returns
+        -------
             new fields, forms
         """
         if forms and not fields:
@@ -374,44 +421,6 @@ class Project(object):
             new_fields = list(fields)
         return new_fields
 
-    def filter(self, query, output_fields=None):
-        """Query the database and return subject information for those
-        who match the query logic
-
-        Parameters
-        ----------
-        query: Query or QueryGroup
-            Query(Group) object to process
-        output_fields: list
-            The fields desired for matching subjects
-
-        Returns
-        -------
-        A list of dictionaries whose keys contains at least the default field
-        and at most each key passed in with output_fields, each dictionary
-        representing a surviving row in the database.
-        """
-        query_keys = query.fields()
-        if not set(query_keys).issubset(set(self.field_names)):
-            raise ValueError("One or more query keys not in project keys")
-        query_keys.append(self.def_field)
-        data = self.export_records(fields=query_keys)
-        matches = query.filter(data, self.def_field)
-        if matches:
-            # if output_fields is empty, we'll download all fields, which is
-            # not desired, so we limit download to def_field
-            if not output_fields:
-                output_fields = [self.def_field]
-            #  But if caller passed a string and not list, we need to listify
-            if isinstance(output_fields, basestring):
-                output_fields = [output_fields]
-            return self.export_records(records=matches, fields=output_fields)
-        else:
-            #  If there are no matches, then sending an empty list to
-            #  export_records will actually return all rows, which is not
-            #  what we want
-            return []
-
     def names_labels(self, do_print=False):
         """Simple helper function to get all field names and labels """
         if do_print:
@@ -421,7 +430,7 @@ class Project(object):
 
     def import_records(self, to_import, overwrite='normal', format='json',
         return_format='json', return_content='count',
-            date_format='YMD'):
+        date_format='YMD', force_auto_number=False):
         """
         Import data into the RedCap Project
 
@@ -454,6 +463,10 @@ class Project(object):
             strings are formatted as 'MM/DD/YYYY' set this parameter as
             'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
             other formattings are allowed.
+        force_auto_number : ('False') Enables automatic assignment of record IDs
+            of imported records by REDCap. If this is set to true, and auto-numbering
+            for records is enabled for the project, auto-numbering of imported records
+            will be enabled.
 
         Returns
         -------
@@ -483,6 +496,7 @@ class Project(object):
         pl['returnFormat'] = return_format
         pl['returnContent'] = return_content
         pl['dateFormat'] = date_format
+        pl['forceAutoNumber'] = force_auto_number
         response = self._call_api(pl, 'imp_record')[0]
         if 'error' in response:
             raise RedcapError(str(response))
@@ -537,7 +551,7 @@ class Project(object):
         return content, content_map
 
     def import_file(self, record, field, fname, fobj, event=None,
-            return_format='json'):
+                    repeat_instance=None, return_format='json'):
         """
         Import the contents of a file represented by fobj to a
         particular records field
@@ -554,6 +568,10 @@ class Project(object):
             file object as returned by `open`
         event : str
             for longitudinal projects, specify the unique event here
+        repeat_instance : int
+            (only for projects with repeating instruments/events)
+            The repeat instance number of the repeating event (if longitudinal)
+            or the repeating instrument (if classic or longitudinal).
         return_format : ('json'), 'csv', 'xml'
             format of error message
 
@@ -573,6 +591,8 @@ class Project(object):
         pl['record'] = record
         if event:
             pl['event'] = event
+        if repeat_instance:
+            pl['repeat_instance'] = repeat_instance
         file_kwargs = {'files': {'file': (fname, fobj)}}
         return self._call_api(pl, 'imp_file', **file_kwargs)[0]
 
@@ -659,14 +679,15 @@ class Project(object):
         return self._call_api(pl, 'exp_user')[0]
 
     def export_survey_participant_list(self, instrument, event=None, format='json'):
-        """ Export the Survey Participant List
+        """
+        Export the Survey Participant List
 
         Notes
-        ----
+        -----
         The passed instrument must be set up as a survey instrument.
 
         Parameters
-        ---------
+        ----------
         instrument: str
             Name of instrument as seen in second column of Data Dictionary.
         event: str
@@ -679,3 +700,98 @@ class Project(object):
         if event:
             pl['event'] = event
         return self._call_api(pl, 'exp_survey_participant_list')
+    
+    def generate_next_record_name(self):
+        pl = self.__basepl(content='generateNextRecordName')
+
+        return self._call_api(pl, 'exp_next_id')[0]
+
+    def export_project_info(self, format='json'):
+        """
+        Export Project Information
+
+        Parameters
+        ----------
+        format: (json, xml, csv), json by default
+            Format of returned data
+        """
+
+        pl = self.__basepl(content='project', format=format)
+
+        return self._call_api(pl, 'exp_proj')[0]
+
+    def export_reports(self, format='json', report_id=None,
+            raw_or_label='raw', raw_or_label_headers='raw',
+            export_checkbox_labels='false', decimal_character=None,
+            df_kwargs=None):
+        """
+        Export a report of the Project
+
+        Notes
+        -----
+
+
+        Parameters
+        ----------
+        report_id : the report ID number provided next to the report name
+            on the report list page
+        format :  (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
+            Format of returned data. ``'json'`` returns json-decoded
+            objects while ``'csv'`` and ``'xml'`` return other formats.
+            ``'df'`` will attempt to return a ``pandas.DataFrame``.
+        raw_or_label : raw [default], label - export the raw coded values or
+            labels for the options of multiple choice fields
+        raw_or_label_headers : raw [default], label - (for 'csv' format 'flat'
+            type only) for the CSV headers, export the variable/field names
+            (raw) or the field labels (label)
+        export_checkbox_labels : true, false [default] - specifies the format of
+            checkbox field values specifically when exporting the data as labels
+            (i.e., when rawOrLabel=label). When exporting labels, by default
+            (without providing the exportCheckboxLabel flag or if
+            exportCheckboxLabel=false), all checkboxes will either have a value
+            'Checked' if they are checked or 'Unchecked' if not checked.
+            But if exportCheckboxLabel is set to true, it will instead export
+            the checkbox value as the checkbox option's label (e.g., 'Choice 1')
+            if checked or it will be blank/empty (no value) if not checked.
+            If rawOrLabel=false, then the exportCheckboxLabel flag is ignored.
+        decimal_character : If specified, force all numbers into same decimal
+            format. You may choose to force all data values containing a
+            decimal to have the same decimal character, which will be applied
+            to all calc fields and number-validated text fields. Options
+            include comma ',' or dot/full stop '.', but if left blank/null,
+            then it will export numbers using the fields' native decimal format.
+            Simply provide the value of either ',' or '.' for this parameter.
+
+        Returns
+        -------
+        Per Redcap API:
+        Data from the project in the format and type specified
+        Ordered by the record (primary key of project) and then by event id
+        """
+
+        ret_format = format
+        if format == 'df':
+            from pandas import read_csv
+            ret_format = 'csv'
+        pl = self.__basepl(content='report', format=ret_format)
+        keys_to_add = (report_id, raw_or_label, raw_or_label_headers, export_checkbox_labels,
+            decimal_character)
+        str_keys = ('report_id', 'rawOrLabel', 'rawOrLabelHeaders', 'exportCheckboxLabel',
+            'decimalCharacter')
+        for key, data in zip(str_keys, keys_to_add):
+            if data:
+                pl[key] = data
+        response, _ = self._call_api(pl, 'exp_report')
+        if format in ('json', 'csv', 'xml'):
+            return response
+        elif format == 'df':
+            if not df_kwargs:
+                if self.is_longitudinal():
+                    df_kwargs = {'index_col': [self.def_field,
+                                               'redcap_event_name']}
+                else:
+                    df_kwargs = {'index_col': self.def_field}
+            buf = StringIO(response)
+            df = self.read_csv(buf, **df_kwargs)
+            buf.close()
+            return df
