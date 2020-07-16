@@ -15,12 +15,12 @@ __author__ = 'Scott Burns'
 __copyright__ = ' Copyright 2014, Vanderbilt University'
 
 
-from requests import post, RequestException
+from requests import RequestException, Session
 import json
-
 
 RedcapError = RequestException
 
+_session = Session()
 
 class RCAPIError(Exception):
     """ Errors corresponding to a misuse of the REDCap API """
@@ -40,7 +40,7 @@ class RCRequest(object):
     biggest consumer.
     """
 
-    def __init__(self, url, payload, qtype):
+    def __init__(self, url, payload, qtype, session=_session):
         """
         Constructor
 
@@ -56,6 +56,8 @@ class RCRequest(object):
         self.url = url
         self.payload = payload
         self.type = qtype
+        self.session = session
+
         if qtype:
             self.validate()
         fmt_key = 'returnFormat' if 'returnFormat' in payload else 'format'
@@ -120,7 +122,7 @@ class RCRequest(object):
         Parameters
         ----------
         kwargs :
-            passed to requests.post()
+            passed to requests.Session.post()
 
         Returns
         -------
@@ -128,11 +130,11 @@ class RCRequest(object):
             data object from JSON decoding process if format=='json',
             else return raw string (ie format=='csv'|'xml')
         """
-        r = post(self.url, data=self.payload, **kwargs)
+        response = self.session.post(self.url, data=self.payload, **kwargs)
         # Raise if we need to
-        self.raise_for_status(r)
-        content = self.get_content(r)
-        return content, r.headers
+        self.raise_for_status(response)
+        content = self.get_content(response)
+        return content, response.headers
 
     def get_content(self, r):
         """Abstraction for grabbing content from a returned response"""
