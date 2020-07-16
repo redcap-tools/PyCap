@@ -11,7 +11,6 @@ import warnings
 from .request import RCRequest, RedcapError, RequestException
 import semantic_version
 
-
 try:
     from StringIO import StringIO
 except ImportError:
