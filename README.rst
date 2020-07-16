@@ -29,6 +29,7 @@ Currently, these API calls are available:
 -   Delete File
 -   Export Users
 -   Export Form Event Mappings
+-   Export Reports
 
 Events and Arms are automatically exported for longitudinal projects (see below).
 
@@ -89,6 +90,9 @@ Usage
     # Export form event mappings
     >>> fem = project.export_fem()
     ...
+
+    # Export Reports
+    >>> reports = project.export_reports(['1','2'])
 
 Installation
 ------------
