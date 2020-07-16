@@ -2,6 +2,8 @@
 
 .. image:: https://travis-ci.org/redcap-tools/PyCap.svg?branch=master
     :target: https://travis-ci.org/redcap-tools/PyCap
+.. image:: https://badge.fury.io/py/PyCap.svg
+    :target: https://badge.fury.io/py/PyCap
 
 Intro
 =====
