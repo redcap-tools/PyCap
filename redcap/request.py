@@ -15,7 +15,7 @@ __author__ = 'Scott Burns'
 __copyright__ = ' Copyright 2014, Vanderbilt University'
 
 
-from requests import post, RequestException, Request, Session
+from requests import RequestException, Session
 import json
 
 RedcapError = RequestException
