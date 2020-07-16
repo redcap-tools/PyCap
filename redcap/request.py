@@ -122,7 +122,7 @@ class RCRequest(object):
         Parameters
         ----------
         kwargs :
-            passed to requests.post()
+            passed to requests.Session.post()
 
         Returns
         -------
