@@ -719,9 +719,10 @@ class Project(object):
 
         return self._call_api(pl, 'exp_proj')[0]
 
-    def export_reports(self, format='json', report_id=None, returnFormat='json',
-            rawOrLabel='raw', rawOrLabelHeaders='raw',
-            exportCheckboxLabel='false', csvDelimiter=',',decimalCharacter=None):
+    def export_reports(self, format='json', report_id=None,
+            raw_or_label='raw', raw_or_label_headers='raw',
+            export_checkbox_labels='false', decimal_character=None,
+            df_kwargs=None):
         """
         Export a report of the Project
 
@@ -733,18 +734,16 @@ class Project(object):
         ----------
         report_id : the report ID number provided next to the report name
             on the report list page
-        format : (``'json'``), ``'csv'``, ``'xml'``
-            response return format
-        returnFormat : csv, json, xml - specifies the format of error messages.
-            If you do not pass in this flag, it will select the default format
-            for you passed based on the 'format' flag you passed in or if no
-            format flag was passed in, it will default to 'xml'.
-        rawOrLabel : raw [default], label - export the raw coded values or
+        format :  (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
+            Format of returned data. ``'json'`` returns json-decoded
+            objects while ``'csv'`` and ``'xml'`` return other formats.
+            ``'df'`` will attempt to return a ``pandas.DataFrame``.
+        raw_or_label : raw [default], label - export the raw coded values or
             labels for the options of multiple choice fields
-        rawOrLabelHeaders : raw [default], label - (for 'csv' format 'flat'
+        raw_or_label_headers : raw [default], label - (for 'csv' format 'flat'
             type only) for the CSV headers, export the variable/field names
             (raw) or the field labels (label)
-        exportCheckboxLabel : true, false [default] - specifies the format of
+        export_checkbox_labels : true, false [default] - specifies the format of
             checkbox field values specifically when exporting the data as labels
             (i.e., when rawOrLabel=label). When exporting labels, by default
             (without providing the exportCheckboxLabel flag or if
@@ -754,11 +753,7 @@ class Project(object):
             the checkbox value as the checkbox option's label (e.g., 'Choice 1')
             if checked or it will be blank/empty (no value) if not checked.
             If rawOrLabel=false, then the exportCheckboxLabel flag is ignored.
-        csvDelimiter : Set the delimiter used to separate values in the
-            CSV data file (for CSV format only). Options include: comma ','
-            (default), 'tab', semi-colon ';', pipe '|', or caret '^'.
-            Simply provide the value in quotes for this parameter.
-        decimalCharacter : If specified, force all numbers into same decimal
+        decimal_character : If specified, force all numbers into same decimal
             format. You may choose to force all data values containing a
             decimal to have the same decimal character, which will be applied
             to all calc fields and number-validated text fields. Options
@@ -778,15 +773,13 @@ class Project(object):
             from pandas import read_csv
             ret_format = 'csv'
         pl = self.__basepl(content='report', format=ret_format)
-        fields = self.backfill_fields(fields, forms)
-        keys_to_add = (raw_or_label, rawOrLabelHeaders, export_checkbox_labels,
-            csvDelimiter, decimalCharacter)
-        str_keys = ('rawOrLabel', 'rawOrLabelHeaders', 'exportCheckboxLabel',
-            'csvDelimiter', 'decimalCharacter')
+        keys_to_add = (report_id, raw_or_label, raw_or_label_headers, export_checkbox_labels,
+            decimal_character)
+        str_keys = ('report_id', 'rawOrLabel', 'rawOrLabelHeaders', 'exportCheckboxLabel',
+            'decimalCharacter')
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 pl[key] = data
-
         response, _ = self._call_api(pl, 'exp_report')
         if format in ('json', 'csv', 'xml'):
             return response
