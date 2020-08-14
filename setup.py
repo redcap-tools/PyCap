@@ -18,7 +18,7 @@ def read(*parts):
 def find_version(*file_parts):
     version_file = read(*file_parts)
     version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]$", version_file, re.M
+        r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M
     )
     if version_match:
         return version_match.group(1)
