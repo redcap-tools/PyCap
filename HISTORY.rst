@@ -1,6 +1,12 @@
 HISTORY
 -------
 
+1.1.1 (2020-08-18)
++++++++++++++++++++
+
+* Bug Fixes
+    - Fix package version parsing for UNIX (#122 @fissell)
+
 1.1.0 (2020-07-16)
 +++++++++++++++++++
 
