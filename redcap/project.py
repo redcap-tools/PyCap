@@ -6,6 +6,7 @@ __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
 
 import json
+from dateutil.parser import parse
 import warnings
 
 from .request import RCRequest, RedcapError, RequestException
@@ -267,7 +268,8 @@ class Project(object):
     events=None, raw_or_label='raw', event_name='label',
     format='json', export_survey_fields=False,
     export_data_access_groups=False, df_kwargs=None,
-    export_checkbox_labels=False, filter_logic=None):
+    export_checkbox_labels=False, filter_logic=None,
+    date_begin=None, date_end=None):
         """
         Export data from the REDCap project.
 
@@ -319,6 +321,10 @@ class Project(object):
             export.
         filter_logic : string
             specify the filterLogic to be sent to the API.
+        date_begin : string
+            for the dateRangeStart filtering of the API
+        date_end : string
+            for the dateRangeEnd filtering snet to the API
 
         Returns
         -------
@@ -332,10 +338,18 @@ class Project(object):
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
         raw_or_label, event_name, export_survey_fields,
-        export_data_access_groups, export_checkbox_labels)
+        export_data_access_groups, export_checkbox_labels,
+        date_begin, date_end)
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
         'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
-        'exportCheckboxLabel')
+        'exportCheckboxLabel', 'dateRangeBegin', 'dateRangeEnd')
+
+        if date_begin:
+            date_begin = parse(date_begin).strftime('%Y-%m-%d %H:%M:%S')
+
+        if date_end:
+            date_end = parse(date_end).strftime('%Y-%m-%d %H:%M:%S')
+
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 if key in ('fields', 'records', 'forms', 'events'):
@@ -699,7 +713,7 @@ class Project(object):
         if event:
             pl['event'] = event
         return self._call_api(pl, 'exp_survey_participant_list')
-    
+
     def generate_next_record_name(self):
         pl = self.__basepl(content='generateNextRecordName')
 
