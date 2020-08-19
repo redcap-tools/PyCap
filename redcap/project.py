@@ -338,17 +338,11 @@ class Project(object):
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (records, fields, forms, events,
         raw_or_label, event_name, export_survey_fields,
-        export_data_access_groups, export_checkbox_labels,
-        date_begin, date_end)
+        export_data_access_groups, export_checkbox_labels)
+
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
         'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
-        'exportCheckboxLabel', 'dateRangeBegin', 'dateRangeEnd')
-
-        if date_begin:
-            date_begin = parse(date_begin).strftime('%Y-%m-%d %H:%M:%S')
-
-        if date_end:
-            date_end = parse(date_end).strftime('%Y-%m-%d %H:%M:%S')
+        'exportCheckboxLabel')
 
         for key, data in zip(str_keys, keys_to_add):
             if data:
@@ -357,6 +351,13 @@ class Project(object):
                         pl["{}[{}]".format(key, i)] = value
                 else:
                     pl[key] = data
+
+        if date_begin:
+            pl["dateRangeBegin"] = \
+                parse(date_begin).strftime('%Y-%m-%d %H:%M:%S')
+
+        if date_end:
+            pl["dateRangeEnd"] = parse(date_end).strftime('%Y-%m-%d %H:%M:%S')
 
         if filter_logic:
             pl["filterLogic"] = filter_logic
