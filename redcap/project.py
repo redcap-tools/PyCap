@@ -6,7 +6,6 @@ __license__ = 'MIT'
 __copyright__ = '2014, Vanderbilt University'
 
 import json
-from dateutil.parser import parse
 import warnings
 
 from .request import RCRequest, RedcapError, RequestException
@@ -321,9 +320,9 @@ class Project(object):
             export.
         filter_logic : string
             specify the filterLogic to be sent to the API.
-        date_begin : string
+        date_begin : datetime
             for the dateRangeStart filtering of the API
-        date_end : string
+        date_end : datetime
             for the dateRangeEnd filtering snet to the API
 
         Returns
@@ -353,11 +352,10 @@ class Project(object):
                     pl[key] = data
 
         if date_begin:
-            pl["dateRangeBegin"] = \
-                parse(date_begin).strftime('%Y-%m-%d %H:%M:%S')
+            pl["dateRangeBegin"] = date_begin.strftime('%Y-%m-%d %H:%M:%S')
 
         if date_end:
-            pl["dateRangeEnd"] = parse(date_end).strftime('%Y-%m-%d %H:%M:%S')
+            pl["dateRangeEnd"] = date_end.strftime('%Y-%m-%d %H:%M:%S')
 
         if filter_logic:
             pl["filterLogic"] = filter_logic
