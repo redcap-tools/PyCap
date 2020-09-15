@@ -267,7 +267,8 @@ class Project(object):
     events=None, raw_or_label='raw', event_name='label',
     format='json', export_survey_fields=False,
     export_data_access_groups=False, df_kwargs=None,
-    export_checkbox_labels=False, filter_logic=None):
+    export_checkbox_labels=False, filter_logic=None,
+    date_begin=None, date_end=None):
         """
         Export data from the REDCap project.
 
@@ -319,6 +320,10 @@ class Project(object):
             export.
         filter_logic : string
             specify the filterLogic to be sent to the API.
+        date_begin : datetime
+            for the dateRangeStart filtering of the API
+        date_end : datetime
+            for the dateRangeEnd filtering snet to the API
 
         Returns
         -------
@@ -333,9 +338,11 @@ class Project(object):
         keys_to_add = (records, fields, forms, events,
         raw_or_label, event_name, export_survey_fields,
         export_data_access_groups, export_checkbox_labels)
+
         str_keys = ('records', 'fields', 'forms', 'events', 'rawOrLabel',
         'eventName', 'exportSurveyFields', 'exportDataAccessGroups',
         'exportCheckboxLabel')
+
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 if key in ('fields', 'records', 'forms', 'events'):
@@ -343,6 +350,12 @@ class Project(object):
                         pl["{}[{}]".format(key, i)] = value
                 else:
                     pl[key] = data
+
+        if date_begin:
+            pl["dateRangeBegin"] = date_begin.strftime('%Y-%m-%d %H:%M:%S')
+
+        if date_end:
+            pl["dateRangeEnd"] = date_end.strftime('%Y-%m-%d %H:%M:%S')
 
         if filter_logic:
             pl["filterLogic"] = filter_logic
@@ -699,7 +712,7 @@ class Project(object):
         if event:
             pl['event'] = event
         return self._call_api(pl, 'exp_survey_participant_list')
-    
+
     def generate_next_record_name(self):
         pl = self.__basepl(content='generateNextRecordName')
 
