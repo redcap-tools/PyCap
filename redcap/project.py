@@ -11,8 +11,6 @@ import warnings
 from .request import RCRequest, RedcapError, RequestException
 import semantic_version
 
-import logging
-
 try:
     from StringIO import StringIO
 except ImportError:
@@ -51,51 +49,26 @@ class Project(object):
         self.arm_names = None
         self.configured = False
 
-        self.logger = logging.getLogger(__name__)
-
         if not lazy:
             self.configure()
 
     def configure(self):
-
-        self.logger.debug("Configuring project.")
-
-        self.logger.debug("Exporting metadata.")
         try:
             self.metadata = self.__md()
         except RequestException:
             raise RedcapError("Exporting metadata failed. Check your URL and token.")
-        self.logger.debug("Metadata exported.")
-        self.logger.debug("Exporting REDCap version")
         try:
             self.redcap_version = self.__rcv()
         except:
             raise RedcapError("Determination of REDCap version failed")
-        self.logger.debug("Version exported.")
-
-        self.logger.debug("Filtering metadata on field_name")
         self.field_names = self.filter_metadata('field_name')
-        self.logger.debug("metadata filtering done")
-
-        self.logger.debug("setting default field")
         # we'll use the first field as the default id for each row
         self.def_field = self.field_names[0]
-
-        self.logger.debug("Filtering metadata on field_label")
         self.field_labels = self.filter_metadata('field_label')
-
-        self.logger.debug("Grabbing form names")
         self.forms = tuple(set(c['form_name'] for c in self.metadata))
-
-        self.logger.debug("determining whether logitudinal")
         # determine whether longitudinal
-        self.logger.debug("exporting events")
         ev_data = self._call_api(self.__basepl('event'), 'exp_event')[0]
-        self.logger.debug("exporting events COMPLETE")
-        self.logger.debug("exporting arms")
-
         arm_data = self._call_api(self.__basepl('arm'), 'exp_arm')[0]
-        self.logger.debug("exporting arms COMPLETE")
 
         if isinstance(ev_data, dict) and ('error' in ev_data.keys()):
             events = tuple([])
