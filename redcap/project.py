@@ -194,7 +194,7 @@ class Project(object):
 
     def export_field_names(self, field=None, format='json', df_kwargs=None):
         """
-        Export the project's field names
+        Export the project's export field names
 
         Parameters
         ----------
@@ -212,7 +212,7 @@ class Project(object):
         Returns
         -------
         metadata : list, str, ``pandas.DataFrame``
-            metadata sttructure for the project.
+            metadata structure for the project.
         """
         ret_format = format
         if format == 'df':
