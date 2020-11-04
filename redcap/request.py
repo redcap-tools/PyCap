@@ -1,30 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-__author__ = 'Scott Burns <scott.s.burns@gmail.com>'
-__license__ = 'MIT'
-__copyright__ = '2014, Vanderbilt University'
-
 """
 
 Low-level HTTP functionality
 
 """
 
-__author__ = 'Scott Burns'
-__copyright__ = ' Copyright 2014, Vanderbilt University'
-
-
-from requests import RequestException, Session
 import json
+from requests import RequestException, Session
+
+__author__ = "Scott Burns <scott.s.burns@gmail.com>"
+__license__ = "MIT"
+__copyright__ = "2014, Vanderbilt University"
 
 RedcapError = RequestException
 
 _session = Session()
 
+
 class RCAPIError(Exception):
     """ Errors corresponding to a misuse of the REDCap API """
-    pass
 
 
 class RCRequest(object):
@@ -60,47 +55,90 @@ class RCRequest(object):
 
         if qtype:
             self.validate()
-        fmt_key = 'returnFormat' if 'returnFormat' in payload else 'format'
+        fmt_key = "returnFormat" if "returnFormat" in payload else "format"
         self.fmt = payload[fmt_key]
 
     def validate(self):
         """Checks that at least required params exist"""
-        required = ['token', 'content']
+        required = ["token", "content"]
         valid_data = {
-            'exp_record': (['type', 'format'], 'record',
-                'Exporting record but content is not record'),
-            'exp_field_names': (['format'], 'exportFieldNames',
-                'Exporting field names, but content is not exportFieldNames'),
-            'del_record': (['format'], 'record',
-                'Deleting record but content is not record'),
-            'imp_record': (['type', 'overwriteBehavior', 'data', 'format'],
-                'record', 'Importing record but content is not record'),
-            'metadata': (['format'], 'metadata',
-                'Requesting metadata but content != metadata'),
-            'exp_file': (['action', 'record', 'field'], 'file',
-                'Exporting file but content is not file'),
-            'imp_file': (['action', 'record', 'field'], 'file',
-                'Importing file but content is not file'),
-            'del_file': (['action', 'record', 'field'], 'file',
-                'Deleteing file but content is not file'),
-            'exp_event': (['format'], 'event',
-                'Exporting events but content is not event'),
-            'exp_arm': (['format'], 'arm',
-                'Exporting arms but content is not arm'),
-            'exp_fem': (['format'], 'formEventMapping',
-                'Exporting form-event mappings but content != formEventMapping'),
-            'exp_next_id': ([], 'generateNextRecordName',
-                'Generating next record name but content is not generateNextRecordName'),
-            'exp_proj': (['format'], 'project',
-                'Exporting project info but content is not project'),
-            'exp_user': (['format'], 'user',
-                'Exporting users but content is not user'),
-            'exp_survey_participant_list': (['instrument'], 'participantList',
-                'Exporting Survey Participant List but content != participantList'),
-            'exp_report': (['report_id', 'format'], 'report',
-                'Exporting Reports but content is not reports'),
-            'version': (['format'], 'version',
-                'Requesting version but content != version')
+            "exp_record": (
+                ["type", "format"],
+                "record",
+                "Exporting record but content is not record",
+            ),
+            "exp_field_names": (
+                ["format"],
+                "exportFieldNames",
+                "Exporting field names, but content is not exportFieldNames",
+            ),
+            "del_record": (
+                ["format"],
+                "record",
+                "Deleting record but content is not record",
+            ),
+            "imp_record": (
+                ["type", "overwriteBehavior", "data", "format"],
+                "record",
+                "Importing record but content is not record",
+            ),
+            "metadata": (
+                ["format"],
+                "metadata",
+                "Requesting metadata but content != metadata",
+            ),
+            "exp_file": (
+                ["action", "record", "field"],
+                "file",
+                "Exporting file but content is not file",
+            ),
+            "imp_file": (
+                ["action", "record", "field"],
+                "file",
+                "Importing file but content is not file",
+            ),
+            "del_file": (
+                ["action", "record", "field"],
+                "file",
+                "Deleteing file but content is not file",
+            ),
+            "exp_event": (
+                ["format"],
+                "event",
+                "Exporting events but content is not event",
+            ),
+            "exp_arm": (["format"], "arm", "Exporting arms but content is not arm"),
+            "exp_fem": (
+                ["format"],
+                "formEventMapping",
+                "Exporting form-event mappings but content != formEventMapping",
+            ),
+            "exp_next_id": (
+                [],
+                "generateNextRecordName",
+                "Generating next record name but content is not generateNextRecordName",
+            ),
+            "exp_proj": (
+                ["format"],
+                "project",
+                "Exporting project info but content is not project",
+            ),
+            "exp_user": (["format"], "user", "Exporting users but content is not user"),
+            "exp_survey_participant_list": (
+                ["instrument"],
+                "participantList",
+                "Exporting Survey Participant List but content != participantList",
+            ),
+            "exp_report": (
+                ["report_id", "format"],
+                "report",
+                "Exporting Reports but content is not reports",
+            ),
+            "version": (
+                ["format"],
+                "version",
+                "Requesting version but content != version",
+            ),
         }
         extra, req_content, err_msg = valid_data[self.type]
         required.extend(extra)
@@ -110,13 +148,13 @@ class RCRequest(object):
         if not set(required) <= pl_keys:
             # what is not in pl_keys?
             not_pre = required - pl_keys
-            raise RCAPIError("Required keys: %s" % ', '.join(not_pre))
+            raise RCAPIError("Required keys: %s" % ", ".join(not_pre))
         # Check content, raise with err_msg if not good
         try:
-            if self.payload['content'] != req_content:
+            if self.payload["content"] != req_content:
                 raise RCAPIError(err_msg)
-        except KeyError:
-            raise RCAPIError('content not in payload')
+        except KeyError as key_fail:
+            raise RCAPIError("content not in payload") from key_fail
 
     def execute(self, **kwargs):
         """Execute the API request and return data
@@ -138,33 +176,37 @@ class RCRequest(object):
         content = self.get_content(response)
         return content, response.headers
 
+    # pylint: disable=invalid-name
     def get_content(self, r):
         """Abstraction for grabbing content from a returned response"""
-        if self.type == 'exp_file':
+        if self.type == "exp_file":
             # don't use the decoded r.text
             return r.content
-        elif self.type == 'version':
+        if self.type == "version":
             return r.content
-        else:
-            if self.fmt == 'json':
-                content = {}
-                # Decode
-                try:
-                    # Watch out for bad/empty json
-                    content = json.loads(r.text, strict=False)
-                except ValueError as e:
-                    if not self.expect_empty_json():
-                        # reraise for requests that shouldn't send empty json
-                        raise ValueError(e)
-                finally:
-                    return content
-            else:
-                return r.text
+        # pylint: disable=lost-exception
+        if self.fmt == "json":
+            content = {}
+            # Decode
+            try:
+                # Watch out for bad/empty json
+                content = json.loads(r.text, strict=False)
+            except ValueError as e:
+                if not self.expect_empty_json():
+                    # reraise for requests that shouldn't send empty json
+                    raise ValueError(e) from e
+            finally:
+                return content
+        # pylint: enable=lost-exception
+        return r.text
+
+    # pylint: enable=invalid-name
 
     def expect_empty_json(self):
         """Some responses are known to send empty responses"""
-        return self.type in ('imp_file', 'del_file')
+        return self.type in ("imp_file", "del_file")
 
+    # pylint: disable=invalid-name
     def raise_for_status(self, r):
         """Given a response, raise for bad status for certain actions
 
@@ -174,12 +216,14 @@ class RCRequest(object):
 
         Raising for everything wouldn't let the user see the
         (hopefully helpful) error message"""
-        if self.type in ('metadata', 'exp_file', 'imp_file', 'del_file'):
+        if self.type in ("metadata", "exp_file", "imp_file", "del_file"):
             r.raise_for_status()
         # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
         # specifically 10.5
         if 500 <= r.status_code < 600:
             raise RedcapError(r.content)
 
-        if 400 == r.status_code and self.type == 'exp_record':
+        if r.status_code == 400 and self.type == "exp_record":
             raise RedcapError(r.content)
+
+    # pylint: enable=invalid-name
