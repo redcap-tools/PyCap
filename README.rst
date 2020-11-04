@@ -1,4 +1,4 @@
-**I am no longer actively developing this code base. Please continue to submit bugs and I'll do my best to tackle them.**
+**This project is community maintained. Please continue to submit bugs and feature requests, though it's the community's responsibility to address them.**
 
 .. image:: https://travis-ci.org/redcap-tools/PyCap.svg?branch=master
     :target: https://travis-ci.org/redcap-tools/PyCap
