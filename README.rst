@@ -1,4 +1,4 @@
-**I am no longer actively developing this code base. Please continue to submit bugs and I'll do my best to tackle them.**
+**This project is community maintained. Please continue to submit bugs and feature requests, though it's the community's responsibility to address them.**
 
 .. image:: https://travis-ci.org/redcap-tools/PyCap.svg?branch=master
     :target: https://travis-ci.org/redcap-tools/PyCap
@@ -98,15 +98,56 @@ Usage
 
 Installation
 ------------
+
+Install with :code:`pip`
+::
+
+    $ pip install PyCap
+
+Install extra requirements, which allows returning project data as a :code:`pandas.DataFrame`
+::
+
+    $ pip install PyCap[pandas]
+
+Install from GitHub
 ::
 
     $ git clone git://github.com/sburns/PyCap.git PyCap
     $ cd PyCap
     $ python setup.py install
 
-    OR
 
-    $ pip install PyCap
+Contributing
+------------
+
+1. Create a virtual environment and activate it
+::
+
+    $ python -m venv .venv
+    $ source .venv/Scripts/activate
+
+2. Install `pip-tools <https://github.com/jazzband/pip-tools/blob/master/README.rst>`_.
+::
+
+    $ pip install pip-tools
+
+3. Install all project dependencies
+::
+
+    $ pip-sync requirements.txt dev-requirements.txt
+
+4. Install the package, with a link to the source code. This ensures any changes you
+make are immendiate available to test.
+::
+
+    $ python setup.py develop
+
+5. Add your changes and make sure your changes pass all tests
+::
+
+    $ pytest
+
+Finally, start a pull request!
 
 Citing
 ------
