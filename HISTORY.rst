@@ -1,6 +1,23 @@
 HISTORY
 -------
 
+1.1.2 (2020-11-05)
++++++++++++++++++++
+
+* API Support
+    - Add support for ``exportFieldNames`` call (#125 @chgreer)
+    - Add ``dateRangeBegin`` and ``dateRangeEnd`` parameters to ``Project.export_records`` (#124 @chgreer)
+
+* Package Improvements
+    - Use ``pytest`` for full test suite (#131)
+    - Enforce ``black`` and ``pylint`` style and formatting on project (#131)
+    - Deprecate support for Python 2 (#131)
+    - Add ``pandas`` as an ``extra_requires`` (#131)
+
+* Documentation
+    - Update README with new community support model and how to contribute (#131)
+
+
 1.1.1 (2020-08-18)
 +++++++++++++++++++
 
