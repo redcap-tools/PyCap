@@ -23,24 +23,21 @@ def read(*parts):
     with codecs.open(os.path.join(here, *parts), "r") as f:
         return f.read()
 
+
 def find_version(*file_parts):
     version_file = read(*file_parts)
-    version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M
-    )
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
+
 
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
-required = [
-    'requests>=1.0.0',
-    'semantic-version>=2.3.1'
-]
+required = ["requests>=1.0.0", "semantic-version>=2.3.1"]
 
 if os.path.exists("MANIFEST"):
     os.remove("MANIFEST")
