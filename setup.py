@@ -42,36 +42,43 @@ required = [
     'semantic-version>=2.3.1'
 ]
 
-if __name__ == '__main__':
-    if os.path.exists('MANIFEST'):
-        os.remove('MANIFEST')
+if os.path.exists("MANIFEST"):
+    os.remove("MANIFEST")
 
-    long_desc = open('README.rst').read() + '\n\n' + open('HISTORY.rst').read()
+long_desc = open("README.rst").read() + "\n\n" + open("HISTORY.rst").read()
 
-    setup(name='PyCap',
-        maintainer='Scott Burns',
-        maintainer_email='scott.s.burns@gmail.com',
-        description="""PyCap: Python interface to REDCap""",
-        license='MIT',
-        url='http://sburns.github.com/PyCap',
-        version=find_version("redcap", "__init__.py"),
-        download_url='http://sburns.github.com/PyCap',
-        long_description=long_desc,
-        packages=['redcap'],
-        install_requires=required,
-        platforms='any',
-        classifiers=(
-                'Development Status :: 5 - Production/Stable',
-                'Intended Audience :: Developers',
-                'Intended Audience :: Science/Research',
-                'License :: OSI Approved :: MIT License',
-                'License :: OSI Approved',
-                'Topic :: Software Development',
-                'Topic :: Scientific/Engineering',
-                'Operating System :: Microsoft :: Windows',
-                'Operating System :: POSIX',
-                'Operating System :: Unix',
-                'Operating System :: MacOS',
-                'Programming Language :: Python',
-                'Programming Language :: Python :: 2.7',)
-        )
+setup(
+    name="PyCap",
+    maintainer="Scott Burns",
+    maintainer_email="scott.s.burns@gmail.com",
+    description="""PyCap: Python interface to REDCap""",
+    license="MIT",
+    url="http://sburns.github.com/PyCap",
+    version=find_version("redcap", "__init__.py"),
+    download_url="http://sburns.github.com/PyCap",
+    long_description=long_desc,
+    packages=["redcap"],
+    install_requires=required,
+    extras_require={
+        "pandas": ["pandas>=0.25.0"],
+        # eg:
+        #   'rst': ['docutils>=0.11'],
+        #   ':python_version=="2.6"': ['argparse'],
+    },
+    platforms="any",
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved",
+        "Topic :: Software Development",
+        "Topic :: Scientific/Engineering",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
+        "Operating System :: MacOS",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+    ],
+)

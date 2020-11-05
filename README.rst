@@ -98,13 +98,24 @@ Usage
 
 Installation
 ------------
+
+Install with :code:`pip`
+::
+
+    $ pip install PyCap
+
+Install extra requirements, which allows returning project data as a :code:`pandas.DataFrame`
+::
+
+    $ pip install PyCap[pandas]
+
+Install from GitHub
 ::
 
     $ git clone git://github.com/sburns/PyCap.git PyCap
     $ cd PyCap
     $ python setup.py install
 
-    OR
 
     $ pip install PyCap
 
