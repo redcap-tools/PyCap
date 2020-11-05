@@ -54,6 +54,7 @@ setup(
     version=find_version("redcap", "__init__.py"),
     download_url="http://sburns.github.com/PyCap",
     long_description=long_desc,
+    long_description_content_type="text/x-rst",
     packages=["redcap"],
     install_requires=required,
     extras_require={
