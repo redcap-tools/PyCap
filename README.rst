@@ -117,7 +117,37 @@ Install from GitHub
     $ python setup.py install
 
 
-    $ pip install PyCap
+Contributing
+------------
+
+1. Create a virtual environment and activate it
+::
+
+    $ python -m venv .venv
+    $ source .venv/Scripts/activate
+
+2. Install `pip-tools <https://github.com/jazzband/pip-tools/blob/master/README.rst>`_.
+::
+
+    $ pip install pip-tools
+
+3. Install all project dependencies
+::
+
+    $ pip-sync requirements.txt dev-requirements.txt
+
+4. Install the package, with a link to the source code. This ensures any changes you
+make are immendiate available to test.
+::
+
+    $ python setup.py develop
+
+5. Add your changes and make sure your changes pass all tests
+::
+
+    $ pytest
+
+Finally, start a pull request!
 
 Citing
 ------
