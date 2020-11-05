@@ -1,13 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Scott Burns <scott.s.burns@gmail.com>'
-__license__ = 'MIT'
-__copyright__ = '2014, Vanderbilt University'
+__author__ = "Scott Burns <scott.s.burns@gmail.com>"
+__license__ = "MIT"
+__copyright__ = "2014, Vanderbilt University"
 
 import codecs
 import os
 import re
+import sys
+import warnings
+
+if sys.version_info[0] < 3:
+    warnings.warn(
+        "Support Python 2 has been deprecated, and will be removed "
+        " in a future major release. Please upgrade to Python 3."
+    )
 
 # Taken from vulture setup.py: https://github.com/jendrikseipp/vulture/blob/master/setup.py
 def read(*parts):
