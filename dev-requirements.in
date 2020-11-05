@@ -1,0 +1,12 @@
+# Constrain dev requirements against production requirements
+-c requirements.txt
+pandas
+pytest
+pytest-cov
+pytest-black
+pytest-pylint
+Sphinx
+numpydoc
+wheel
+responses
+twine

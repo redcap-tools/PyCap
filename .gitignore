@@ -13,4 +13,6 @@ _site/
 *.swp
 .vscode/
 ve/
+.venv
+.coverage
 .noseids
