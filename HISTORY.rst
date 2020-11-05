@@ -9,13 +9,13 @@ HISTORY
     - Add ``dateRangeBegin`` and ``dateRangeEnd`` parameters to ``Project.export_records`` (#124 @chgreer)
 
 * Package Improvements
-    - Use ``pytest`` for full test suite (#131)
-    - Enforce ``black`` and ``pylint`` style and formatting on project (#131)
-    - Deprecate support for Python 2 (#131)
-    - Add ``pandas`` as an ``extra_requires`` (#131)
+    - Use ``pytest`` for full test suite (#132)
+    - Enforce ``black`` and ``pylint`` style and formatting on project (#132)
+    - Deprecate support for Python 2 (#132)
+    - Add ``pandas`` as an ``extra_requires`` (#132)
 
 * Documentation
-    - Update README with new community support model and how to contribute (#131)
+    - Update README with new community support model and how to contribute (#132)
 
 
 1.1.1 (2020-08-18)
