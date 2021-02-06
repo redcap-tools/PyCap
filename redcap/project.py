@@ -425,6 +425,9 @@ class Project(object):
             "exportCheckboxLabel",
         )
 
+        if export_survey_fields:
+            fields = fields.extend([name + "_complete" for name in self.forms])
+
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 if key in ("fields", "records", "forms", "events"):
