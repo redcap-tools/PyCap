@@ -615,6 +615,62 @@ class Project(object):
             raise RedcapError(str(response))
         return response
 
+    def import_metadata(
+        self,
+        to_import,
+        format="json",
+        return_format="json",
+        date_format="YMD"
+    ):
+        """
+        Import metadata (DataDict) into the RedCap Project
+
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        return_format : ('json'), 'csv', 'xml'
+            Response format. By default, response will be json-decoded.
+        date_format : ('YMD'), 'DMY', 'MDY'
+            Describes the formatting of dates. By default, date strings
+            are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
+            strings are formatted as 'MM/DD/YYYY' set this parameter as
+            'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
+            other formattings are allowed.
+
+        Returns
+        -------
+        response : dict, str
+            response from REDCap API, json-decoded if ``return_format`` == ``'json'``
+            If successful, the number of imported fields
+        """
+        payload = self.__basepl("metadata")
+        # pylint: disable=comparison-with-callable
+        if hasattr(to_import, "to_csv"):
+            # We'll assume it's a df
+            buf = StringIO()
+            to_import.to_csv(buf, index=False)
+            payload["data"] = buf.getvalue()
+            buf.close()
+            format = "csv"
+        elif format == "json":
+            payload["data"] = json.dumps(to_import, separators=(",", ":"))
+        else:
+            # don't do anything to csv/xml
+            payload["data"] = to_import
+        # pylint: enable=comparison-with-callable
+        payload["format"] = format
+        payload["returnFormat"] = return_format
+        payload["dateFormat"] = date_format
+        response = self._call_api(payload, "imp_metadata")[0]
+        if "error" in str(response):
+            raise RedcapError(str(response))
+        return response
+
     def export_file(self, record, field, event=None, return_format="json"):
         """
         Export the contents of a file stored for a particular record
