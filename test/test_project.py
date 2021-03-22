@@ -405,6 +405,17 @@ class ProjectTests(unittest.TestCase):
         exc = assert_context.exception
         self.assertIn("error", exc.args[0])
 
+    @responses.activate
+    def test_import_metadata(self):
+        "Test metadata import"
+        self.add_normalproject_response()
+        data = self.reg_proj.export_metadata()
+        response = self.reg_proj.import_metadata(data)
+        for field_dict in response:
+            for key in ["field_name", "field_label", "form_name", "arm_num", "name"]:
+                self.assertIn(key, field_dict)
+            self.assertNotIn("error", response)
+
     @staticmethod
     def is_good_csv(csv_string):
         "Helper to test csv strings"
