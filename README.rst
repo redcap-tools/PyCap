@@ -112,7 +112,7 @@ Install extra requirements, which allows returning project data as a :code:`pand
 Install from GitHub
 ::
 
-    $ git clone git://github.com/sburns/PyCap.git PyCap
+    $ git clone git://github.com/redcap-tools/PyCap.git PyCap
     $ cd PyCap
     $ python setup.py install
 
@@ -156,4 +156,4 @@ If you use PyCap in your research, please consider citing the software:
 
     Burns, S. S., Browne, A., Davis, G. N., Rimrodt, S. L., & Cutting, L. E. PyCap (Version 1.0) [Computer Software].
     Nashville, TN: Vanderbilt University and Philadelphia, PA: Childrens Hospital of Philadelphia.
-    Available from https://github.com/sburns/PyCap. doi:10.5281/zenodo.9917
+    Available from https://github.com/redcap-tools/PyCap. doi:10.5281/zenodo.9917
