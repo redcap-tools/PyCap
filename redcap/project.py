@@ -585,7 +585,7 @@ class Project(object):
         response : dict, str
             response from REDCap API, json-decoded if ``return_format`` == ``'json'``
         """
-        payload = self._initialize_import_payload(to_import, format, 'record')
+        payload = self._initialize_import_payload(to_import, format, "record")
 
         payload["overwriteBehavior"] = overwrite
         payload["returnFormat"] = return_format
@@ -598,11 +598,7 @@ class Project(object):
         return response
 
     def import_metadata(
-        self,
-        to_import,
-        format="json",
-        return_format="json",
-        date_format="YMD"
+        self, to_import, format="json", return_format="json", date_format="YMD"
     ):
         """
         Import metadata (DataDict) into the RedCap Project
@@ -666,8 +662,7 @@ class Project(object):
             buf = StringIO()
             if data_type == "record":
                 if self.is_longitudinal():
-                    csv_kwargs = {"index_label": [self.def_field,
-                                                  "redcap_event_name"]}
+                    csv_kwargs = {"index_label": [self.def_field, "redcap_event_name"]}
                 else:
                     csv_kwargs = {"index_label": self.def_field}
             elif data_type == "metadata":
