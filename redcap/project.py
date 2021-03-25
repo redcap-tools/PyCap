@@ -17,6 +17,7 @@ __author__ = "Scott Burns <scott.s.burnsgmail.com>"
 __license__ = "MIT"
 __copyright__ = "2014, Vanderbilt University"
 
+# pylint: disable=too-many-lines
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-public-methods
