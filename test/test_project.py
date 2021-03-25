@@ -405,6 +405,29 @@ class ProjectTests(unittest.TestCase):
         exc = assert_context.exception
         self.assertIn("error", exc.args[0])
 
+    @responses.activate
+    def test_import_metadata(self):
+        "Test metadata import"
+        self.add_normalproject_response()
+        data = self.reg_proj.export_metadata()
+        response = self.reg_proj.import_metadata(data)
+        for field_dict in response:
+            for key in ["field_name", "field_label", "form_name", "arm_num", "name"]:
+                self.assertIn(key, field_dict)
+            self.assertNotIn("error", response)
+
+    @unittest.skip("Fails on test server for unknown reason")
+    @responses.activate
+    def test_import_reduced_metadata(self):
+        "Test import of a reduced set of metadata"
+        self.add_normalproject_response()
+        original_data = self.reg_proj.export_metadata()
+        # reducing the metadata
+        reduced_data = original_data[0:1]
+        imported_data = self.reg_proj.import_metadata(reduced_data)
+
+        self.assertEqual(len(imported_data), len(reduced_data))
+
     @staticmethod
     def is_good_csv(csv_string):
         "Helper to test csv strings"

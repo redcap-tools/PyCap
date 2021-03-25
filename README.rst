@@ -24,6 +24,7 @@ Currently, these API calls are available:
 
 -   Export Records
 -   Export Metadata
+-   Import Metadata
 -   Delete Records
 -   Import Records
 -   Export File
