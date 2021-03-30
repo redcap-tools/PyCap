@@ -1,6 +1,16 @@
 HISTORY
 -------
 
+1.1.3 (2020-11-05)
++++++++++++++++++++
+
+* API Support
+    - Add support for ``import_metadata`` endpoint (#145 @JuliaSprenger)
+
+* Documentation
+    - Update ``contributing.rst`` with new installation instructions (#135 @njvack)
+
+
 1.1.2 (2020-11-05)
 +++++++++++++++++++
 
