@@ -682,7 +682,7 @@ class Project(object):
         payload["format"] = format
         return payload
 
-    def export_file(self, record, field, event=None, return_format="json"):
+    def export_file(self, record, field, event=None, return_format="json",repeat_instance=None):
         """
         Export the contents of a file stored for a particular record
 
@@ -700,6 +700,7 @@ class Project(object):
             for longitudinal projects, specify the unique event here
         return_format: ('json'), 'csv', 'xml'
             format of error message
+        repeat_instance: (None),str,int
 
         Returns
         -------
@@ -719,6 +720,8 @@ class Project(object):
         payload["record"] = record
         if event:
             payload["event"] = event
+        if repeat_instance:
+            payload["repeat_instance"] = str(repeat_instance)
         content, headers = self._call_api(payload, "exp_file")
         # REDCap adds some useful things in content-type
         if "content-type" in headers:
