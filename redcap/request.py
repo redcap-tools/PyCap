@@ -82,6 +82,11 @@ class RCRequest(object):
                 "record",
                 "Importing record but content is not record",
             ),
+            "imp_metadata": (
+                ["type", "data", "format"],
+                "metadata",
+                "Importing record but content is not record",
+            ),
             "metadata": (
                 ["format"],
                 "metadata",

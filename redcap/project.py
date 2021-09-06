@@ -17,6 +17,7 @@ __author__ = "Scott Burns <scott.s.burnsgmail.com>"
 __license__ = "MIT"
 __copyright__ = "2014, Vanderbilt University"
 
+# pylint: disable=too-many-lines
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-public-methods
@@ -588,15 +589,88 @@ class Project(object):
         response : dict, str
             response from REDCap API, json-decoded if ``return_format`` == ``'json'``
         """
-        payload = self.__basepl("record")
+        payload = self._initialize_import_payload(to_import, format, "record")
+
+        payload["overwriteBehavior"] = overwrite
+        payload["returnFormat"] = return_format
+        payload["returnContent"] = return_content
+        payload["dateFormat"] = date_format
+        payload["forceAutoNumber"] = force_auto_number
+        response = self._call_api(payload, "imp_record")[0]
+        if "error" in response:
+            raise RedcapError(str(response))
+        return response
+
+    def import_metadata(
+        self, to_import, format="json", return_format="json", date_format="YMD"
+    ):
+        """
+        Import metadata (DataDict) into the RedCap Project
+
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        return_format : ('json'), 'csv', 'xml'
+            Response format. By default, response will be json-decoded.
+        date_format : ('YMD'), 'DMY', 'MDY'
+            Describes the formatting of dates. By default, date strings
+            are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
+            strings are formatted as 'MM/DD/YYYY' set this parameter as
+            'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
+            other formattings are allowed.
+
+        Returns
+        -------
+        response : dict, str
+            response from REDCap API, json-decoded if ``return_format`` == ``'json'``
+            If successful, the number of imported fields
+        """
+        payload = self._initialize_import_payload(to_import, format, "metadata")
+        payload["returnFormat"] = return_format
+        payload["dateFormat"] = date_format
+        response = self._call_api(payload, "imp_metadata")[0]
+        if "error" in str(response):
+            raise RedcapError(str(response))
+        return response
+
+    def _initialize_import_payload(self, to_import, format, data_type):
+        """
+        Standardize the data to be imported and add it to the payload
+
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        data_type: 'record', 'metadata'
+            The kind of data that are imported
+
+        Returns
+        -------
+        payload : (dict, str)
+            The initialized payload dictionary and updated format
+        """
+
+        payload = self.__basepl(data_type)
         # pylint: disable=comparison-with-callable
         if hasattr(to_import, "to_csv"):
             # We'll assume it's a df
             buf = StringIO()
-            if self.is_longitudinal():
-                csv_kwargs = {"index_label": [self.def_field, "redcap_event_name"]}
-            else:
-                csv_kwargs = {"index_label": self.def_field}
+            if data_type == "record":
+                if self.is_longitudinal():
+                    csv_kwargs = {"index_label": [self.def_field, "redcap_event_name"]}
+                else:
+                    csv_kwargs = {"index_label": self.def_field}
+            elif data_type == "metadata":
+                csv_kwargs = {"index": False}
             to_import.to_csv(buf, **csv_kwargs)
             payload["data"] = buf.getvalue()
             buf.close()
@@ -607,18 +681,11 @@ class Project(object):
             # don't do anything to csv/xml
             payload["data"] = to_import
         # pylint: enable=comparison-with-callable
-        payload["overwriteBehavior"] = overwrite
-        payload["format"] = format
-        payload["returnFormat"] = return_format
-        payload["returnContent"] = return_content
-        payload["dateFormat"] = date_format
-        payload["forceAutoNumber"] = force_auto_number
-        response = self._call_api(payload, "imp_record")[0]
-        if "error" in response:
-            raise RedcapError(str(response))
-        return response
 
-    def export_file(self, record, field, event=None, return_format="json"):
+        payload["format"] = format
+        return payload
+
+    def export_file(self, record, field, event=None, return_format="json",repeat_instance=None):
         """
         Export the contents of a file stored for a particular record
 
@@ -636,6 +703,7 @@ class Project(object):
             for longitudinal projects, specify the unique event here
         return_format: ('json'), 'csv', 'xml'
             format of error message
+        repeat_instance: (None),str,int
 
         Returns
         -------
@@ -655,6 +723,8 @@ class Project(object):
         payload["record"] = record
         if event:
             payload["event"] = event
+        if repeat_instance:
+            payload["repeat_instance"] = str(repeat_instance)
         content, headers = self._call_api(payload, "exp_file")
         # REDCap adds some useful things in content-type
         if "content-type" in headers:

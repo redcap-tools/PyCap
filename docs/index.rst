@@ -6,7 +6,7 @@
 PyCap
 =====
 
-PyCap is an interface to the `REDCap <http://www.project-redcap.org>`_ Application Programming Interface (API). PyCap is designed to be a minimal interface exposing all required and optional API parameters. My hope is that it makes simple things easy & hard things possible.
+PyCap is an interface to the `REDCap <http://www.project-redcap.org>`_ Application Programming Interface (API). PyCap is designed to be a minimal interface exposing all required and optional API parameters. Our hope is that it makes simple things easy & hard things possible.
 
 Installation
 ------------
@@ -15,11 +15,13 @@ Install the latest version with `pip <https://pypi.python.org/pypi/pip>`_::
 
     $ pip install PyCap
 
+If you want to load REDCap data into `pandas <https://github.com/redcap-tools/PyCap>`_ dataframes, this will make sure you have pandas installed::
+
+    $ pip install 'PyCap[pandas]'
+
 To install the bleeding edge from the github repo, use the following::
 
-    $ pip install -e git+https://github.com/sburns/PyCap.git#egg=PyCap
-
-The only requirement is `requests <http://python-requests.org>`_ which will be installed automatically for you by ``pip``.
+    $ pip install -e git+https://github.com/redcap-tools/PyCap.git#egg=PyCap
 
 Philosophy
 ----------
@@ -40,7 +42,7 @@ If you use PyCap in your research, please consider citing the software:
 
     Burns, S. S., Browne, A., Davis, G. N., Rimrodt, S. L., & Cutting, L. E. PyCap (Version 1.0) [Computer Software].
     Nashville, TN: Vanderbilt University and Philadelphia, PA: Childrens Hospital of Philadelphia.
-    Available from https://github.com/sburns/PyCap. doi:10.5281/zenodo.9917
+    Available from https://github.com/redcap-tools/PyCap. doi:10.5281/zenodo.9917
 
 
 Contents:
