@@ -682,7 +682,9 @@ class Project(object):
         payload["format"] = format
         return payload
 
-    def export_file(self, record, field, event=None, return_format="json",repeat_instance=None):
+    def export_file(
+        self, record, field, event=None, return_format="json", repeat_instance=None
+    ):
         """
         Export the contents of a file stored for a particular record
 
