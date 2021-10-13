@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redcap="https://projectredcap.org" xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 schema/odm/ODM1-3-1.xsd" ODMVersion="1.3.1" FileOID="000-00-0000" FileType="Snapshot" Description="PyCap Test Simple Project" AsOfDateTime="2021-10-13T10:31:20" CreationDateTime="2021-10-13T10:31:20" SourceSystem="REDCap" SourceSystemVersion="11.2.3">
+<Study OID="Project.PyCapTestSimpleProject">
+<GlobalVariables>
+	<StudyName>PyCap Test Simple Project</StudyName>
+	<StudyDescription>This file contains the metadata, events, and data for REDCap project "PyCap Test Simple Project".</StudyDescription>
+	<ProtocolName>PyCap Test Simple Project</ProtocolName>
+	<redcap:RecordAutonumberingEnabled>0</redcap:RecordAutonumberingEnabled>
+	<redcap:CustomRecordLabel></redcap:CustomRecordLabel>
+	<redcap:SecondaryUniqueField></redcap:SecondaryUniqueField>
+	<redcap:SchedulingEnabled>0</redcap:SchedulingEnabled>
+	<redcap:SurveysEnabled>0</redcap:SurveysEnabled>
+	<redcap:SurveyInvitationEmailField></redcap:SurveyInvitationEmailField>
+	<redcap:Purpose>0</redcap:Purpose>
+	<redcap:PurposeOther></redcap:PurposeOther>
+	<redcap:ProjectNotes></redcap:ProjectNotes>
+	<redcap:SurveyQueueCustomText></redcap:SurveyQueueCustomText>
+	<redcap:DataMartProjectEnabled>0</redcap:DataMartProjectEnabled>
+	<redcap:DatamartAllowRepeatRevision>0</redcap:DatamartAllowRepeatRevision>
+	<redcap:DatamartAllowCreateRevision>0</redcap:DatamartAllowCreateRevision>
+	<redcap:DatamartCronEnabled>0</redcap:DatamartCronEnabled>
+	<redcap:MissingDataCodes></redcap:MissingDataCodes>
+</GlobalVariables>
+<MetaDataVersion OID="Metadata.PyCapTestSimpleProject_2021-10-13_1031" Name="PyCap Test Simple Project" redcap:RecordIdField="record_id">
+	<FormDef OID="Form.demographics" Name="Basic Demography Form" Repeating="No" redcap:FormName="demographics">
+		<ItemGroupRef ItemGroupOID="demographics.record_id" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="demographics.first_name" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="demographics.last_name" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="demographics.comments" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="demographics.demographics_complete" Mandatory="No"/>
+	</FormDef>
+	<ItemGroupDef OID="demographics.record_id" Name="Basic Demography Form" Repeating="No">
+		<ItemRef ItemOID="record_id" Mandatory="No" redcap:Variable="record_id"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="demographics.first_name" Name="Contact Information" Repeating="No">
+		<ItemRef ItemOID="first_name" Mandatory="No" redcap:Variable="first_name"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="demographics.last_name" Name="Basic Demography Form" Repeating="No">
+		<ItemRef ItemOID="last_name" Mandatory="No" redcap:Variable="last_name"/>
+		<ItemRef ItemOID="address" Mandatory="No" redcap:Variable="address"/>
+		<ItemRef ItemOID="telephone" Mandatory="No" redcap:Variable="telephone"/>
+		<ItemRef ItemOID="email" Mandatory="No" redcap:Variable="email"/>
+		<ItemRef ItemOID="dob" Mandatory="No" redcap:Variable="dob"/>
+		<ItemRef ItemOID="age" Mandatory="No" redcap:Variable="age"/>
+		<ItemRef ItemOID="ethnicity" Mandatory="No" redcap:Variable="ethnicity"/>
+		<ItemRef ItemOID="race" Mandatory="No" redcap:Variable="race"/>
+		<ItemRef ItemOID="sex" Mandatory="No" redcap:Variable="sex"/>
+		<ItemRef ItemOID="height" Mandatory="No" redcap:Variable="height"/>
+		<ItemRef ItemOID="weight" Mandatory="No" redcap:Variable="weight"/>
+		<ItemRef ItemOID="bmi" Mandatory="No" redcap:Variable="bmi"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="demographics.comments" Name="General Comments" Repeating="No">
+		<ItemRef ItemOID="comments" Mandatory="No" redcap:Variable="comments"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="demographics.demographics_complete" Name="Form Status" Repeating="No">
+		<ItemRef ItemOID="demographics_complete" Mandatory="No" redcap:Variable="demographics_complete"/>
+	</ItemGroupDef>
+	<ItemDef OID="record_id" Name="record_id" DataType="text" Length="999" redcap:Variable="record_id" redcap:FieldType="text">
+		<Question><TranslatedText>Study ID</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="first_name" Name="first_name" DataType="text" Length="999" redcap:Variable="first_name" redcap:FieldType="text" redcap:SectionHeader="Contact Information" redcap:Identifier="y">
+		<Question><TranslatedText>First Name</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="last_name" Name="last_name" DataType="text" Length="999" redcap:Variable="last_name" redcap:FieldType="text" redcap:Identifier="y">
+		<Question><TranslatedText>Last Name</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="address" Name="address" DataType="text" Length="999" redcap:Variable="address" redcap:FieldType="textarea" redcap:Identifier="y">
+		<Question><TranslatedText>Street, City, State, ZIP</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="telephone" Name="telephone" DataType="text" Length="999" redcap:Variable="telephone" redcap:FieldType="text" redcap:TextValidationType="phone" redcap:FieldNote="Include Area Code" redcap:Identifier="y">
+		<Question><TranslatedText>Phone number</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="email" Name="email" DataType="text" Length="999" redcap:Variable="email" redcap:FieldType="text" redcap:TextValidationType="email" redcap:Identifier="y">
+		<Question><TranslatedText>E-mail</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="dob" Name="dob" DataType="date" Length="999" redcap:Variable="dob" redcap:FieldType="text" redcap:TextValidationType="date_ymd" redcap:Identifier="y">
+		<Question><TranslatedText>Date of birth</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="age" Name="age" DataType="float" Length="999" redcap:Variable="age" redcap:FieldType="calc" redcap:Calculation="rounddown(datediff([dob],&#039;today&#039;,&#039;y&#039;))">
+		<Question><TranslatedText>Age (years)</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="ethnicity" Name="ethnicity" DataType="text" Length="1" redcap:Variable="ethnicity" redcap:FieldType="radio" redcap:CustomAlignment="LH">
+		<Question><TranslatedText>Ethnicity</TranslatedText></Question>
+		<CodeListRef CodeListOID="ethnicity.choices"/>
+	</ItemDef>
+	<ItemDef OID="race" Name="race" DataType="text" Length="1" redcap:Variable="race" redcap:FieldType="select">
+		<Question><TranslatedText>Race</TranslatedText></Question>
+		<CodeListRef CodeListOID="race.choices"/>
+	</ItemDef>
+	<ItemDef OID="sex" Name="sex" DataType="text" Length="1" redcap:Variable="sex" redcap:FieldType="radio">
+		<Question><TranslatedText>Gender</TranslatedText></Question>
+		<CodeListRef CodeListOID="sex.choices"/>
+	</ItemDef>
+	<ItemDef OID="height" Name="height" DataType="float" Length="999" SignificantDigits="1" redcap:Variable="height" redcap:FieldType="text" redcap:TextValidationType="float">
+		<Question><TranslatedText>Height (cm)</TranslatedText></Question>
+		<RangeCheck Comparator="GE" SoftHard="Soft">
+			<CheckValue>130</CheckValue>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (130 - 215). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+		</RangeCheck>
+		<RangeCheck Comparator="LE" SoftHard="Soft">
+			<CheckValue>215</CheckValue>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (130 - 215). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+		</RangeCheck>
+	</ItemDef>
+	<ItemDef OID="weight" Name="weight" DataType="integer" Length="999" redcap:Variable="weight" redcap:FieldType="text" redcap:TextValidationType="int">
+		<Question><TranslatedText>Weight (kilograms)</TranslatedText></Question>
+		<RangeCheck Comparator="GE" SoftHard="Soft">
+			<CheckValue>35</CheckValue>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (35 - 200). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+		</RangeCheck>
+		<RangeCheck Comparator="LE" SoftHard="Soft">
+			<CheckValue>200</CheckValue>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (35 - 200). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+		</RangeCheck>
+	</ItemDef>
+	<ItemDef OID="bmi" Name="bmi" DataType="float" Length="999" redcap:Variable="bmi" redcap:FieldType="calc" redcap:Calculation="round(([weight]*10000)/(([height])^(2)),1)">
+		<Question><TranslatedText>BMI</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="comments" Name="comments" DataType="text" Length="999" redcap:Variable="comments" redcap:FieldType="textarea" redcap:SectionHeader="General Comments">
+		<Question><TranslatedText>Comments</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="demographics_complete" Name="demographics_complete" DataType="text" Length="1" redcap:Variable="demographics_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
+		<Question><TranslatedText>Complete?</TranslatedText></Question>
+		<CodeListRef CodeListOID="demographics_complete.choices"/>
+	</ItemDef>
+	<CodeList OID="ethnicity.choices" Name="ethnicity" DataType="text" redcap:Variable="ethnicity">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Hispanic or Latino</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>NOT Hispanic or Latino</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Unknown / Not Reported</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+	<CodeList OID="race.choices" Name="race" DataType="text" redcap:Variable="race">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>American Indian/Alaska Native</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Asian</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Native Hawaiian or Other Pacific Islander</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="3"><Decode><TranslatedText>Black or African American</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="4"><Decode><TranslatedText>White</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="5"><Decode><TranslatedText>More Than One Race</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="6"><Decode><TranslatedText>Unknown / Not Reported</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+	<CodeList OID="sex.choices" Name="sex" DataType="text" redcap:Variable="sex">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Female</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Male</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+	<CodeList OID="demographics_complete.choices" Name="demographics_complete" DataType="text" redcap:Variable="demographics_complete">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Incomplete</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Unverified</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Complete</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+</MetaDataVersion>
+</Study>
+<ClinicalData StudyOID="Project.PyCapTestSimpleProject" MetaDataVersionOID="Metadata.PyCapTestSimpleProject_2021-10-13_1031">
+	<SubjectData SubjectKey="1" redcap:RecordIdField="record_id">
+			<FormData FormOID="Form.demographics" FormRepeatKey="1">
+				<ItemGroupData ItemGroupOID="demographics.record_id" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="record_id" Value="1"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.first_name" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="first_name" Value="PyCap"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.last_name" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="last_name" Value="Test1"/>
+					<ItemData ItemOID="address" Value="github"/>
+					<ItemData ItemOID="telephone" Value="(415) 555-1212"/>
+					<ItemData ItemOID="email" Value="pycaptest1@github.com"/>
+					<ItemData ItemOID="dob" Value="2021-10-13"/>
+					<ItemData ItemOID="age" Value="0"/>
+					<ItemData ItemOID="ethnicity" Value="2"/>
+					<ItemData ItemOID="race" Value="6"/>
+					<ItemData ItemOID="sex" Value="0"/>
+					<ItemData ItemOID="height" Value="130"/>
+					<ItemData ItemOID="weight" Value="100"/>
+					<ItemData ItemOID="bmi" Value="59.2"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.demographics_complete" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="demographics_complete" Value="2"/>
+				</ItemGroupData>
+			</FormData>
+	</SubjectData>
+	<SubjectData SubjectKey="2" redcap:RecordIdField="record_id">
+			<FormData FormOID="Form.demographics" FormRepeatKey="1">
+				<ItemGroupData ItemGroupOID="demographics.record_id" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="record_id" Value="2"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.first_name" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="first_name" Value="PyCap"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.last_name" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="last_name" Value="Test2"/>
+					<ItemData ItemOID="address" Value="github2"/>
+					<ItemData ItemOID="telephone" Value="(860) 555-2213"/>
+					<ItemData ItemOID="email" Value="pycaptest2@github.com"/>
+					<ItemData ItemOID="dob" Value="2021-10-12"/>
+					<ItemData ItemOID="age" Value="0"/>
+					<ItemData ItemOID="ethnicity" Value="0"/>
+					<ItemData ItemOID="race" Value="4"/>
+					<ItemData ItemOID="sex" Value="1"/>
+					<ItemData ItemOID="height" Value="131"/>
+					<ItemData ItemOID="weight" Value="101"/>
+					<ItemData ItemOID="bmi" Value="58.9"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.demographics_complete" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="demographics_complete" Value="2"/>
+				</ItemGroupData>
+			</FormData>
+	</SubjectData>
+	<SubjectData SubjectKey="3" redcap:RecordIdField="record_id">
+			<FormData FormOID="Form.demographics" FormRepeatKey="1">
+				<ItemGroupData ItemGroupOID="demographics.record_id" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="record_id" Value="3"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.first_name" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="first_name" Value="PyCap"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.last_name" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="last_name" Value="Incomplete"/>
+				</ItemGroupData>
+				<ItemGroupData ItemGroupOID="demographics.demographics_complete" ItemGroupRepeatKey="1">
+					<ItemData ItemOID="demographics_complete" Value="0"/>
+				</ItemGroupData>
+			</FormData>
+	</SubjectData>
+</ClinicalData>
+</ODM>
