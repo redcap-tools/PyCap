@@ -1,5 +1,15 @@
 """Test suite for Project class against real REDCap server"""
 # pylint: disable=missing-function-docstring
+import os
+
+import pytest
+
+
+if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
+    pytest.skip(
+        "Super user token not found, skipping integration tests",
+        allow_module_level=True,
+    )
 
 
 def test_export_of_simple_project(simple_project):
