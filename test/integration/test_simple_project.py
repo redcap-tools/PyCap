@@ -1,17 +1,13 @@
 """Test suite for Project class against real REDCap server"""
 # pylint: disable=missing-function-docstring
-import os
-
-import pytest
-from redcap import Project
 
 
-@pytest.mark.skipif(
-    True, reason="Need to migrate to GitHub Actions before testing on CI"
-)
-def test_export_of_simple_project():
-    url = "https://redcapdemo.vanderbilt.edu/api/"
-    token = os.getenv("REDCAPDEMO_SIMPLE_TOKEN")
-    simple_proj = Project(url, token)
-    proj_records_export = simple_proj.export_records()
+def test_export_of_simple_project(simple_project):
+    proj_records_export = simple_project.export_records()
     assert len(proj_records_export) == 3
+
+
+def test_import_of_simple_project(simple_project):
+    test_records = [{"record_id": i} for i in range(4, 7)]
+    res = simple_project.import_records(test_records)
+    assert res["count"] == len(test_records)
