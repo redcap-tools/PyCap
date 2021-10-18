@@ -5,11 +5,9 @@ import os
 import pytest
 from redcap import Project
 
-LOCAL_DEV = os.getenv("LOCAL_DEV")
-
 
 @pytest.mark.skipif(
-    not LOCAL_DEV, reason="Need to migrate to GitHub Actions before testing on CI"
+    True, reason="Need to migrate to GitHub Actions before testing on CI"
 )
 def test_export_of_simple_project():
     url = "https://redcapdemo.vanderbilt.edu/api/"

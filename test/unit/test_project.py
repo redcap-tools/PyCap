@@ -6,13 +6,18 @@
 import os
 import unittest
 import json
+import urllib.parse as urlparse
+
+# For some reason, if I try to import 'mock' any other way then I get a really weird error...
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 import responses
 import semantic_version
 
 from redcap import Project, RedcapError
-
-LOCAL_DEV = os.getenv("LOCAL_DEV")
 
 SKIP_PD = False
 try:
@@ -20,37 +25,14 @@ try:
 except ImportError:
     SKIP_PD = True
 
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
 
-# pylint: disable=pointless-statement
-try:
-    basestring  # attempt to evaluate basestring
-
-    def is_str(string):
-        return isinstance(string, basestring)
-
-    def is_bytestring(string):
-        return isinstance(string, basestring)
+def is_str(string):
+    return isinstance(string, str)
 
 
-# pylint: enable=pointless-statement
+def is_bytestring(string):
+    return isinstance(string, bytes)
 
-except NameError:
-
-    def is_str(string):
-        return isinstance(string, str)
-
-    def is_bytestring(string):
-        return isinstance(string, bytes)
-
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 
 # pylint: disable=too-many-public-methods
 class ProjectTests(unittest.TestCase):
