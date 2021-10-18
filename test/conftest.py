@@ -23,9 +23,7 @@ def simple_project_token(redcapdemo_url):
     """
     super_token = os.getenv("REDCAPDEMO_SUPERUSER_TOKEN")
     current_time = datetime.now().strftime("%m-%d %H:%M:%S")
-    project_title = (
-        f"PyCap Test Simple Project: {current_time}"
-    )
+    project_title = f"PyCap Test Simple Project: {current_time}"
     project_info = f"""<?xml version="1.0" encoding="UTF-8" ?>
     <item>
     <project_title>{project_title}</project_title>
