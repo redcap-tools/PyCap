@@ -400,7 +400,7 @@ class ProjectTests(unittest.TestCase):
                 self.assertIn(key, field_dict)
             self.assertNotIn("error", response)
 
-    @unittest.skip("Fails on test server for unknown reason")
+    @unittest.skip("Fails for unknown reason")
     @responses.activate
     def test_import_reduced_metadata(self):
         "Test import of a reduced set of metadata"
@@ -479,7 +479,7 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(payload["arms[1]"], "arm1")
         self.assertEqual(payload["arms[2]"], "arm2")
 
-    @unittest.skipIf(True, "Fails for unknown reason")
+    @unittest.skip("Fails for unknown reason")
     @responses.activate
     def test_file_export(self):
         """Test file export and proper content-type parsing"""
@@ -508,7 +508,7 @@ class ProjectTests(unittest.TestCase):
         this_dir, _ = os.path.split(__file__)
         return os.path.join(this_dir, "data.txt")
 
-    @unittest.skipIf(True, "Fails on for unknown reason")
+    @unittest.skip("Fails for unknown reason")
     @responses.activate
     def test_file_import(self):
         "Test file import"
