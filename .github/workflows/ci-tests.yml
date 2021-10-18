@@ -1,6 +1,15 @@
 name: CI Tests
 
-on: [push]
+on:
+  # Need to also run on pushes to master since PRs from a fork won't have
+  # access to the super user token, thereby skipping the tests
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -14,6 +23,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
+      env:
+        REDCAPDEMO_SUPERUSER_TOKEN: ${{ secrets.REDCAPDEMO_SUPERUSER_TOKEN }}
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
