@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
+# pylint: disable=consider-using-f-string
 """Test suite for Project class"""
 
 import os
@@ -8,11 +9,7 @@ import unittest
 import json
 import urllib.parse as urlparse
 
-# For some reason, if I try to import 'mock' any other way then I get a really weird error...
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 
 import responses
 import semantic_version
