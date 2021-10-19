@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "PyCap"
+version = "1.1.3"
+description = "PyCap: Python interface to REDCap"
+authors = ["Scott Burns <scott.s.burns@gmail.com>"]
+maintainers = ["Paul Wildenhain <pwildenhain@gmail.com>"]
+license = "MIT"
+readme = "README.rst"
+documentation = "https://pycap.readthedocs.io"
+repository = "https://github.com/redcap-tools/PyCap"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2.7",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7.1"
+requests = "^2.26.0"
+semantic-version = "^2.8.5"
+pandas = {version = "^1.3.4", optional = true}
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
+pytest-black = {version = "^0.3.12", allow-prereleases = true}
+pytest-pylint = "^0.18.0"
+numpydoc = "^1.1.0"
+Sphinx = "^4.2.0"
+responses = "^0.14.0"
+
+[tool.poetry.extras]
+data_science = ["pandas"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
