@@ -528,7 +528,7 @@ class Project(object):
         return new_fields
 
     def names_labels(self, do_print=False):
-        """Simple helper function to get all field names and labels """
+        """Simple helper function to get all field names and labels"""
         if do_print:
             for name, label in zip(self.field_names, self.field_labels):
                 print("%s --> %s" % (str(name), str(label)))

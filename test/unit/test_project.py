@@ -309,7 +309,7 @@ class ProjectTests(unittest.TestCase):
         self.survey_proj = Project(self.survey_proj_url, self.reg_token)
 
     def test_good_init(self):
-        """Ensure basic instantiation """
+        """Ensure basic instantiation"""
 
         self.assertIsInstance(self.long_proj, Project)
         self.assertIsInstance(self.reg_proj, Project)
@@ -351,7 +351,7 @@ class ProjectTests(unittest.TestCase):
 
     @responses.activate
     def test_json_export(self):
-        """ Make sure we get a list of dicts"""
+        """Make sure we get a list of dicts"""
         self.add_normalproject_response()
         data = self.reg_proj.export_records()
         self.assertIsInstance(data, list)
@@ -419,7 +419,7 @@ class ProjectTests(unittest.TestCase):
 
     @responses.activate
     def test_csv_export(self):
-        """Test valid csv export """
+        """Test valid csv export"""
         self.add_normalproject_response()
         csv = self.reg_proj.export_records(format="csv")
         self.assertTrue(self.is_good_csv(csv))
@@ -457,7 +457,7 @@ class ProjectTests(unittest.TestCase):
 
     @responses.activate
     def test_fem_export(self):
-        """ Test fem export in json format gives list of dicts"""
+        """Test fem export in json format gives list of dicts"""
         self.add_long_project_response()
         fem = self.long_proj.export_fem(format="json")
         self.assertIsInstance(fem, list)

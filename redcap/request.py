@@ -19,7 +19,7 @@ _session = Session()
 
 
 class RCAPIError(Exception):
-    """ Errors corresponding to a misuse of the REDCap API """
+    """Errors corresponding to a misuse of the REDCap API"""
 
 
 class RCRequest(object):
