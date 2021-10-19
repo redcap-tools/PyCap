@@ -1,4 +1,4 @@
-name: CI Tests
+name: CI
 
 on:
   # Need to also run on pushes to master since PRs from a fork won't have

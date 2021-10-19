@@ -1,7 +1,7 @@
 **This project is community maintained. Please continue to submit bugs and feature requests, though it's the community's responsibility to address them.**
 
-.. image:: https://github.com/redcap-tools/PyCap/actions/workflows/ci-tests.yml/badge.svg
-    :target: https://github.com/redcap-tools/PyCap/actions/workflows/ci-tests.yml
+.. image:: https://github.com/redcap-tools/PyCap/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/redcap-tools/PyCap/actions/workflows/ci.yml
 .. image:: https://badge.fury.io/py/PyCap.svg
     :target: https://badge.fury.io/py/PyCap
 .. image:: https://img.shields.io/badge/code%20style-black-black
