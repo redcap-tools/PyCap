@@ -115,40 +115,34 @@ Install extra requirements, which allows returning project data as a :code:`pand
 Install from GitHub
 ::
 
-    $ git clone git://github.com/redcap-tools/PyCap.git PyCap
-    $ cd PyCap
-    $ python setup.py install
+    $ pip install https://github.com/redcap-tools/PyCap/archive/master.zip
 
 
 Contributing
 ------------
 
-1. Create a virtual environment and activate it
+
+1. Install `poetry <https://python-poetry.org/docs/master/#installation>`_
+::
+    
+    $ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+
+
+2. Install all project dependencies (including development dependencies).
 ::
 
-    $ python -m venv .venv
-    $ source .venv/Scripts/activate
+    $ poetry install
 
-2. Install `pip-tools <https://github.com/jazzband/pip-tools/blob/master/README.rst>`_.
+3. Add your changes and make sure your changes pass all tests.
 ::
 
-    $ pip install pip-tools
+    $ poetry run pytest
 
-3. Install all project dependencies
-::
-
-    $ pip-sync requirements.txt dev-requirements.txt
-
-4. Install the package, with a link to the source code. This ensures any changes you
-make are immendiate available to test.
-::
-
-    $ python setup.py develop
-
-5. Add your changes and make sure your changes pass all tests
-::
-
-    $ pytest
+If you make changes to the dependencies you'll need to handle
+them with `poetry add/remove <https://python-poetry.org/docs/master/basic-usage/#installing-dependencies>`_
+and update the :code:`requirements.txt` with
+`poetry export <https://python-poetry.org/docs/master/cli/#export>`_ for the CI to run
+(until I figure out the best to actually run :code:`poetry` in CI)
 
 Finally, start a pull request!
 
