@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=consider-using-f-string
 """
 
 Low-level HTTP functionality

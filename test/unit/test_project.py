@@ -499,7 +499,7 @@ class ProjectTests(unittest.TestCase):
 
     def import_file(self):
         upload_fname = self.upload_fname()
-        with open(upload_fname, "r") as fobj:
+        with open(upload_fname, "r", encoding="UTF-8") as fobj:
             response = self.reg_proj.import_file("1", "file", upload_fname, fobj)
         return response
 
@@ -521,7 +521,7 @@ class ProjectTests(unittest.TestCase):
         self.assertTrue("error" not in response)
         # Test importing a file to a non-file field raises a ValueError
         fname = self.upload_fname()
-        with open(fname, "r") as fobj:
+        with open(fname, "r", encoding="UTF-8") as fobj:
             with self.assertRaises(ValueError):
                 response = self.reg_proj.import_file("1", "first_name", fname, fobj)
 

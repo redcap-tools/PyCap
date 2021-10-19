@@ -30,7 +30,7 @@ def simple_project_token(redcapdemo_url):
     <purpose>0</purpose>
     </item>"""
 
-    with open("test/data/test_simple_project.xml") as proj_xml_file:
+    with open("test/data/test_simple_project.xml", encoding="UTF-8") as proj_xml_file:
         project_data = proj_xml_file.read()
 
     res = requests.post(

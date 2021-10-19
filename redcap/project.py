@@ -22,6 +22,9 @@ __copyright__ = "2014, Vanderbilt University"
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-public-methods
 # pylint: disable=redefined-builtin
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-generator
+# pylint: disable=use-dict-literal
 class Project(object):
     """Main class for interacting with REDCap projects"""
 
