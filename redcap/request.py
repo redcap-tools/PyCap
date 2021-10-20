@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=consider-using-f-string
 """
 
 Low-level HTTP functionality
@@ -19,7 +20,7 @@ _session = Session()
 
 
 class RCAPIError(Exception):
-    """ Errors corresponding to a misuse of the REDCap API """
+    """Errors corresponding to a misuse of the REDCap API"""
 
 
 class RCRequest(object):

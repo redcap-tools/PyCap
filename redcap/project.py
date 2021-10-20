@@ -22,6 +22,9 @@ __copyright__ = "2014, Vanderbilt University"
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-public-methods
 # pylint: disable=redefined-builtin
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-generator
+# pylint: disable=use-dict-literal
 class Project(object):
     """Main class for interacting with REDCap projects"""
 
@@ -531,7 +534,7 @@ class Project(object):
         return new_fields
 
     def names_labels(self, do_print=False):
-        """Simple helper function to get all field names and labels """
+        """Simple helper function to get all field names and labels"""
         if do_print:
             for name, label in zip(self.field_names, self.field_labels):
                 print("%s --> %s" % (str(name), str(label)))

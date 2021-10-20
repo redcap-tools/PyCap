@@ -12,11 +12,13 @@ if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     )
 
 
+@pytest.mark.integration
 def test_export_of_simple_project(simple_project):
     proj_records_export = simple_project.export_records()
     assert len(proj_records_export) == 3
 
 
+@pytest.mark.integration
 def test_import_of_simple_project(simple_project):
     test_records = [{"record_id": i} for i in range(4, 7)]
     res = simple_project.import_records(test_records)

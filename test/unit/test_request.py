@@ -10,10 +10,10 @@ from redcap import RCRequest, RCAPIError
 
 
 class TestClass(unittest.TestCase):
-    """ Testing RCRequest """
+    """Testing RCRequest"""
 
     def setUp(self):
-        """ We can use Kenneth Reitz's httpbin.org to test requests """
+        """We can use Kenneth Reitz's httpbin.org to test requests"""
         self.url = "http://httpbin.org"
         self.base = {
             "token": "8E66DB6844D58E990075AFB51658A002",
