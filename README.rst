@@ -2,6 +2,8 @@
 
 .. image:: https://github.com/redcap-tools/PyCap/actions/workflows/ci.yml/badge.svg
     :target: https://github.com/redcap-tools/PyCap/actions/workflows/ci.yml
+.. image:: https://codecov.io/gh/redcap-tools/PyCap/branch/master/graph/badge.svg?token=IRgcPzANxU
+    :target: https://codecov.io/gh/redcap-tools/PyCap
 .. image:: https://badge.fury.io/py/PyCap.svg
     :target: https://badge.fury.io/py/PyCap
 .. image:: https://img.shields.io/badge/code%20style-black-black
