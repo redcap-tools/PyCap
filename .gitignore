@@ -14,5 +14,6 @@ _site/
 .vscode/
 ve/
 .venv
+coverage.xml
 .coverage
 .noseids
