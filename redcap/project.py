@@ -330,6 +330,7 @@ class Project(object):
         events=None,
         raw_or_label="raw",
         event_name="label",
+        type="flat",
         format="json",
         export_survey_fields=False,
         export_data_access_groups=False,
@@ -363,6 +364,8 @@ class Project(object):
             multiple choice fields, or both
         event_name : (``'label'``), ``'unique'``
              export the unique event name or the event label
+        type : (``'flat'``), ``'eav'``
+             database output structure type
         format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
             Format of returned data. ``'json'`` returns json-decoded
             objects while ``'csv'`` and ``'xml'`` return other formats.
@@ -403,7 +406,7 @@ class Project(object):
         ret_format = format
         if format == "df":
             ret_format = "csv"
-        payload = self.__basepl("record", format=ret_format)
+        payload = self.__basepl("record", format=ret_format, rec_type=type)
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (
             records,
@@ -455,10 +458,13 @@ class Project(object):
             raise ValueError(("Unsupported format: '{}'").format(format))
 
         if not df_kwargs:
-            if self.is_longitudinal():
-                df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
+            if type == "eav":
+                df_kwargs = {}
             else:
-                df_kwargs = {"index_col": self.def_field}
+                if self.is_longitudinal():
+                    df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
+                else:
+                    df_kwargs = {"index_col": self.def_field}
         buf = StringIO(response)
         dataframe = self.read_csv(buf, **df_kwargs)
         buf.close()

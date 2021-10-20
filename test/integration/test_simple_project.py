@@ -13,13 +13,30 @@ if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
 
 
 @pytest.mark.integration
-def test_export_of_simple_project(simple_project):
+def test_export_records(simple_project):
     proj_records_export = simple_project.export_records()
     assert len(proj_records_export) == 3
 
 
 @pytest.mark.integration
-def test_import_of_simple_project(simple_project):
-    test_records = [{"record_id": i} for i in range(4, 7)]
+def test_export_records_df(simple_project):
+    proj_records_export = simple_project.export_records(format="df")
+    assert len(proj_records_export) == 3
+
+
+@pytest.mark.integration
+def test_export_records_df_eav(simple_project):
+    proj_records_export = simple_project.export_records(format="df", type="eav")
+    assert len(proj_records_export) == 31
+
+
+@pytest.mark.integration
+def test_import_and_delete_records(simple_project):
+    new_record_ids = [4, 5, 6]
+    test_records = [{"record_id": i} for i in new_record_ids]
+
     res = simple_project.import_records(test_records)
     assert res["count"] == len(test_records)
+
+    res = simple_project.delete_records(new_record_ids)
+    assert res == "3"
