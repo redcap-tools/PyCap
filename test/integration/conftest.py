@@ -1,4 +1,4 @@
-"""Global fixtures for test suite"""
+"""Test fixtures for integration tests only"""
 # pylint: disable=redefined-outer-name
 from datetime import datetime
 import os
@@ -9,13 +9,13 @@ import requests
 from redcap import Project
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def redcapdemo_url():
     """API url for redcapdemo testing site"""
     return "https://redcapdemo.vanderbilt.edu/api/"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def simple_project_token(redcapdemo_url):
     """Create a simple project for testing on redcapdemo.vanderbilt.edu
     This API method returns the token for the newly created project, which
@@ -47,7 +47,7 @@ def simple_project_token(redcapdemo_url):
     return res.text
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def simple_project(redcapdemo_url, simple_project_token):
     """A simple REDCap project"""
     return Project(redcapdemo_url, simple_project_token)
