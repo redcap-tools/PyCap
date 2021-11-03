@@ -11,16 +11,11 @@ import urllib.parse as urlparse
 
 from unittest import mock
 
+import pandas as pd
 import responses
 import semantic_version
 
 from redcap import Project, RedcapError
-
-SKIP_PD = False
-try:
-    import pandas as pd
-except ImportError:
-    SKIP_PD = True
 
 
 def is_str(string):
@@ -597,7 +592,6 @@ class ProjectTests(unittest.TestCase):
             self.assertNotIn("redcap_survey_identifier", record)
             self.assertNotIn("demographics_timestamp", record)
 
-    @unittest.skipIf(SKIP_PD, "Couldn't import pandas")
     @responses.activate
     def test_metadata_to_df(self):
         """Test metadata export --> DataFrame"""
@@ -605,7 +599,6 @@ class ProjectTests(unittest.TestCase):
         dataframe = self.reg_proj.export_metadata(format="df")
         self.assertIsInstance(dataframe, pd.DataFrame)
 
-    @unittest.skipIf(SKIP_PD, "Couldn't import pandas")
     @responses.activate
     def test_export_to_df(self):
         """Test export --> DataFrame"""
@@ -619,7 +612,6 @@ class ProjectTests(unittest.TestCase):
         long_dataframe = self.long_proj.export_records(format="df", event_name="raw")
         self.assertTrue(hasattr(long_dataframe.index, "names"))
 
-    @unittest.skipIf(SKIP_PD, "Couldn't import pandas")
     @responses.activate
     def test_export_df_kwargs(self):
         """Test passing kwargs to export DataFrame construction"""
@@ -630,7 +622,6 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(dataframe.index.name, "first_name")
         self.assertTrue("study_id" in dataframe)
 
-    @unittest.skipIf(SKIP_PD, "Couldn't import pandas")
     @responses.activate
     def test_metadata_df_kwargs(self):
         """Test passing kwargs to metadata DataFrame construction"""
@@ -641,7 +632,6 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(dataframe.index.name, "field_label")
         self.assertTrue("field_name" in dataframe)
 
-    @unittest.skipIf(SKIP_PD, "Couldn't import pandas")
     @responses.activate
     def test_import_dataframe(self):
         """Test importing a pandas.DataFrame"""
