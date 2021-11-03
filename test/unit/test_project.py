@@ -2,6 +2,7 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
 # pylint: disable=consider-using-f-string
+# pylint: disable=duplicate-code
 """Test suite for Project class"""
 
 import os
