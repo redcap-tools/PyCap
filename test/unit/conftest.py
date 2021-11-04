@@ -47,7 +47,6 @@ def simple_project(project_urls, project_token, mocked_responses) -> Project:
         headers = {"Content-Type": "application/json"}
 
         resp = None
-
         if " filename" in data:
             resp = {}
         else:
@@ -59,6 +58,12 @@ def simple_project(project_urls, project_token, mocked_responses) -> Project:
                 else:
                     resp = {"count": 1}
             elif request_type == "metadata":
+                # importing metadata
+                if "data" in data:
+                    data_len = len(json.loads(data["data"][0]))
+                    resp = json.dumps(data_len)
+                    return (201, headers, resp)
+                # exporting metadata
                 if "csv" in data["format"]:
                     resp = (
                         "field_name,field_label,form_name,arm_num,name\n"
