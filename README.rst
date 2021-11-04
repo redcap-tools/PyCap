@@ -130,10 +130,10 @@ Contributing
     $ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 
 
-2. Install all project dependencies (including development dependencies).
+2. Install all project dependencies (including development/optional dependencies).
 ::
 
-    $ poetry install
+    $ poetry install -E data_science
 
 3. Add your changes and make sure your changes pass all tests.
 ::
@@ -144,7 +144,7 @@ If you make changes to the dependencies you'll need to handle
 them with `poetry add/remove <https://python-poetry.org/docs/master/basic-usage/#installing-dependencies>`_
 and update the :code:`requirements.txt` with
 `poetry export <https://python-poetry.org/docs/master/cli/#export>`_ for the CI to run
-(until I figure out the best to actually run :code:`poetry` in CI)
+(until I figure out the best way to actually run :code:`poetry` in CI)
 
 Finally, start a pull request!
 
