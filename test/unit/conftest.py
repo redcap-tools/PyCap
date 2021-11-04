@@ -10,10 +10,12 @@ from redcap import Project
 
 # pylint: disable=too-many-branches
 
+
 @pytest.fixture(scope="module")
 def project_token() -> str:
     """Project API token"""
     return "supersecrettoken"
+
 
 @pytest.fixture(scope="module")
 def project_urls() -> dict[str]:
@@ -21,10 +23,11 @@ def project_urls() -> dict[str]:
     return {
         "bad_url": "https://redcap.badproject.edu/api",
         "long_project": "https://redcap.longproject.edu/api/",
-        "normal_project": "https://redcap.normalproject.edu/api/",
+        "simple_project": "https://redcap.simpleproject.edu/api/",
         "ssl_project": "https://redcap.sslproject.edu/api/",
-        "survey_project": "https://redcap.surveyproject.edu/api/"
+        "survey_project": "https://redcap.surveyproject.edu/api/",
     }
+
 
 # See here for docs: https://github.com/getsentry/responses#responses-as-a-pytest-fixture
 @pytest.fixture(scope="module")
@@ -33,10 +36,12 @@ def mocked_responses() -> responses.RequestsMock:
     with responses.RequestsMock() as resps:
         yield resps
 
+
 @pytest.fixture(scope="module")
-def normal_project(project_urls, project_token, mocked_responses) -> Project:
-    """Mocked normal REDCap project"""
-    def request_callback_normal(req) -> None:
+def simple_project(project_urls, project_token, mocked_responses) -> Project:
+    """Mocked simple REDCap project"""
+
+    def request_callback_simple(req) -> None:
         parsed = urlparse.urlparse(f"?{req.body}")
         data = urlparse.parse_qs(parsed.query)
         headers = {"Content-Type": "application/json"}
@@ -143,12 +148,12 @@ def normal_project(project_urls, project_token, mocked_responses) -> Project:
 
         return (201, headers, json.dumps(resp))
 
-    normal_project_url = project_urls["normal_project"]
+    simple_project_url = project_urls["simple_project"]
     mocked_responses.add_callback(
         responses.POST,
-        normal_project_url,
-        callback=request_callback_normal,
+        simple_project_url,
+        callback=request_callback_simple,
         content_type="application/json",
     )
 
-    return Project(normal_project_url, project_token)
+    return Project(simple_project_url, project_token)

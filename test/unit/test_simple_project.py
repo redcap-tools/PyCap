@@ -4,12 +4,12 @@
 from redcap import Project
 
 
-def test_basic_init(normal_project):
-    assert isinstance(normal_project, Project)
+def test_basic_init(simple_project):
+    assert isinstance(simple_project, Project)
 
 
-def test_normal_json_export(normal_project):
-    data = normal_project.export_records()
+def test_simple_json_export(simple_project):
+    data = simple_project.export_records()
 
     assert isinstance(data, list)
     for record in data:
