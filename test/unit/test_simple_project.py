@@ -5,6 +5,7 @@ from io import StringIO
 
 import pandas as pd
 import pytest
+import semantic_version
 
 from redcap import Project, RedcapError
 
@@ -21,6 +22,10 @@ def test_bad_creds(project_urls, project_token):
 
 def test_init(simple_project):
     assert isinstance(simple_project, Project)
+
+
+def test_get_version(simple_project):
+    assert simple_project.redcap_version == semantic_version.Version("11.2.3")
 
 
 def test_attrs(simple_project):
@@ -76,6 +81,14 @@ def test_metadata_df_export(simple_project):
     dataframe = simple_project.export_metadata(format="df")
 
     assert isinstance(dataframe, pd.DataFrame)
+
+
+def test_metadata_df_export_correctly_uses_df_kwargs(simple_project):
+    dataframe = simple_project.export_metadata(
+        format="df", df_kwargs={"index_col": "field_label"}
+    )
+    assert dataframe.index.name == "field_label"
+    assert "field_name" in dataframe
 
 
 def test_metadata_export_passes_filters_as_arrays(simple_project, mocker):
@@ -145,3 +158,41 @@ def test_df_export_correctly_uses_df_kwargs(simple_project):
     assert dataframe.index.name == "first_name"
     # the default index column is just a regular column
     assert "study_id" in dataframe
+
+
+def test_export_methods_handle_empty_data_error(simple_project, mocker):
+    mocker.patch.object(simple_project, "_call_api", return_value=("\n", {}))
+
+    dataframe = simple_project.export_records(format="df")
+    assert dataframe.empty
+
+    dataframe = simple_project.export_fem(format="df")
+    assert dataframe.empty
+
+    dataframe = simple_project.export_metadata(format="df")
+    assert dataframe.empty
+
+
+def test_df_import(simple_project):
+    dataframe = simple_project.export_records(format="df")
+    response = simple_project.import_records(dataframe)
+
+    assert "count" in response
+    assert not "error" in response
+
+
+# Right now it seems like this isn't acutally testing the date formatting?
+# just passing through a bogus option still passes the test. Consider modifying method
+# to strictly enforce these options, or removing this test.
+@pytest.mark.parametrize(
+    "record, date_format",
+    [
+        ([{"study_id": "1", "dob": "2000-01-01"}], "YMD"),
+        ([{"study_id": "1", "dob": "31/01/2000"}], "DMY"),
+        ([{"study_id": "1", "dob": "12/31/2000"}], "MDY"),
+    ],
+)
+def test_import_date_formatting(simple_project, record, date_format):
+    response = simple_project.import_records(record, date_format=date_format)
+
+    assert response["count"] == 1

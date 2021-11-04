@@ -99,7 +99,9 @@ def simple_project(project_urls, project_token, mocked_responses) -> Project:
                     },
                 ]
             elif request_type == "version":
-                resp = {"error": "no version info"}
+                resp = b"11.2.3"
+                headers = {"content-type": "text/csv; charset=utf-8"}
+                return (201, headers, resp)
             elif request_type == "event":
                 resp = {"error": "no events"}
             elif request_type == "arm":
