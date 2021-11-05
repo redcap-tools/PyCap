@@ -36,10 +36,25 @@ def handle_simple_project_arms_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_long_project_arms_request(**kwargs) -> MockResponse:
+    headers = kwargs["headers"]
+    resp = [{"arm_num": 1, "name": "test"}]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_simple_project_events_request(**kwargs) -> MockResponse:
     """Handle events export, used at project initialization"""
     headers = kwargs["headers"]
     resp = {"error": "no events"}
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_long_project_events_request(**kwargs) -> MockResponse:
+    """Handle events export, used at project initialization"""
+    headers = kwargs["headers"]
+    resp = [{"unique_event_name": "raw"}]
 
     return (201, headers, json.dumps(resp))
 
@@ -113,6 +128,21 @@ def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_long_project_metadata_request(**kwargs) -> MockResponse:
+    headers = kwargs["headers"]
+    resp = [
+        {
+            "field_name": "record_id",
+            "field_label": "Record ID",
+            "form_name": "Test Form",
+            "arm_num": 1,
+            "name": "test",
+        }
+    ]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_project_info_request(**kwargs) -> MockResponse:
     """Handle project info export request"""
     headers = kwargs["headers"]
@@ -160,6 +190,14 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_long_project_records_request(**kwargs) -> MockResponse:
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+
+    if "returnContent" in data:
+        resp = {"count": 1}
+    pass
+
 def handle_user_request(**kwargs) -> MockResponse:
     """Handle user export"""
     headers = kwargs["headers"]
@@ -201,6 +239,20 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "project": handle_project_info_request,
         "record": handle_simple_project_records_request,
         "user": handle_user_request,
+        "version": handle_version_request,
+    }
+
+    return handlers_dict[request_type]
+
+
+
+def get_long_project_request_handler(request_type: str) -> Callable:
+    """Given a request type, extract the handler function"""
+    handlers_dict = {
+        "arm": handle_long_project_arms_request,
+        "event": handle_long_project_events_request,
+        "metadata": handle_long_project_metadata_request,
+        "record": handle_long_project_records_request,
         "version": handle_version_request,
     }
 
