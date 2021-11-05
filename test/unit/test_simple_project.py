@@ -1,15 +1,40 @@
 #! /usr/bin/env python
 """Test suite for Project class against mocked REDCap server"""
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
 import os
 
 from io import StringIO
 
+from test.unit.callback_utils import get_simple_project_request_handler, parse_request
+
 import pandas as pd
 import pytest
+import responses
 import semantic_version
 
 from redcap import Project, RedcapError
+
+
+@pytest.fixture(scope="module")
+def simple_project(project_urls, project_token, mocked_responses) -> Project:
+    """Mocked simple REDCap project"""
+
+    def request_callback_simple(req):
+        request_data, request_headers, request_type = parse_request(req)
+        request_handler = get_simple_project_request_handler(request_type)
+        response = request_handler(data=request_data, headers=request_headers)
+        return response
+
+    simple_project_url = project_urls["simple_project"]
+    mocked_responses.add_callback(
+        responses.POST,
+        simple_project_url,
+        callback=request_callback_simple,
+        content_type="application/json",
+    )
+
+    return Project(simple_project_url, project_token)
 
 
 def test_bad_creds(project_urls, project_token):
