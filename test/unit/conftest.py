@@ -45,9 +45,9 @@ def simple_project(project_urls, project_token, mocked_responses) -> Project:
         parsed = urlparse.urlparse(f"?{req.body}")
         data = urlparse.parse_qs(parsed.query)
         headers = {"Content-Type": "application/json"}
-
         resp = None
-        if " filename" in data:
+        # file import
+        if " filename" in str(data):
             resp = {}
         else:
             request_type = data.get("content", ["unknown"])[0]

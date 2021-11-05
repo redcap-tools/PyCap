@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 """Test suite for Project class against mocked REDCap server"""
 # pylint: disable=missing-function-docstring
+import os
+
 from io import StringIO
 
 import pandas as pd
@@ -52,22 +54,71 @@ def test_events_and_arms_attrs_are_empty(simple_project):
         assert attr_obj == ()
 
 
-def test_import_records(simple_project):
-    data = simple_project.export_records()
-    response = simple_project.import_records(data)
+# Right now it seems like this isn't acutally testing the date formatting?
+# just passing through a bogus option still passes the test. Consider modifying method
+# to strictly enforce these options, or removing this test.
+@pytest.mark.parametrize(
+    "record, date_format",
+    [
+        ([{"study_id": "1", "dob": "2000-01-01"}], "YMD"),
+        ([{"study_id": "1", "dob": "31/01/2000"}], "DMY"),
+        ([{"study_id": "1", "dob": "12/31/2000"}], "MDY"),
+    ],
+)
+def test_import_date_formatting(simple_project, record, date_format):
+    response = simple_project.import_records(record, date_format=date_format)
 
-    assert "count" in response
-    assert not "error" in response
+    assert response["count"] == 1
 
 
-def test_bad_import_throws_exception(simple_project):
-    data = simple_project.export_records()
-    data[0]["non_existent_key"] = "foo"
+def test_file_import(simple_project):
+    this_dir, _ = os.path.split(__file__)
+    upload_fname = os.path.join(this_dir, "data.txt")
+    with open(upload_fname, "r", encoding="UTF-8") as fobj:
+        simple_project.import_file("1", "file", upload_fname, fobj)
 
-    with pytest.raises(RedcapError) as assert_context:
-        simple_project.import_records(data)
 
-    assert "error" in repr(assert_context)
+def test_file_export(simple_project):
+    record, field = "1", "file"
+    content, headers = simple_project.export_file(record, field)
+    assert isinstance(content, bytes)
+    # We should at least get the filename in the headers
+    assert "name" in headers
+    # needs to raise ValueError for exporting non-file fields
+    with pytest.raises(ValueError):
+        simple_project.export_file(record=record, field="dob")
+
+
+def test_user_export(simple_project):
+    users = simple_project.export_users()
+    # A project must have at least one user
+    assert len(users) > 0
+
+    req_keys = [
+        "firstname",
+        "lastname",
+        "email",
+        "username",
+        "expiration",
+        "data_access_group",
+        "data_export",
+        "forms",
+    ]
+    for user in users:
+        for key in req_keys:
+            assert key in user
+
+
+def test_generate_next_record_name(simple_project):
+    next_name = simple_project.generate_next_record_name()
+
+    assert next_name == 123
+
+
+def test_export_project_info(simple_project):
+    info = simple_project.export_project_info()
+
+    assert info["project_id"] == 123
 
 
 def test_metadata_csv_export(simple_project):
@@ -151,6 +202,22 @@ def test_df_export(simple_project):
     assert hasattr(dataframe.index, "name")
 
 
+def test_fem_export_passes_filters_as_arrays(simple_project, mocker):
+    mocked_api_call = mocker.patch.object(
+        simple_project, "_call_api", return_value=(None, None)
+    )
+
+    simple_project.export_fem(arms=["arm0", "arm1", "arm2"])
+
+    args, _ = mocked_api_call.call_args
+
+    payload = args[0]
+
+    assert payload["arms[0]"] == "arm0"
+    assert payload["arms[1]"] == "arm1"
+    assert payload["arms[2]"] == "arm2"
+
+
 def test_df_export_correctly_uses_df_kwargs(simple_project):
     dataframe = simple_project.export_records(
         format="df", df_kwargs={"index_col": "first_name"}
@@ -158,6 +225,48 @@ def test_df_export_correctly_uses_df_kwargs(simple_project):
     assert dataframe.index.name == "first_name"
     # the default index column is just a regular column
     assert "study_id" in dataframe
+
+
+def test_export_survey_fields_doesnt_include_survey_fields(simple_project):
+    """For the simple project there is no survey. But we should still
+    be able to call this method anyway.
+    """
+    records = simple_project.export_records(export_survey_fields=True)
+    for record in records:
+        assert "redcap_survey_identifier" not in record
+        assert "demographics_timestamp" not in record
+
+
+def test_export_checkbox_labels(simple_project):
+    checkbox_label = simple_project.export_records(
+        raw_or_label="label", export_checkbox_labels=True
+    )[0]["matcheck1___1"]
+    assert checkbox_label == "Foo"
+
+
+def test_export_always_include_def_field(simple_project):
+    # If we just ask for a form, must also get def_field in there
+    records = simple_project.export_records(forms=["imaging"])
+    for record in records:
+        assert simple_project.def_field in record
+    # still need it def_field even if not asked for in form and fields
+    records = simple_project.export_records(forms=["imaging"], fields=["foo_score"])
+    for record in records:
+        assert simple_project.def_field in record
+    # If we just ask for some fields, still need def_field
+    records = simple_project.export_records(fields=["foo_score"])
+    for record in records:
+        assert simple_project.def_field in record
+
+
+def test_export_data_access_groups(simple_project):
+    records = simple_project.export_records(export_data_access_groups=True)
+    for record in records:
+        assert "redcap_data_access_group" in record
+    # When not passed, that key shouldn't be there
+    records = simple_project.export_records()
+    for record in records:
+        assert not "redcap_data_access_group" in record
 
 
 def test_export_methods_handle_empty_data_error(simple_project, mocker):
@@ -173,26 +282,27 @@ def test_export_methods_handle_empty_data_error(simple_project, mocker):
     assert dataframe.empty
 
 
+def test_import_records(simple_project):
+    data = simple_project.export_records()
+    response = simple_project.import_records(data)
+
+    assert "count" in response
+    assert not "error" in response
+
+
+def test_bad_import_throws_exception(simple_project):
+    data = simple_project.export_records()
+    data[0]["non_existent_key"] = "foo"
+
+    with pytest.raises(RedcapError) as assert_context:
+        simple_project.import_records(data)
+
+    assert "error" in repr(assert_context)
+
+
 def test_df_import(simple_project):
     dataframe = simple_project.export_records(format="df")
     response = simple_project.import_records(dataframe)
 
     assert "count" in response
     assert not "error" in response
-
-
-# Right now it seems like this isn't acutally testing the date formatting?
-# just passing through a bogus option still passes the test. Consider modifying method
-# to strictly enforce these options, or removing this test.
-@pytest.mark.parametrize(
-    "record, date_format",
-    [
-        ([{"study_id": "1", "dob": "2000-01-01"}], "YMD"),
-        ([{"study_id": "1", "dob": "31/01/2000"}], "DMY"),
-        ([{"study_id": "1", "dob": "12/31/2000"}], "MDY"),
-    ],
-)
-def test_import_date_formatting(simple_project, record, date_format):
-    response = simple_project.import_records(record, date_format=date_format)
-
-    assert response["count"] == 1
