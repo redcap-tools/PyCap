@@ -37,6 +37,7 @@ def handle_simple_project_arms_request(**kwargs) -> MockResponse:
 
 
 def handle_long_project_arms_request(**kwargs) -> MockResponse:
+    """Give back list of arms for long project"""
     headers = kwargs["headers"]
     resp = [{"arm_num": 1, "name": "test"}]
 
@@ -52,9 +53,17 @@ def handle_simple_project_events_request(**kwargs) -> MockResponse:
 
 
 def handle_long_project_events_request(**kwargs) -> MockResponse:
-    """Handle events export, used at project initialization"""
+    """Give back list of events for long project"""
     headers = kwargs["headers"]
     resp = [{"unique_event_name": "raw"}]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_form_event_mapping_request(**kwargs) -> MockResponse:
+    """Handle form event mapping export for long project"""
+    headers = kwargs["headers"]
+    resp = [{"field_name": "record_id"}, {"field_name": "test"}]
 
     return (201, headers, json.dumps(resp))
 
@@ -129,6 +138,7 @@ def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
 
 
 def handle_long_project_metadata_request(**kwargs) -> MockResponse:
+    """Handle metadata export for long project"""
     headers = kwargs["headers"]
     resp = [
         {
@@ -191,12 +201,29 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
 
 
 def handle_long_project_records_request(**kwargs) -> MockResponse:
+    """Handle csv export for long project"""
     data = kwargs["data"]
+    # if the None value gets returned it means the test failed
+    resp = None
     headers = kwargs["headers"]
-
+    # data import
     if "returnContent" in data:
         resp = {"count": 1}
-    pass
+
+        return (201, headers, json.dumps(resp))
+    if "csv" in data["format"]:
+        resp = "record_id,test,redcap_event_name\n1,1,raw"
+        headers = {"content-type": "text/csv; charset=utf-8"}
+    elif "raw" in data["events[0]"]:
+        resp = json.dumps(
+            [
+                {"record_id": "1", "test": "test1"},
+                {"record_id": "2", "test": "test"},
+            ]
+        )
+
+    return (201, headers, resp)
+
 
 def handle_user_request(**kwargs) -> MockResponse:
     """Handle user export"""
@@ -245,12 +272,12 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
     return handlers_dict[request_type]
 
 
-
 def get_long_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
         "arm": handle_long_project_arms_request,
         "event": handle_long_project_events_request,
+        "formEventMapping": handle_form_event_mapping_request,
         "metadata": handle_long_project_metadata_request,
         "record": handle_long_project_records_request,
         "version": handle_version_request,
