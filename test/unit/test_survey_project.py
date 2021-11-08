@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-"""Test suite for Project class against mocked REDCap server"""
+"""Test suite for Project class with survey against mocked REDCap server"""
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 from test.unit.callback_utils import get_survey_project_request_handler, parse_request
