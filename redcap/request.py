@@ -156,11 +156,8 @@ class RCRequest(object):
             not_pre = required - pl_keys
             raise RCAPIError("Required keys: %s" % ", ".join(not_pre))
         # Check content, raise with err_msg if not good
-        try:
-            if self.payload["content"] != req_content:
-                raise RCAPIError(err_msg)
-        except KeyError as key_fail:
-            raise RCAPIError("content not in payload") from key_fail
+        if self.payload["content"] != req_content:
+            raise RCAPIError(err_msg)
 
     def execute(self, **kwargs):
         """Execute the API request and return data
