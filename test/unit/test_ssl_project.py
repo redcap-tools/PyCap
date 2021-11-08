@@ -14,7 +14,7 @@ from redcap import Project
 def ssl_project(project_urls, project_token, mocked_responses) -> Project:
     """Mocked simple REDCap project, without verified ssl"""
 
-    def request_callback_simple(req):
+    def request_callback_ssl(req):
         request_data, request_headers, request_type = parse_request(req)
         request_handler = get_simple_project_request_handler(request_type)
         response = request_handler(data=request_data, headers=request_headers)
@@ -24,7 +24,7 @@ def ssl_project(project_urls, project_token, mocked_responses) -> Project:
     mocked_responses.add_callback(
         responses.POST,
         ssl_project_url,
-        callback=request_callback_simple,
+        callback=request_callback_ssl,
         content_type="application/json",
     )
 
