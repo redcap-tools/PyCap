@@ -225,6 +225,29 @@ def handle_long_project_records_request(**kwargs) -> MockResponse:
     return (201, headers, resp)
 
 
+def handle_survey_project_records_request(**kwargs) -> MockResponse:
+    """Handle export with survey fields requested"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # if the None value gets returned it means the test failed
+    resp = None
+    if data["exportSurveyFields"]:
+        resp = [
+            {
+                "field_name": "record_id",
+                "redcap_survey_identifier": "test",
+                "demographics_timestamp": "a_real_date",
+            },
+            {
+                "field_name": "test",
+                "redcap_survey_identifier": "test",
+                "demographics_timestamp": "a_real_date",
+            },
+        ]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_user_request(**kwargs) -> MockResponse:
     """Handle user export"""
     headers = kwargs["headers"]
@@ -280,6 +303,19 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "formEventMapping": handle_form_event_mapping_request,
         "metadata": handle_long_project_metadata_request,
         "record": handle_long_project_records_request,
+        "version": handle_version_request,
+    }
+
+    return handlers_dict[request_type]
+
+
+def get_survey_project_request_handler(request_type: str) -> Callable:
+    """Given a request type, extract the handler function"""
+    handlers_dict = {
+        "arm": handle_simple_project_arms_request,
+        "event": handle_simple_project_events_request,
+        "metadata": handle_simple_project_metadata_request,
+        "record": handle_survey_project_records_request,
         "version": handle_version_request,
     }
 
