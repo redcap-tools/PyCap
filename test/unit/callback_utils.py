@@ -165,6 +165,7 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
     """Handle records import/export request"""
     data = kwargs["data"]
     headers = kwargs["headers"]
+    status_code = 201
     # record import
     if "returnContent" in data:
         if "non_existent_key" in data["data"][0]:
@@ -176,7 +177,7 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
         resp = "record_id,test,first_name,study_id\n1,1,Peter,1"
         headers = {"content-type": "text/csv; charset=utf-8"}
         # don't want to convert this response to json
-        return (201, headers, resp)
+        return (status_code, headers, resp)
 
     elif "exportDataAccessGroups" in data:
         resp = [
@@ -191,13 +192,20 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
         ]
     elif "label" in data.get("rawOrLabel"):
         resp = [{"matcheck1___1": "Foo"}]
+    # mock a malformed request errors
+    elif "bad_request" in str(data):
+        status_code = 400
+        resp = {}
+    elif "server_error" in str(data):
+        status_code = 500
+        resp = {}
     else:
         resp = [
             {"record_id": "1", "test": "test1"},
             {"record_id": "2", "test": "test"},
         ]
 
-    return (201, headers, json.dumps(resp))
+    return (status_code, headers, json.dumps(resp))
 
 
 def handle_long_project_records_request(**kwargs) -> MockResponse:

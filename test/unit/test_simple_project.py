@@ -61,6 +61,17 @@ def test_verify_ssl_defaults_to_true(simple_project):
 # pylint: enable=protected-access
 
 
+def test_server_error_produces_redcap_error(simple_project):
+    # trigger the "server error" test with the "server_error" field
+    with pytest.raises(RedcapError):
+        simple_project.export_records(filter_logic=["server_error"])
+
+
+def test_bad_request_produces_redcap_error(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_records(filter_logic=["bad_request"])
+
+
 def test_get_version(simple_project):
     assert simple_project.redcap_version == semantic_version.Version("11.2.3")
 
