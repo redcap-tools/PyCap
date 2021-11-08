@@ -1,4 +1,6 @@
 """Test fixtures for unit tests only"""
+from typing import Dict
+
 import pytest
 import responses
 
@@ -10,7 +12,7 @@ def project_token() -> str:
 
 
 @pytest.fixture(scope="module")
-def project_urls() -> dict[str]:
+def project_urls() -> Dict[str, str]:
     """Different urls for different mock projects"""
     return {
         "bad_url": "https://redcap.badproject.edu/api",

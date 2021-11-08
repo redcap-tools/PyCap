@@ -1,16 +1,16 @@
 """Utility functions for unit test callbacks"""
 
 import json
-from typing import Callable
+from typing import Callable, List, Tuple, Union
 
 from urllib import parse
 
 from requests import Request
 
-MockResponse = tuple[int, dict, dict]
+MockResponse = Tuple[int, dict, dict]
 
 
-def parse_request(req: Request) -> list[dict, str]:
+def parse_request(req: Request) -> List[Union[dict, str]]:
     """Extract the body of a request into a dict"""
     parsed = parse.urlparse(f"?{req.body}")
     data = parse.parse_qs(parsed.query)
