@@ -145,6 +145,9 @@ them with `poetry add/remove <https://python-poetry.org/docs/master/basic-usage/
 and update the :code:`requirements.txt` with
 `poetry export <https://python-poetry.org/docs/master/cli/#export>`_ for the CI to run
 (until I figure out the best way to actually run :code:`poetry` in CI)
+::
+
+    $ poetry export -f requirements.txt --output requirements.txt --dev -E data_science
 
 Finally, start a pull request!
 
