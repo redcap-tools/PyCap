@@ -51,6 +51,16 @@ def test_init(simple_project):
     assert isinstance(simple_project, Project)
 
 
+# pylint: disable=protected-access
+def test_verify_ssl_defaults_to_true(simple_project):
+    post_kwargs = simple_project._kwargs()
+    assert "verify" in post_kwargs
+    assert post_kwargs["verify"]
+
+
+# pylint: enable=protected-access
+
+
 def test_get_version(simple_project):
     assert simple_project.redcap_version == semantic_version.Version("11.2.3")
 
