@@ -7,7 +7,7 @@ from test.unit.callback_utils import get_long_project_request_handler, parse_req
 import pytest
 import responses
 
-from redcap import Project
+from redcap import Project, RedcapError
 
 
 @pytest.fixture(scope="module")
@@ -33,6 +33,13 @@ def long_project(project_urls, project_token, mocked_responses) -> Project:
 
 def test_init(long_project):
     assert isinstance(long_project, Project)
+
+
+def test_metadata_import_handles_api_error(long_project):
+    metadata = long_project.export_metadata()
+
+    with pytest.raises(RedcapError):
+        long_project.import_metadata(metadata)
 
 
 def test_long_attrs_are_populated(long_project):

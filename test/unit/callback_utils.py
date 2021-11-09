@@ -171,16 +171,21 @@ def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
 
 def handle_long_project_metadata_request(**kwargs) -> MockResponse:
     """Handle metadata export for long project"""
+    data = kwargs["data"]
     headers = kwargs["headers"]
-    resp = [
-        {
-            "field_name": "record_id",
-            "field_label": "Record ID",
-            "form_name": "Test Form",
-            "arm_num": 1,
-            "name": "test",
-        }
-    ]
+    # import metadata
+    if "data" in data:
+        resp = {"error": "test error"}
+    else:
+        resp = [
+            {
+                "field_name": "record_id",
+                "field_label": "Record ID",
+                "form_name": "Test Form",
+                "arm_num": 1,
+                "name": "test",
+            }
+        ]
 
     return (201, headers, json.dumps(resp))
 
