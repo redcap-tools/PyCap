@@ -100,7 +100,7 @@ def handle_form_event_mapping_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_file_request(**kwargs) -> MockResponse:
+def handle_simple_project_file_request(**kwargs) -> MockResponse:
     """Handle file import/export requests"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -111,6 +111,24 @@ def handle_file_request(**kwargs) -> MockResponse:
         headers["content-type"] = "text/plain;name=data.txt"
 
     return (201, headers, json.dumps(resp))
+
+
+# pylint: disable=unused-argument
+def handle_long_project_file_request(**kwargs) -> MockResponse:
+    """Handle file export requests"""
+    # test using blank headers
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = {}
+    # file export
+    if " filename" not in str(data):
+        # name of the data file that was imported
+        headers["content-type"] = "text/plain;name=data.txt"
+
+    return (201, headers, json.dumps(resp))
+
+
+# pylint: enable=unused-argument
 
 
 def handle_generate_next_record_name_request(**kwargs) -> MockResponse:
@@ -127,7 +145,13 @@ def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
     headers = kwargs["headers"]
     # import_metadata
     if "data" in data:
-        data_len = len(json.loads(data["data"][0]))
+        if "csv" in data["format"]:
+            # count newlines to infer number of records
+            newline_count = str(data["data"][0].count("\n") - 1)
+            data_len = json.loads(str.encode(newline_count))
+        else:
+            data_len = len(json.loads(data["data"][0]))
+
         resp = json.dumps(data_len)
         return (201, headers, resp)
     # exporting metadata
@@ -182,9 +206,18 @@ def handle_long_project_metadata_request(**kwargs) -> MockResponse:
                 "field_name": "record_id",
                 "field_label": "Record ID",
                 "form_name": "Test Form",
+                "field_type": "text",
                 "arm_num": 1,
                 "name": "test",
-            }
+            },
+            {
+                "field_name": "file",
+                "field_label": "test",
+                "form_name": "Test Form",
+                "field_type": "file",
+                "arm_num": 1,
+                "name": "file",
+            },
         ]
 
     return (201, headers, json.dumps(resp))
@@ -355,7 +388,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "arm": handle_simple_project_arms_request,
         "event": handle_simple_project_events_request,
         "exportFieldNames": handle_export_field_names_request,
-        "file": handle_file_request,
+        "file": handle_simple_project_file_request,
         "generateNextRecordName": handle_generate_next_record_name_request,
         "metadata": handle_simple_project_metadata_request,
         "project": handle_project_info_request,
@@ -372,6 +405,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
     handlers_dict = {
         "arm": handle_long_project_arms_request,
         "event": handle_long_project_events_request,
+        "file": handle_long_project_file_request,
         "formEventMapping": handle_form_event_mapping_request,
         "metadata": handle_long_project_metadata_request,
         "record": handle_long_project_records_request,

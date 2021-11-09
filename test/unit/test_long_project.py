@@ -35,6 +35,12 @@ def test_init(long_project):
     assert isinstance(long_project, Project)
 
 
+def test_file_export(long_project):
+    record, field = "1", "file"
+    content, _ = long_project.export_file(record, field, event="raw", repeat_instance=1)
+    assert isinstance(content, bytes)
+
+
 def test_metadata_import_handles_api_error(long_project):
     metadata = long_project.export_metadata()
 

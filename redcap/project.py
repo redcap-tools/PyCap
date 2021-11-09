@@ -732,6 +732,7 @@ class Project(object):
             payload["repeat_instance"] = str(repeat_instance)
         content, headers = self._call_api(payload, "exp_file")
         # REDCap adds some useful things in content-type
+        content_map = {}
         if "content-type" in headers:
             splat = [
                 key_values.strip() for key_values in headers["content-type"].split(";")
@@ -742,8 +743,7 @@ class Project(object):
                 if "=" in key_values
             ]
             content_map = dict(key_values)
-        else:
-            content_map = {}
+
         return content, content_map
 
     def import_file(

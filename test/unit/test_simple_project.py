@@ -298,6 +298,20 @@ def test_metadata_import(simple_project):
     assert response == len(data)
 
 
+def test_metadata_csv_import(simple_project):
+    metadata_csv_export = simple_project.export_metadata(format="csv")
+    response = simple_project.import_metadata(metadata_csv_export, format="csv")
+
+    assert response == 1
+
+
+def test_metadata_df_import(simple_project):
+    dataframe = simple_project.export_metadata(format="df")
+    response = simple_project.import_metadata(dataframe)
+
+    assert response == 1
+
+
 def test_reduced_metadata_import(simple_project):
     original_data = simple_project.export_metadata()
     # reducing the metadata
