@@ -193,17 +193,34 @@ def handle_project_info_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_simple_project_delete_records(data: dict) -> int:
+    """Given simple project delete request, determine how many records were deleted"""
+    resp = 0
+    for key in data:
+        if "records[" in key:
+            resp += 1
+    return resp
+
+
+def handle_simple_project_import_records(data: dict) -> dict:
+    """Given simple project import request, determine response"""
+    if "non_existent_key" in data["data"][0]:
+        resp = {"error": "invalid field"}
+    else:
+        resp = {"count": 1}
+
+    return resp
+
+
 def handle_simple_project_records_request(**kwargs) -> MockResponse:
     """Handle records import/export request"""
     data = kwargs["data"]
     headers = kwargs["headers"]
     status_code = 201
-    # record import
-    if "returnContent" in data:
-        if "non_existent_key" in data["data"][0]:
-            resp = {"error": "invalid field"}
-        else:
-            resp = {"count": 1}
+    if "delete" in data.get("action", "other"):
+        resp = handle_simple_project_delete_records(data)
+    elif "returnContent" in data:
+        resp = handle_simple_project_import_records(data)
     # record export
     elif "csv" in data["format"]:
         resp = "record_id,test,first_name,study_id\n1,1,Peter,1"
@@ -222,7 +239,7 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
                 "redcap_data_access_group": "group1",
             },
         ]
-    elif "label" in data.get("rawOrLabel"):
+    elif "label" in data.get("rawOrLabel", "raw"):
         resp = [{"matcheck1___1": "Foo"}]
     elif data.get("dateRangeBegin") and data.get("dateRangeEnd"):
         resp = [{"record_id": "1", "test": "test1"}]

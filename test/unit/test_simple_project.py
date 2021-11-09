@@ -192,6 +192,27 @@ def test_generate_next_record_name(simple_project):
     assert next_name == 123
 
 
+def test_delete_records(simple_project):
+    response = simple_project.delete_records([1, 2, 3])
+
+    assert response == "3"
+
+
+def test_delete_records_passes_filters_as_arrays(simple_project, mocker):
+    mocked_api_call = mocker.patch.object(
+        simple_project, "_call_api", return_value=(None, None)
+    )
+
+    simple_project.delete_records([1, 2])
+
+    args, _ = mocked_api_call.call_args
+
+    payload = args[0]
+
+    assert payload["records[0]"] == 1
+    assert payload["records[1]"] == 2
+
+
 def test_export_field_names(simple_project):
     export_field_names = simple_project.export_field_names()
 
