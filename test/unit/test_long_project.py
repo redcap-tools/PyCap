@@ -64,6 +64,11 @@ def test_fem_export(long_project):
         assert isinstance(arm, dict)
 
 
+def test_fem_export_stricly_enforces_format(long_project):
+    with pytest.raises(ValueError):
+        long_project.export_fem(format="unsupported")
+
+
 def test_export_to_df_gives_multi_index(long_project):
     long_dataframe = long_project.export_records(format="df", event_name="raw")
 

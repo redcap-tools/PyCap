@@ -60,6 +60,38 @@ def handle_long_project_events_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_export_field_names_request(**kwargs) -> MockResponse:
+    """Give back list of project export field names"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = [
+        {
+            "original_field_name": "record_id",
+            "choice_value": "",
+            "export_field_name": "record_id",
+        },
+        {
+            "original_field_name": "test",
+            "choice_value": "1",
+            "export_field_name": "test___1",
+        },
+    ]
+
+    if "csv" in str(data):
+        headers = {"content-type": "text/csv; charset=utf-8"}
+        resp = (
+            "original_field_name,choice_value,export_field_name\n",
+            "record_id,,record_id\ntest,1,test___1",
+        )
+
+        if "field" in str(data):
+            resp = "original_field_name,choice_value,export_field_name\ntest,1,test___1"
+
+        return (201, headers, resp)
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_form_event_mapping_request(**kwargs) -> MockResponse:
     """Handle form event mapping export for long project"""
     headers = kwargs["headers"]
@@ -192,6 +224,8 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
         ]
     elif "label" in data.get("rawOrLabel"):
         resp = [{"matcheck1___1": "Foo"}]
+    elif data.get("dateRangeBegin") and data.get("dateRangeEnd"):
+        resp = [{"record_id": "1", "test": "test1"}]
     # mock a malformed request errors
     elif "bad_request" in str(data):
         status_code = 400
@@ -276,11 +310,18 @@ def handle_user_request(**kwargs) -> MockResponse:
 
 
 # pylint: disable=unused-argument
-def handle_version_request(**kwargs) -> MockResponse:
+def handle_simple_project_version_request(**kwargs) -> MockResponse:
     """Handle REDCap version request"""
     resp = b"11.2.3"
     headers = {"content-type": "text/csv; charset=utf-8"}
     return (201, headers, resp)
+
+
+def handle_long_project_version_request(**kwargs) -> MockResponse:
+    """Handle REDCap version request, where version is unavailable"""
+    resp = {"error": "no version found"}
+    headers = {"content-type": "text/csv; charset=utf-8"}
+    return (201, headers, json.dumps(resp))
 
 
 # pylint: enable=unused-argument
@@ -291,13 +332,14 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
     handlers_dict = {
         "arm": handle_simple_project_arms_request,
         "event": handle_simple_project_events_request,
+        "exportFieldNames": handle_export_field_names_request,
         "file": handle_file_request,
         "generateNextRecordName": handle_generate_next_record_name_request,
         "metadata": handle_simple_project_metadata_request,
         "project": handle_project_info_request,
         "record": handle_simple_project_records_request,
         "user": handle_user_request,
-        "version": handle_version_request,
+        "version": handle_simple_project_version_request,
     }
 
     return handlers_dict[request_type]
@@ -311,7 +353,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "formEventMapping": handle_form_event_mapping_request,
         "metadata": handle_long_project_metadata_request,
         "record": handle_long_project_records_request,
-        "version": handle_version_request,
+        "version": handle_long_project_version_request,
     }
 
     return handlers_dict[request_type]
@@ -324,7 +366,7 @@ def get_survey_project_request_handler(request_type: str) -> Callable:
         "event": handle_simple_project_events_request,
         "metadata": handle_simple_project_metadata_request,
         "record": handle_survey_project_records_request,
-        "version": handle_version_request,
+        "version": handle_simple_project_version_request,
     }
 
     return handlers_dict[request_type]

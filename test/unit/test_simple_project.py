@@ -4,9 +4,9 @@
 # pylint: disable=redefined-outer-name
 import os
 
+from datetime import datetime
 from io import StringIO
 
-from test.unit.callback_utils import get_simple_project_request_handler, parse_request
 
 import pandas as pd
 import pytest
@@ -14,6 +14,12 @@ import responses
 import semantic_version
 
 from redcap import Project, RedcapError
+
+# pylint: disable=wrong-import-order
+# pylint thinks that this is from the test stdlib rather than a project module
+from test.unit.callback_utils import get_simple_project_request_handler, parse_request
+
+# pylint: enable=wrong-import-order
 
 
 @pytest.fixture(scope="module")
@@ -37,6 +43,19 @@ def simple_project(project_urls, project_token, mocked_responses) -> Project:
     return Project(simple_project_url, project_token)
 
 
+def is_json(data):
+    """Shorthand assertion for a json data structure"""
+    is_list = isinstance(data, list)
+
+    is_list_of_dicts = True
+    for record in data:
+        if not isinstance(record, dict):
+            is_list_of_dicts = False
+            break
+
+    return is_list and is_list_of_dicts
+
+
 def test_bad_creds(project_urls, project_token):
     # this url is "bad" because we didn't set up an response fixture for it
     bad_url = project_urls["bad_url"]
@@ -45,6 +64,11 @@ def test_bad_creds(project_urls, project_token):
         Project(bad_url, project_token)
     with pytest.raises(RedcapError):
         Project(bad_url, "1")
+
+
+def test_filter_metadata_enforces_strict_keys(simple_project):
+    with pytest.raises(KeyError):
+        simple_project.filter_metadata("fake_column")
 
 
 def test_init(simple_project):
@@ -74,6 +98,13 @@ def test_bad_request_produces_redcap_error(simple_project):
 
 def test_get_version(simple_project):
     assert simple_project.redcap_version == semantic_version.Version("11.2.3")
+
+
+def test_life_goes_on_without_the_version(simple_project, mocker):
+    mocker.patch.object(simple_project, "_Project__rcv", side_effect=(Exception))
+
+    with pytest.raises(RedcapError):
+        simple_project.configure()
 
 
 def test_attrs(simple_project):
@@ -161,6 +192,24 @@ def test_generate_next_record_name(simple_project):
     assert next_name == 123
 
 
+def test_export_field_names(simple_project):
+    export_field_names = simple_project.export_field_names()
+
+    assert is_json(export_field_names)
+
+
+def test_export_df_field_names_single_field(simple_project):
+    export_field_name = simple_project.export_field_names(format="df", field="test")
+
+    assert isinstance(export_field_name, pd.DataFrame)
+    assert len(export_field_name) == 1
+
+
+def test_export_field_names_strictly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_field_names(format="unsupported")
+
+
 def test_export_project_info(simple_project):
     info = simple_project.export_project_info()
 
@@ -208,6 +257,11 @@ def test_metadata_export_passes_filters_as_arrays(simple_project, mocker):
     assert payload["forms[2]"] == "form2"
 
 
+def test_metadata_export_strictly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_metadata(format="unsupported")
+
+
 def test_metadata_import(simple_project):
     data = simple_project.export_metadata()
     response = simple_project.import_metadata(data)
@@ -227,10 +281,7 @@ def test_reduced_metadata_import(simple_project):
 def test_json_export(simple_project):
     data = simple_project.export_records()
 
-    assert isinstance(data, list)
-
-    for record in data:
-        assert isinstance(record, dict)
+    assert is_json(data)
 
 
 def test_csv_export(simple_project):
@@ -246,6 +297,20 @@ def test_df_export(simple_project):
     assert isinstance(dataframe, pd.DataFrame)
     # Test it's a normal index
     assert hasattr(dataframe.index, "name")
+
+
+def test_export_with_date_filters(simple_project):
+    all_records = simple_project.export_records()
+    limited_records = simple_project.export_records(
+        date_begin=datetime(2021, 11, 1), date_end=datetime(2021, 11, 2)
+    )
+
+    assert len(all_records) > len(limited_records)
+
+
+def test_export_records_strictly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_records(format="unsupported")
 
 
 def test_fem_export_passes_filters_as_arrays(simple_project, mocker):

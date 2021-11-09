@@ -117,13 +117,14 @@ class Project(object):
     def __rcv(self):
         payload = self.__basepl("version")
         rcv = self._call_api(payload, "version")[0].decode("utf-8")
+        resp = None
         if "error" in rcv:
             warnings.warn("Version information not available for this REDCap instance")
-            return ""
+            resp = ""
         if semantic_version.validate(rcv):
-            return semantic_version.Version(rcv)
+            resp = semantic_version.Version(rcv)
 
-        return rcv
+        return resp
 
     def is_longitudinal(self):
         """
@@ -394,7 +395,7 @@ class Project(object):
         filter_logic : string
             specify the filterLogic to be sent to the API.
         date_begin : datetime
-            for the dateRangeStart filtering of the API
+            for the dateRangeBegin filtering of the API
         date_end : datetime
             for the dateRangeEnd filtering snet to the API
 
