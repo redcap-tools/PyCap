@@ -115,7 +115,7 @@ def handle_simple_project_file_request(**kwargs) -> MockResponse:
 
 # pylint: disable=unused-argument
 def handle_long_project_file_request(**kwargs) -> MockResponse:
-    """Handle file export requests"""
+    """Handle file import/export/delete requests"""
     # test using blank headers
     data = kwargs["data"]
     headers = kwargs["headers"]

@@ -2,6 +2,8 @@
 """Test suite for Project class, with long project, against mocked REDCap server"""
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
+import os
+
 from test.unit.callback_utils import get_long_project_request_handler, parse_request
 
 import pytest
@@ -39,6 +41,21 @@ def test_file_export(long_project):
     record, field = "1", "file"
     content, _ = long_project.export_file(record, field, event="raw", repeat_instance=1)
     assert isinstance(content, bytes)
+
+
+def test_file_import(long_project):
+    this_dir, _ = os.path.split(__file__)
+    upload_fname = os.path.join(this_dir, "data.txt")
+    with open(upload_fname, "r", encoding="UTF-8") as fobj:
+        long_project.import_file(
+            "1", "file", upload_fname, fobj, event="raw", repeat_instance=1
+        )
+
+
+def test_file_delete(long_project):
+    record, field = "1", "file"
+    response = long_project.delete_file(record, field, event="raw")
+    assert response == {}
 
 
 def test_metadata_import_handles_api_error(long_project):
