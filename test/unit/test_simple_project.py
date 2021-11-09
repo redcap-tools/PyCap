@@ -66,13 +66,21 @@ def test_bad_creds(project_urls, project_token):
         Project(bad_url, "1")
 
 
+def test_init(simple_project):
+    assert isinstance(simple_project, Project)
+
+
 def test_filter_metadata_enforces_strict_keys(simple_project):
     with pytest.raises(KeyError):
         simple_project.filter_metadata("fake_column")
 
 
-def test_init(simple_project):
-    assert isinstance(simple_project, Project)
+def test_metadata_type_catches_non_existent_fields(simple_project, capsys):
+    res = simple_project.metadata_type("fake_field")
+    out, _ = capsys.readouterr()
+
+    assert res == ""
+    assert "not in metadata field:fake_field" in out
 
 
 # pylint: disable=protected-access
@@ -359,6 +367,12 @@ def test_df_export_correctly_uses_df_kwargs(simple_project):
     assert "study_id" in dataframe
 
 
+def test_df_export_handles_eav_type(simple_project):
+    data = simple_project.export_records(format="df", type="eav")
+
+    assert isinstance(data, pd.DataFrame)
+
+
 def test_export_survey_fields_doesnt_include_survey_fields(simple_project):
     """For the simple project there is no survey. But we should still
     be able to call this method anyway.
@@ -387,6 +401,9 @@ def test_export_always_include_def_field(simple_project):
         assert simple_project.def_field in record
     # If we just ask for some fields, still need def_field
     records = simple_project.export_records(fields=["foo_score"])
+    for record in records:
+        assert simple_project.def_field in record
+    records = simple_project.export_records(fields=["record_id", "foo_score"])
     for record in records:
         assert simple_project.def_field in record
 
