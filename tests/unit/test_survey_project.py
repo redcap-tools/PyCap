@@ -2,12 +2,12 @@
 """Test suite for Project class with survey against mocked REDCap server"""
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
-from test.unit.callback_utils import get_survey_project_request_handler, parse_request
 
 import pytest
 import responses
 
 from redcap import Project
+from tests.unit.callback_utils import get_survey_project_request_handler, parse_request
 
 
 @pytest.fixture(scope="module")

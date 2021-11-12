@@ -14,16 +14,11 @@ import responses
 import semantic_version
 
 from redcap import Project, RedcapError
-
-# pylint: disable=wrong-import-order
-# pylint thinks that this is from the test stdlib rather than a project module
-from test.unit.callback_utils import (
+from tests.unit.callback_utils import (
     is_json,
     get_simple_project_request_handler,
     parse_request,
 )
-
-# pylint: enable=wrong-import-order
 
 
 @pytest.fixture(scope="module")
