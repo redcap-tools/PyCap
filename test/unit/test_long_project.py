@@ -4,7 +4,11 @@
 # pylint: disable=redefined-outer-name
 import os
 
-from test.unit.callback_utils import get_long_project_request_handler, parse_request
+from test.unit.callback_utils import (
+    is_json,
+    get_long_project_request_handler,
+    parse_request,
+)
 
 import pytest
 import responses
@@ -56,6 +60,12 @@ def test_file_delete(long_project):
     record, field = "1", "file"
     response = long_project.delete_file(record, field, event="raw")
     assert response == {}
+
+
+def test_export_survey_participants_list(long_project):
+    res = long_project.export_survey_participant_list(instrument="test", event="raw")
+
+    assert is_json(res)
 
 
 def test_metadata_import_handles_api_error(long_project):

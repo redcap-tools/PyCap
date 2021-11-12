@@ -17,7 +17,11 @@ from redcap import Project, RedcapError
 
 # pylint: disable=wrong-import-order
 # pylint thinks that this is from the test stdlib rather than a project module
-from test.unit.callback_utils import get_simple_project_request_handler, parse_request
+from test.unit.callback_utils import (
+    is_json,
+    get_simple_project_request_handler,
+    parse_request,
+)
 
 # pylint: enable=wrong-import-order
 
@@ -41,19 +45,6 @@ def simple_project(project_urls, project_token, mocked_responses) -> Project:
     )
 
     return Project(simple_project_url, project_token)
-
-
-def is_json(data):
-    """Shorthand assertion for a json data structure"""
-    is_list = isinstance(data, list)
-
-    is_list_of_dicts = True
-    for record in data:
-        if not isinstance(record, dict):
-            is_list_of_dicts = False
-            break
-
-    return is_list and is_list_of_dicts
 
 
 def test_bad_creds(project_urls, project_token):

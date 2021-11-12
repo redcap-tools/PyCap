@@ -10,6 +10,19 @@ from requests import Request
 MockResponse = Tuple[int, dict, dict]
 
 
+def is_json(data: List[dict]):
+    """Shorthand assertion for a json data structure"""
+    is_list = isinstance(data, list)
+
+    is_list_of_dicts = True
+    for record in data:
+        if not isinstance(record, dict):
+            is_list_of_dicts = False
+            break
+
+    return is_list and is_list_of_dicts
+
+
 def parse_request(req: Request) -> List[Union[dict, str]]:
     """Extract the body of a request into a dict"""
     parsed = parse.urlparse(f"?{req.body}")
@@ -382,6 +395,41 @@ def handle_long_project_version_request(**kwargs) -> MockResponse:
 # pylint: enable=unused-argument
 
 
+def handle_long_project_survey_participants_request(**kwargs) -> MockResponse:
+    """Get the survey participants for an instrument"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+
+    if "test" in data.get("instrument") and "raw" in data.get("event"):
+        resp = [
+            {
+                "email": "test1@gmail.com",
+                "email_occurrence": 1,
+                "identifier": "",
+                "record": "",
+                "invitation_sent_status": 0,
+                "invitation_send_time": "",
+                "response_status": 2,
+                "survey_access_code": "",
+                "survey_link": "",
+            },
+            {
+                "email": "test2@gmail.com",
+                "email_occurrence": 1,
+                "identifier": "",
+                "record": "",
+                "invitation_sent_status": 0,
+                "invitation_send_time": "",
+                "response_status": 2,
+                "survey_access_code": "",
+                "survey_link": "",
+            },
+        ]
+
+    return (201, headers, json.dumps(resp))
+
+
 def get_simple_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
@@ -408,6 +456,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "file": handle_long_project_file_request,
         "formEventMapping": handle_form_event_mapping_request,
         "metadata": handle_long_project_metadata_request,
+        "participantList": handle_long_project_survey_participants_request,
         "record": handle_long_project_records_request,
         "version": handle_long_project_version_request,
     }

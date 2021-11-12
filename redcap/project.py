@@ -903,7 +903,7 @@ class Project(object):
         payload["instrument"] = instrument
         if event:
             payload["event"] = event
-        return self._call_api(payload, "exp_survey_participant_list")
+        return self._call_api(payload, "exp_survey_participant_list")[0]
 
     def generate_next_record_name(self):
         """Return the next record name for auto-numbering records"""
