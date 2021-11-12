@@ -460,3 +460,20 @@ def test_df_import(simple_project):
 
     assert "count" in response
     assert not "error" in response
+
+
+def test_reports_json_export(simple_project):
+    report = simple_project.export_reports(report_id="1")
+
+    assert is_json(report)
+
+
+def test_reports_df_export(simple_project):
+    report = simple_project.export_reports(report_id="1", format="df")
+
+    assert isinstance(report, pd.DataFrame)
+
+
+def test_reports_export_stricly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_reports(report_id="1", format="unsupported")

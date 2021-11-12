@@ -121,3 +121,9 @@ def test_import_dataframe(long_project):
 
     assert "count" in response
     assert "error" not in response
+
+
+def test_reports_df_export(long_project):
+    report = long_project.export_reports(report_id="1", format="df")
+
+    assert isinstance(report, pd.DataFrame)

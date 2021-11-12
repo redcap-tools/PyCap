@@ -358,6 +358,49 @@ def handle_survey_project_records_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_simple_project_reports_request(**kwargs) -> MockResponse:
+    """Export report data from project"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+    # We must receive a report id in order to give a response
+    if "1" in data.get("report_id"):
+        if "csv" in data["format"]:
+            resp = "record_id,date_col,test_col_1,test_col_2\n1,2015-04-08,test,1"
+            headers = {"content-type": "text/csv; charset=utf-8"}
+            return (201, headers, resp)
+
+        resp = [
+            {
+                "record_id": "1",
+                "date_col": "2015-04-08",
+                "test_col_1": "test",
+                "test_col_2": "1",
+            },
+            {
+                "neo_data_request_id": "2",
+                "date_col": "2015-04-01",
+                "test_col_1": "test",
+                "test_col_2": "",
+            },
+        ]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_long_project_reports_request(**kwargs) -> MockResponse:
+    """Export report data from long project, csv only for now"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+    # We must receive a report id in order to give a response
+    if "1" in data.get("report_id") and "csv" in data["format"]:
+        resp = "record_id,redcap_event_name,test_col_1,test_col_2\n1,raw,test,1"
+        headers = {"content-type": "text/csv; charset=utf-8"}
+
+    return (201, headers, resp)
+
+
 def handle_user_request(**kwargs) -> MockResponse:
     """Handle user export"""
     headers = kwargs["headers"]
@@ -441,6 +484,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "metadata": handle_simple_project_metadata_request,
         "project": handle_project_info_request,
         "record": handle_simple_project_records_request,
+        "report": handle_simple_project_reports_request,
         "user": handle_user_request,
         "version": handle_simple_project_version_request,
     }
@@ -458,6 +502,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "metadata": handle_long_project_metadata_request,
         "participantList": handle_long_project_survey_participants_request,
         "record": handle_long_project_records_request,
+        "report": handle_long_project_reports_request,
         "version": handle_long_project_version_request,
     }
 
