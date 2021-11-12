@@ -1,5 +1,5 @@
 [MASTER]
-ignore=docs,setup.py
+ignore=docs
 
 [MESSAGES CONTROL]
 

@@ -4,9 +4,9 @@
 # pylint: disable=redefined-outer-name
 import os
 
+from datetime import datetime
 from io import StringIO
 
-from test.unit.callback_utils import get_simple_project_request_handler, parse_request
 
 import pandas as pd
 import pytest
@@ -14,6 +14,11 @@ import responses
 import semantic_version
 
 from redcap import Project, RedcapError
+from tests.unit.callback_utils import (
+    is_json,
+    get_simple_project_request_handler,
+    parse_request,
+)
 
 
 @pytest.fixture(scope="module")
@@ -51,6 +56,19 @@ def test_init(simple_project):
     assert isinstance(simple_project, Project)
 
 
+def test_filter_metadata_enforces_strict_keys(simple_project):
+    with pytest.raises(KeyError):
+        simple_project.filter_metadata("fake_column")
+
+
+def test_metadata_type_catches_non_existent_fields(simple_project, capsys):
+    res = simple_project.metadata_type("fake_field")
+    out, _ = capsys.readouterr()
+
+    assert res == ""
+    assert "not in metadata field:fake_field" in out
+
+
 # pylint: disable=protected-access
 def test_verify_ssl_defaults_to_true(simple_project):
     post_kwargs = simple_project._kwargs()
@@ -61,8 +79,26 @@ def test_verify_ssl_defaults_to_true(simple_project):
 # pylint: enable=protected-access
 
 
+def test_server_error_produces_redcap_error(simple_project):
+    # trigger the "server error" test with the "server_error" field
+    with pytest.raises(RedcapError):
+        simple_project.export_records(filter_logic=["server_error"])
+
+
+def test_bad_request_produces_redcap_error(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_records(filter_logic=["bad_request"])
+
+
 def test_get_version(simple_project):
     assert simple_project.redcap_version == semantic_version.Version("11.2.3")
+
+
+def test_life_goes_on_without_the_version(simple_project, mocker):
+    mocker.patch.object(simple_project, "_Project__rcv", side_effect=(Exception))
+
+    with pytest.raises(RedcapError):
+        simple_project.configure()
 
 
 def test_attrs(simple_project):
@@ -150,6 +186,45 @@ def test_generate_next_record_name(simple_project):
     assert next_name == 123
 
 
+def test_delete_records(simple_project):
+    response = simple_project.delete_records([1, 2, 3])
+
+    assert response == "3"
+
+
+def test_delete_records_passes_filters_as_arrays(simple_project, mocker):
+    mocked_api_call = mocker.patch.object(
+        simple_project, "_call_api", return_value=(None, None)
+    )
+
+    simple_project.delete_records([1, 2])
+
+    args, _ = mocked_api_call.call_args
+
+    payload = args[0]
+
+    assert payload["records[0]"] == 1
+    assert payload["records[1]"] == 2
+
+
+def test_export_field_names(simple_project):
+    export_field_names = simple_project.export_field_names()
+
+    assert is_json(export_field_names)
+
+
+def test_export_df_field_names_single_field(simple_project):
+    export_field_name = simple_project.export_field_names(format="df", field="test")
+
+    assert isinstance(export_field_name, pd.DataFrame)
+    assert len(export_field_name) == 1
+
+
+def test_export_field_names_strictly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_field_names(format="unsupported")
+
+
 def test_export_project_info(simple_project):
     info = simple_project.export_project_info()
 
@@ -197,11 +272,30 @@ def test_metadata_export_passes_filters_as_arrays(simple_project, mocker):
     assert payload["forms[2]"] == "form2"
 
 
+def test_metadata_export_strictly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_metadata(format="unsupported")
+
+
 def test_metadata_import(simple_project):
     data = simple_project.export_metadata()
     response = simple_project.import_metadata(data)
 
     assert response == len(data)
+
+
+def test_metadata_csv_import(simple_project):
+    metadata_csv_export = simple_project.export_metadata(format="csv")
+    response = simple_project.import_metadata(metadata_csv_export, format="csv")
+
+    assert response == 1
+
+
+def test_metadata_df_import(simple_project):
+    dataframe = simple_project.export_metadata(format="df")
+    response = simple_project.import_metadata(dataframe)
+
+    assert response == 1
 
 
 def test_reduced_metadata_import(simple_project):
@@ -216,10 +310,7 @@ def test_reduced_metadata_import(simple_project):
 def test_json_export(simple_project):
     data = simple_project.export_records()
 
-    assert isinstance(data, list)
-
-    for record in data:
-        assert isinstance(record, dict)
+    assert is_json(data)
 
 
 def test_csv_export(simple_project):
@@ -235,6 +326,20 @@ def test_df_export(simple_project):
     assert isinstance(dataframe, pd.DataFrame)
     # Test it's a normal index
     assert hasattr(dataframe.index, "name")
+
+
+def test_export_with_date_filters(simple_project):
+    all_records = simple_project.export_records()
+    limited_records = simple_project.export_records(
+        date_begin=datetime(2021, 11, 1), date_end=datetime(2021, 11, 2)
+    )
+
+    assert len(all_records) > len(limited_records)
+
+
+def test_export_records_strictly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_records(format="unsupported")
 
 
 def test_fem_export_passes_filters_as_arrays(simple_project, mocker):
@@ -260,6 +365,12 @@ def test_df_export_correctly_uses_df_kwargs(simple_project):
     assert dataframe.index.name == "first_name"
     # the default index column is just a regular column
     assert "study_id" in dataframe
+
+
+def test_df_export_handles_eav_type(simple_project):
+    data = simple_project.export_records(format="df", type="eav")
+
+    assert isinstance(data, pd.DataFrame)
 
 
 def test_export_survey_fields_doesnt_include_survey_fields(simple_project):
@@ -290,6 +401,9 @@ def test_export_always_include_def_field(simple_project):
         assert simple_project.def_field in record
     # If we just ask for some fields, still need def_field
     records = simple_project.export_records(fields=["foo_score"])
+    for record in records:
+        assert simple_project.def_field in record
+    records = simple_project.export_records(fields=["record_id", "foo_score"])
     for record in records:
         assert simple_project.def_field in record
 
@@ -341,3 +455,20 @@ def test_df_import(simple_project):
 
     assert "count" in response
     assert not "error" in response
+
+
+def test_reports_json_export(simple_project):
+    report = simple_project.export_reports(report_id="1")
+
+    assert is_json(report)
+
+
+def test_reports_df_export(simple_project):
+    report = simple_project.export_reports(report_id="1", format="df")
+
+    assert isinstance(report, pd.DataFrame)
+
+
+def test_reports_export_stricly_enforces_format(simple_project):
+    with pytest.raises(ValueError):
+        simple_project.export_reports(report_id="1", format="unsupported")

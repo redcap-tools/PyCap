@@ -2,12 +2,18 @@
 """Test suite for Project class, with long project, against mocked REDCap server"""
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
-from test.unit.callback_utils import get_long_project_request_handler, parse_request
+import os
 
+import pandas as pd
 import pytest
 import responses
 
-from redcap import Project
+from redcap import Project, RedcapError
+from tests.unit.callback_utils import (
+    is_json,
+    get_long_project_request_handler,
+    parse_request,
+)
 
 
 @pytest.fixture(scope="module")
@@ -33,6 +39,40 @@ def long_project(project_urls, project_token, mocked_responses) -> Project:
 
 def test_init(long_project):
     assert isinstance(long_project, Project)
+
+
+def test_file_export(long_project):
+    record, field = "1", "file"
+    content, _ = long_project.export_file(record, field, event="raw", repeat_instance=1)
+    assert isinstance(content, bytes)
+
+
+def test_file_import(long_project):
+    this_dir, _ = os.path.split(__file__)
+    upload_fname = os.path.join(this_dir, "data.txt")
+    with open(upload_fname, "r", encoding="UTF-8") as fobj:
+        long_project.import_file(
+            "1", "file", upload_fname, fobj, event="raw", repeat_instance=1
+        )
+
+
+def test_file_delete(long_project):
+    record, field = "1", "file"
+    response = long_project.delete_file(record, field, event="raw")
+    assert response == {}
+
+
+def test_export_survey_participants_list(long_project):
+    res = long_project.export_survey_participant_list(instrument="test", event="raw")
+
+    assert is_json(res)
+
+
+def test_metadata_import_handles_api_error(long_project):
+    metadata = long_project.export_metadata()
+
+    with pytest.raises(RedcapError):
+        long_project.import_metadata(metadata)
 
 
 def test_long_attrs_are_populated(long_project):
@@ -64,6 +104,11 @@ def test_fem_export(long_project):
         assert isinstance(arm, dict)
 
 
+def test_fem_export_stricly_enforces_format(long_project):
+    with pytest.raises(ValueError):
+        long_project.export_fem(format="unsupported")
+
+
 def test_export_to_df_gives_multi_index(long_project):
     long_dataframe = long_project.export_records(format="df", event_name="raw")
 
@@ -76,3 +121,9 @@ def test_import_dataframe(long_project):
 
     assert "count" in response
     assert "error" not in response
+
+
+def test_reports_df_export(long_project):
+    report = long_project.export_reports(report_id="1", format="df")
+
+    assert isinstance(report, pd.DataFrame)

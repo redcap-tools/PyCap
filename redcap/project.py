@@ -117,13 +117,14 @@ class Project(object):
     def __rcv(self):
         payload = self.__basepl("version")
         rcv = self._call_api(payload, "version")[0].decode("utf-8")
+        resp = None
         if "error" in rcv:
             warnings.warn("Version information not available for this REDCap instance")
-            return ""
+            resp = ""
         if semantic_version.validate(rcv):
-            return semantic_version.Version(rcv)
+            resp = semantic_version.Version(rcv)
 
-        return rcv
+        return resp
 
     def is_longitudinal(self):
         """
@@ -394,7 +395,7 @@ class Project(object):
         filter_logic : string
             specify the filterLogic to be sent to the API.
         date_begin : datetime
-            for the dateRangeStart filtering of the API
+            for the dateRangeBegin filtering of the API
         date_end : datetime
             for the dateRangeEnd filtering snet to the API
 
@@ -538,13 +539,6 @@ class Project(object):
         else:
             new_fields = list(fields)
         return new_fields
-
-    def names_labels(self, do_print=False):
-        """Simple helper function to get all field names and labels"""
-        if do_print:
-            for name, label in zip(self.field_names, self.field_labels):
-                print("%s --> %s" % (str(name), str(label)))
-        return self.field_names, self.field_labels
 
     def import_records(
         self,
@@ -738,6 +732,7 @@ class Project(object):
             payload["repeat_instance"] = str(repeat_instance)
         content, headers = self._call_api(payload, "exp_file")
         # REDCap adds some useful things in content-type
+        content_map = {}
         if "content-type" in headers:
             splat = [
                 key_values.strip() for key_values in headers["content-type"].split(";")
@@ -748,8 +743,7 @@ class Project(object):
                 if "=" in key_values
             ]
             content_map = dict(key_values)
-        else:
-            content_map = {}
+
         return content, content_map
 
     def import_file(
@@ -909,7 +903,7 @@ class Project(object):
         payload["instrument"] = instrument
         if event:
             payload["event"] = event
-        return self._call_api(payload, "exp_survey_participant_list")
+        return self._call_api(payload, "exp_survey_participant_list")[0]
 
     def generate_next_record_name(self):
         """Return the next record name for auto-numbering records"""

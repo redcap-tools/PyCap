@@ -10,6 +10,19 @@ from requests import Request
 MockResponse = Tuple[int, dict, dict]
 
 
+def is_json(data: List[dict]):
+    """Shorthand assertion for a json data structure"""
+    is_list = isinstance(data, list)
+
+    is_list_of_dicts = True
+    for record in data:
+        if not isinstance(record, dict):
+            is_list_of_dicts = False
+            break
+
+    return is_list and is_list_of_dicts
+
+
 def parse_request(req: Request) -> List[Union[dict, str]]:
     """Extract the body of a request into a dict"""
     parsed = parse.urlparse(f"?{req.body}")
@@ -60,6 +73,38 @@ def handle_long_project_events_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_export_field_names_request(**kwargs) -> MockResponse:
+    """Give back list of project export field names"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = [
+        {
+            "original_field_name": "record_id",
+            "choice_value": "",
+            "export_field_name": "record_id",
+        },
+        {
+            "original_field_name": "test",
+            "choice_value": "1",
+            "export_field_name": "test___1",
+        },
+    ]
+
+    if "csv" in str(data):
+        headers = {"content-type": "text/csv; charset=utf-8"}
+        resp = (
+            "original_field_name,choice_value,export_field_name\n",
+            "record_id,,record_id\ntest,1,test___1",
+        )
+
+        if "field" in str(data):
+            resp = "original_field_name,choice_value,export_field_name\ntest,1,test___1"
+
+        return (201, headers, resp)
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_form_event_mapping_request(**kwargs) -> MockResponse:
     """Handle form event mapping export for long project"""
     headers = kwargs["headers"]
@@ -68,7 +113,7 @@ def handle_form_event_mapping_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_file_request(**kwargs) -> MockResponse:
+def handle_simple_project_file_request(**kwargs) -> MockResponse:
     """Handle file import/export requests"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -79,6 +124,24 @@ def handle_file_request(**kwargs) -> MockResponse:
         headers["content-type"] = "text/plain;name=data.txt"
 
     return (201, headers, json.dumps(resp))
+
+
+# pylint: disable=unused-argument
+def handle_long_project_file_request(**kwargs) -> MockResponse:
+    """Handle file import/export/delete requests"""
+    # test using blank headers
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = {}
+    # file export
+    if " filename" not in str(data):
+        # name of the data file that was imported
+        headers["content-type"] = "text/plain;name=data.txt"
+
+    return (201, headers, json.dumps(resp))
+
+
+# pylint: enable=unused-argument
 
 
 def handle_generate_next_record_name_request(**kwargs) -> MockResponse:
@@ -95,7 +158,13 @@ def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
     headers = kwargs["headers"]
     # import_metadata
     if "data" in data:
-        data_len = len(json.loads(data["data"][0]))
+        if "csv" in data["format"]:
+            # count newlines to infer number of records
+            newline_count = str(data["data"][0].count("\n") - 1)
+            data_len = json.loads(str.encode(newline_count))
+        else:
+            data_len = len(json.loads(data["data"][0]))
+
         resp = json.dumps(data_len)
         return (201, headers, resp)
     # exporting metadata
@@ -139,16 +208,30 @@ def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
 
 def handle_long_project_metadata_request(**kwargs) -> MockResponse:
     """Handle metadata export for long project"""
+    data = kwargs["data"]
     headers = kwargs["headers"]
-    resp = [
-        {
-            "field_name": "record_id",
-            "field_label": "Record ID",
-            "form_name": "Test Form",
-            "arm_num": 1,
-            "name": "test",
-        }
-    ]
+    # import metadata
+    if "data" in data:
+        resp = {"error": "test error"}
+    else:
+        resp = [
+            {
+                "field_name": "record_id",
+                "field_label": "Record ID",
+                "form_name": "Test Form",
+                "field_type": "text",
+                "arm_num": 1,
+                "name": "test",
+            },
+            {
+                "field_name": "file",
+                "field_label": "test",
+                "form_name": "Test Form",
+                "field_type": "file",
+                "arm_num": 1,
+                "name": "file",
+            },
+        ]
 
     return (201, headers, json.dumps(resp))
 
@@ -161,22 +244,40 @@ def handle_project_info_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_simple_project_delete_records(data: dict) -> int:
+    """Given simple project delete request, determine how many records were deleted"""
+    resp = 0
+    for key in data:
+        if "records[" in key:
+            resp += 1
+    return resp
+
+
+def handle_simple_project_import_records(data: dict) -> dict:
+    """Given simple project import request, determine response"""
+    if "non_existent_key" in data["data"][0]:
+        resp = {"error": "invalid field"}
+    else:
+        resp = {"count": 1}
+
+    return resp
+
+
 def handle_simple_project_records_request(**kwargs) -> MockResponse:
     """Handle records import/export request"""
     data = kwargs["data"]
     headers = kwargs["headers"]
-    # record import
-    if "returnContent" in data:
-        if "non_existent_key" in data["data"][0]:
-            resp = {"error": "invalid field"}
-        else:
-            resp = {"count": 1}
+    status_code = 201
+    if "delete" in data.get("action", "other"):
+        resp = handle_simple_project_delete_records(data)
+    elif "returnContent" in data:
+        resp = handle_simple_project_import_records(data)
     # record export
     elif "csv" in data["format"]:
         resp = "record_id,test,first_name,study_id\n1,1,Peter,1"
         headers = {"content-type": "text/csv; charset=utf-8"}
         # don't want to convert this response to json
-        return (201, headers, resp)
+        return (status_code, headers, resp)
 
     elif "exportDataAccessGroups" in data:
         resp = [
@@ -189,15 +290,24 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
                 "redcap_data_access_group": "group1",
             },
         ]
-    elif "label" in data.get("rawOrLabel"):
+    elif "label" in data.get("rawOrLabel", "raw"):
         resp = [{"matcheck1___1": "Foo"}]
+    elif data.get("dateRangeBegin") and data.get("dateRangeEnd"):
+        resp = [{"record_id": "1", "test": "test1"}]
+    # mock a malformed request errors
+    elif "bad_request" in str(data):
+        status_code = 400
+        resp = {}
+    elif "server_error" in str(data):
+        status_code = 500
+        resp = {}
     else:
         resp = [
             {"record_id": "1", "test": "test1"},
             {"record_id": "2", "test": "test"},
         ]
 
-    return (201, headers, json.dumps(resp))
+    return (status_code, headers, json.dumps(resp))
 
 
 def handle_long_project_records_request(**kwargs) -> MockResponse:
@@ -248,6 +358,49 @@ def handle_survey_project_records_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_simple_project_reports_request(**kwargs) -> MockResponse:
+    """Export report data from project"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+    # We must receive a report id in order to give a response
+    if "1" in data.get("report_id"):
+        if "csv" in data["format"]:
+            resp = "record_id,date_col,test_col_1,test_col_2\n1,2015-04-08,test,1"
+            headers = {"content-type": "text/csv; charset=utf-8"}
+            return (201, headers, resp)
+
+        resp = [
+            {
+                "record_id": "1",
+                "date_col": "2015-04-08",
+                "test_col_1": "test",
+                "test_col_2": "1",
+            },
+            {
+                "neo_data_request_id": "2",
+                "date_col": "2015-04-01",
+                "test_col_1": "test",
+                "test_col_2": "",
+            },
+        ]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_long_project_reports_request(**kwargs) -> MockResponse:
+    """Export report data from long project, csv only for now"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+    # We must receive a report id in order to give a response
+    if "1" in data.get("report_id") and "csv" in data["format"]:
+        resp = "record_id,redcap_event_name,test_col_1,test_col_2\n1,raw,test,1"
+        headers = {"content-type": "text/csv; charset=utf-8"}
+
+    return (201, headers, resp)
+
+
 def handle_user_request(**kwargs) -> MockResponse:
     """Handle user export"""
     headers = kwargs["headers"]
@@ -268,14 +421,56 @@ def handle_user_request(**kwargs) -> MockResponse:
 
 
 # pylint: disable=unused-argument
-def handle_version_request(**kwargs) -> MockResponse:
+def handle_simple_project_version_request(**kwargs) -> MockResponse:
     """Handle REDCap version request"""
     resp = b"11.2.3"
     headers = {"content-type": "text/csv; charset=utf-8"}
     return (201, headers, resp)
 
 
+def handle_long_project_version_request(**kwargs) -> MockResponse:
+    """Handle REDCap version request, where version is unavailable"""
+    resp = {"error": "no version found"}
+    headers = {"content-type": "text/csv; charset=utf-8"}
+    return (201, headers, json.dumps(resp))
+
+
 # pylint: enable=unused-argument
+
+
+def handle_long_project_survey_participants_request(**kwargs) -> MockResponse:
+    """Get the survey participants for an instrument"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+
+    if "test" in data.get("instrument") and "raw" in data.get("event"):
+        resp = [
+            {
+                "email": "test1@gmail.com",
+                "email_occurrence": 1,
+                "identifier": "",
+                "record": "",
+                "invitation_sent_status": 0,
+                "invitation_send_time": "",
+                "response_status": 2,
+                "survey_access_code": "",
+                "survey_link": "",
+            },
+            {
+                "email": "test2@gmail.com",
+                "email_occurrence": 1,
+                "identifier": "",
+                "record": "",
+                "invitation_sent_status": 0,
+                "invitation_send_time": "",
+                "response_status": 2,
+                "survey_access_code": "",
+                "survey_link": "",
+            },
+        ]
+
+    return (201, headers, json.dumps(resp))
 
 
 def get_simple_project_request_handler(request_type: str) -> Callable:
@@ -283,13 +478,15 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
     handlers_dict = {
         "arm": handle_simple_project_arms_request,
         "event": handle_simple_project_events_request,
-        "file": handle_file_request,
+        "exportFieldNames": handle_export_field_names_request,
+        "file": handle_simple_project_file_request,
         "generateNextRecordName": handle_generate_next_record_name_request,
         "metadata": handle_simple_project_metadata_request,
         "project": handle_project_info_request,
         "record": handle_simple_project_records_request,
+        "report": handle_simple_project_reports_request,
         "user": handle_user_request,
-        "version": handle_version_request,
+        "version": handle_simple_project_version_request,
     }
 
     return handlers_dict[request_type]
@@ -300,10 +497,13 @@ def get_long_project_request_handler(request_type: str) -> Callable:
     handlers_dict = {
         "arm": handle_long_project_arms_request,
         "event": handle_long_project_events_request,
+        "file": handle_long_project_file_request,
         "formEventMapping": handle_form_event_mapping_request,
         "metadata": handle_long_project_metadata_request,
+        "participantList": handle_long_project_survey_participants_request,
         "record": handle_long_project_records_request,
-        "version": handle_version_request,
+        "report": handle_long_project_reports_request,
+        "version": handle_long_project_version_request,
     }
 
     return handlers_dict[request_type]
@@ -316,7 +516,7 @@ def get_survey_project_request_handler(request_type: str) -> Callable:
         "event": handle_simple_project_events_request,
         "metadata": handle_simple_project_metadata_request,
         "record": handle_survey_project_records_request,
-        "version": handle_version_request,
+        "version": handle_simple_project_version_request,
     }
 
     return handlers_dict[request_type]
