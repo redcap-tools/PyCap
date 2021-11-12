@@ -30,13 +30,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        # Install poetry
+        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+        poetry install -E data_science
     - name: Run tests
       run: |
-        pytest
+        poetry run pytest
     - name: Build docs
       run: |
-        cd docs && make html
+        cd docs && poetry run make html
     - name: Upload coverage to Codecov
       # Only want to run code coverage once, so we choose a single matrix option
       if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest'}}
