@@ -41,8 +41,6 @@ jobs:
       run: |
         cd docs && poetry run make html
     - name: Upload coverage to Codecov
-      # Only want to run code coverage once, so we choose a single matrix option
-      if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest'}}
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
