@@ -32,6 +32,7 @@ jobs:
         python -m pip install --upgrade pip
         # Install poetry
         curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+        source $HOME/.poetry/env
         poetry install -E data_science
     - name: Run tests
       run: |
