@@ -4,7 +4,6 @@
 # pylint: disable=redefined-outer-name
 import os
 
-import pandas as pd
 import pytest
 import responses
 
