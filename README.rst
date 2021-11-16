@@ -50,7 +50,8 @@ Requirements
 
 Usage
 -----
-::
+
+.. code-block:: python
 
     >>> import redcap
     # Init the project with the api url and your specific api key
@@ -105,17 +106,20 @@ Installation
 ------------
 
 Install with :code:`pip`
-::
+
+.. code-block:: sh
 
     $ pip install PyCap
 
 Install extra requirements, which allows returning project data as a :code:`pandas.DataFrame`
-::
+
+.. code-block:: sh
 
     $ pip install PyCap[pandas]
 
 Install from GitHub
-::
+
+.. code-block:: sh
 
     $ pip install https://github.com/redcap-tools/PyCap/archive/master.zip
 
@@ -125,18 +129,21 @@ Contributing
 
 
 1. Install `poetry <https://python-poetry.org/docs/master/#installation>`_
-::
+
+.. code-block:: sh
     
     $ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 
 
 2. Install all project dependencies (including development/optional dependencies).
-::
+
+.. code-block:: sh
 
     $ poetry install -E data_science
 
 3. Add your changes and make sure your changes pass all tests.
-::
+
+.. code-block:: sh
 
     $ poetry run pytest
 
@@ -145,7 +152,8 @@ them with `poetry add/remove <https://python-poetry.org/docs/master/basic-usage/
 and update the :code:`requirements.txt` with
 `poetry export <https://python-poetry.org/docs/master/cli/#export>`_ for the CI to run
 (until I figure out the best way to actually run :code:`poetry` in CI)
-::
+
+.. code-block:: sh
 
     $ poetry export -f requirements.txt --output requirements.txt --dev -E data_science
 
