@@ -93,7 +93,7 @@ Usage
     ...     # that isn't a file
 
     # Delete record
-    >>> response = project.delete_record('1')
+    >>> response = project.delete_record(['1'])
 
     # Export form event mappings
     >>> fem = project.export_fem()
