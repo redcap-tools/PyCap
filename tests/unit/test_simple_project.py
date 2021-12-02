@@ -95,7 +95,7 @@ def test_get_version(simple_project):
 
 
 def test_life_goes_on_without_the_version(simple_project, mocker):
-    mocker.patch.object(simple_project, "_Project__rcv", side_effect=(Exception))
+    mocker.patch.object(simple_project, "_rcv", side_effect=(Exception))
 
     with pytest.raises(RedcapError):
         simple_project.configure()

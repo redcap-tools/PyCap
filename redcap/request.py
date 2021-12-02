@@ -23,7 +23,7 @@ class RCAPIError(Exception):
     """Errors corresponding to a misuse of the REDCap API"""
 
 
-class RCRequest(object):
+class RCRequest:
     """
     Private class wrapping the REDCap API. Decodes response from redcap
     and returns it.
