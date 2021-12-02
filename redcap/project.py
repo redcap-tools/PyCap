@@ -3,15 +3,12 @@
 """User facing class for interacting with a REDCap Project"""
 
 import json
-import warnings
-import semantic_version
 
-from .request import RCRequest, RedcapError, RequestException
+from io import StringIO
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from redcap.request import RedcapError
+from redcap.methods.field_names import FieldNames
+
 
 __author__ = "Scott Burns <scott.s.burnsgmail.com>"
 __license__ = "MIT"
@@ -25,149 +22,8 @@ __copyright__ = "2014, Vanderbilt University"
 # pylint: disable=consider-using-f-string
 # pylint: disable=consider-using-generator
 # pylint: disable=use-dict-literal
-class Project(object):
+class Project(FieldNames):
     """Main class for interacting with REDCap projects"""
-
-    def __init__(self, url, token, name="", verify_ssl=True, lazy=False):
-        """
-        Parameters
-        ----------
-        url : str
-            API URL to your REDCap server
-        token : str
-            API token to your project
-        name : str, optional
-            name for project
-        verify_ssl : boolean, str
-            Verify SSL, default True. Can pass path to CA_BUNDLE.
-        """
-
-        self.token = token
-        self.name = name
-        self.url = url
-        self.verify = verify_ssl
-        self.metadata = None
-        self.redcap_version = None
-        self.field_names = None
-        # We'll use the first field as the default id for each row
-        self.def_field = None
-        self.field_labels = None
-        self.forms = None
-        self.events = None
-        self.arm_nums = None
-        self.arm_names = None
-        self.configured = False
-
-        if not lazy:
-            self.configure()
-
-    def configure(self):
-        """Fill in project attributes"""
-        try:
-            self.metadata = self.__md()
-        except RequestException as request_fail:
-            raise RedcapError(
-                "Exporting metadata failed. Check your URL and token."
-            ) from request_fail
-        try:
-            self.redcap_version = self.__rcv()
-        except Exception as general_fail:
-            raise RedcapError(
-                "Determination of REDCap version failed"
-            ) from general_fail
-        self.field_names = self.filter_metadata("field_name")
-        # we'll use the first field as the default id for each row
-        self.def_field = self.field_names[0]
-        self.field_labels = self.filter_metadata("field_label")
-        self.forms = tuple(set(c["form_name"] for c in self.metadata))
-        # determine whether longitudinal
-        ev_data = self._call_api(self.__basepl("event"), "exp_event")[0]
-        arm_data = self._call_api(self.__basepl("arm"), "exp_arm")[0]
-
-        if isinstance(ev_data, dict) and ("error" in ev_data.keys()):
-            events = tuple([])
-        else:
-            events = ev_data
-
-        if isinstance(arm_data, dict) and ("error" in arm_data.keys()):
-            arm_nums = tuple([])
-            arm_names = tuple([])
-        else:
-            arm_nums = tuple([a["arm_num"] for a in arm_data])
-            arm_names = tuple([a["name"] for a in arm_data])
-        self.events = events
-        self.arm_nums = arm_nums
-        self.arm_names = arm_names
-        self.configured = True
-
-    def __md(self):
-        """Return the project's metadata structure"""
-        p_l = self.__basepl("metadata")
-        p_l["content"] = "metadata"
-        return self._call_api(p_l, "metadata")[0]
-
-    def __basepl(self, content, rec_type="flat", format="json"):
-        """Return a dictionary which can be used as is or added to for
-        payloads"""
-        payload_dict = {"token": self.token, "content": content, "format": format}
-        if content not in ["metapayload_dictata", "file"]:
-            payload_dict["type"] = rec_type
-        return payload_dict
-
-    def __rcv(self):
-        payload = self.__basepl("version")
-        rcv = self._call_api(payload, "version")[0].decode("utf-8")
-        resp = None
-        if "error" in rcv:
-            warnings.warn("Version information not available for this REDCap instance")
-            resp = ""
-        if semantic_version.validate(rcv):
-            resp = semantic_version.Version(rcv)
-
-        return resp
-
-    def is_longitudinal(self):
-        """
-        Returns
-        -------
-        boolean :
-            longitudinal status of this project
-        """
-        return (
-            len(self.events) > 0 and len(self.arm_nums) > 0 and len(self.arm_names) > 0
-        )
-
-    def filter_metadata(self, key):
-        """
-        Return a list of values for the metadata key from each field
-        of the project's metadata.
-
-        Parameters
-        ----------
-        key: str
-            A known key in the metadata structure
-
-        Returns
-        -------
-        filtered :
-            attribute list from each field
-        """
-        filtered = [field[key] for field in self.metadata if key in field]
-        if len(filtered) == 0:
-            raise KeyError("Key not found in metadata")
-        return filtered
-
-    def _kwargs(self):
-        """Private method to build a dict for sending to RCRequest
-
-        Other default kwargs to the http library should go here"""
-        return {"verify": self.verify}
-
-    def _call_api(self, payload, typpe, **kwargs):
-        request_kwargs = self._kwargs()
-        request_kwargs.update(kwargs)
-        rcr = RCRequest(self.url, payload, typpe)
-        return rcr.execute(**request_kwargs)
 
     def export_fem(self, arms=None, format="json", df_kwargs=None):
         """
@@ -192,7 +48,7 @@ class Project(object):
         ret_format = format
         if format == "df":
             ret_format = "csv"
-        payload = self.__basepl("formEventMapping", format=ret_format)
+        payload = self._basepl("formEventMapping", format=ret_format)
 
         if arms:
             for i, value in enumerate(arms):
@@ -206,47 +62,6 @@ class Project(object):
         if not df_kwargs:
             df_kwargs = {}
 
-        return self.read_csv(StringIO(response), **df_kwargs)
-
-    def export_field_names(self, field=None, format="json", df_kwargs=None):
-        """
-        Export the project's export field names
-
-        Parameters
-        ----------
-        fields : str
-            Limit exported field name to this field (only single field supported).
-            When not provided, all fields returned.
-        format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
-            Return the metadata in native objects, csv or xml.
-            ``'df'`` will return a ``pandas.DataFrame``.
-        df_kwargs : dict
-            Passed to ``pandas.read_csv`` to control construction of
-            returned DataFrame.
-            by default ``{'index_col': 'original_field_name'}``
-
-        Returns
-        -------
-        metadata : list, str, ``pandas.DataFrame``
-            metadata structure for the project.
-        """
-        ret_format = format
-        if format == "df":
-            ret_format = "csv"
-
-        payload = self.__basepl("exportFieldNames", format=ret_format)
-
-        if field:
-            payload["field"] = field
-
-        response, _ = self._call_api(payload, "exp_field_names")
-
-        if format in ("json", "csv", "xml"):
-            return response
-        if format != "df":
-            raise ValueError(("Unsupported format: '{}'").format(format))
-        if not df_kwargs:
-            df_kwargs = {"index_col": "original_field_name"}
         return self.read_csv(StringIO(response), **df_kwargs)
 
     def export_metadata(self, fields=None, forms=None, format="json", df_kwargs=None):
@@ -275,7 +90,7 @@ class Project(object):
         ret_format = format
         if format == "df":
             ret_format = "csv"
-        payload = self.__basepl("metadata", format=ret_format)
+        payload = self._basepl("metadata", format=ret_format)
         to_add = [fields, forms]
         str_add = ["fields", "forms"]
         for key, data in zip(str_add, to_add):
@@ -407,7 +222,7 @@ class Project(object):
         ret_format = format
         if format == "df":
             ret_format = "csv"
-        payload = self.__basepl("record", format=ret_format, rec_type=type)
+        payload = self._basepl("record", format=ret_format, rec_type=type)
         fields = self.backfill_fields(fields, forms)
         keys_to_add = (
             records,
@@ -475,29 +290,13 @@ class Project(object):
     # pylint: enable=too-many-branches
     # pylint: enable=too-many-locals
 
-    # pylint: disable=import-outside-toplevel
-    @staticmethod
-    def read_csv(buf, **df_kwargs):
-        """Wrapper around pandas read_csv that handles EmptyDataError"""
-        from pandas import DataFrame, read_csv
-        from pandas.errors import EmptyDataError
-
-        try:
-            dataframe = read_csv(buf, **df_kwargs)
-        except EmptyDataError:
-            dataframe = DataFrame()
-
-        return dataframe
-
-    # pylint: enable=import-outside-toplevel
-
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""
-        return self.__meta_metadata(
+        return self._meta_metadata(
             field_name, "text_validation_type_or_show_slider_number"
         )
 
-    def __meta_metadata(self, field, key):
+    def _meta_metadata(self, field, key):
         """Return the value for key for the field in the metadata"""
         metadata_field = ""
         try:
@@ -662,7 +461,7 @@ class Project(object):
             The initialized payload dictionary and updated format
         """
 
-        payload = self.__basepl(data_type)
+        payload = self._basepl(data_type)
         # pylint: disable=comparison-with-callable
         if hasattr(to_import, "to_csv"):
             # We'll assume it's a df
@@ -719,7 +518,7 @@ class Project(object):
         """
         self._check_file_field(field)
         # load up payload
-        payload = self.__basepl(content="file", format=return_format)
+        payload = self._basepl(content="file", format=return_format)
         # there's no format field in this call
         del payload["format"]
         payload["returnFormat"] = return_format
@@ -786,7 +585,7 @@ class Project(object):
         """
         self._check_file_field(field)
         # load up payload
-        payload = self.__basepl(content="file", format=return_format)
+        payload = self._basepl(content="file", format=return_format)
         # no format in this call
         del payload["format"]
         payload["returnFormat"] = return_format
@@ -826,7 +625,7 @@ class Project(object):
         """
         self._check_file_field(field)
         # Load up payload
-        payload = self.__basepl(content="file", format=return_format)
+        payload = self._basepl(content="file", format=return_format)
         del payload["format"]
         payload["returnFormat"] = return_format
         payload["action"] = "delete"
@@ -839,7 +638,7 @@ class Project(object):
     def _check_file_field(self, field):
         """Check that field exists and is a file field"""
         is_field = field in self.field_names
-        is_file = self.__meta_metadata(field, "field_type") == "file"
+        is_file = self._meta_metadata(field, "field_type") == "file"
         if not (is_field and is_file):
             msg = "'%s' is not a field or not a 'file' field" % field
             raise ValueError(msg)
@@ -879,7 +678,7 @@ class Project(object):
             list of users dicts when ``'format'='json'``,
             otherwise a string
         """
-        payload = self.__basepl(content="user", format=format)
+        payload = self._basepl(content="user", format=format)
         return self._call_api(payload, "exp_user")[0]
 
     def export_survey_participant_list(self, instrument, event=None, format="json"):
@@ -899,7 +698,7 @@ class Project(object):
         format: (json, xml, csv), json by default
             Format of returned data
         """
-        payload = self.__basepl(content="participantList", format=format)
+        payload = self._basepl(content="participantList", format=format)
         payload["instrument"] = instrument
         if event:
             payload["event"] = event
@@ -907,7 +706,7 @@ class Project(object):
 
     def generate_next_record_name(self):
         """Return the next record name for auto-numbering records"""
-        payload = self.__basepl(content="generateNextRecordName")
+        payload = self._basepl(content="generateNextRecordName")
 
         return self._call_api(payload, "exp_next_id")[0]
 
@@ -921,7 +720,7 @@ class Project(object):
             Format of returned data
         """
 
-        payload = self.__basepl(content="project", format=format)
+        payload = self._basepl(content="project", format=format)
 
         return self._call_api(payload, "exp_proj")[0]
 
@@ -985,7 +784,7 @@ class Project(object):
         if format == "df":
             ret_format = "csv"
 
-        payload = self.__basepl(content="report", format=ret_format)
+        payload = self._basepl(content="report", format=ret_format)
         keys_to_add = (
             report_id,
             raw_or_label,

@@ -13,5 +13,5 @@ ignore=docs
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 
-# disabled as long as we support python 2
-disable=useless-object-inheritance
+# we're going to support as many arguments as the API calls have
+disable=too-many-arguments

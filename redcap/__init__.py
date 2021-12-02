@@ -12,8 +12,9 @@ Other API requests are available, such as exporting users & Form-Event Mappings.
 
 """
 
-from .project import Project
-from .request import RCRequest, RCAPIError, RedcapError
+from redcap.methods.field_names import FieldNames
+from redcap.project import Project
+from redcap.request import RCRequest, RCAPIError, RedcapError
 
 __author__ = "Scott Burns <scott.s.burns@gmail.com>"
 __license__ = "MIT"
