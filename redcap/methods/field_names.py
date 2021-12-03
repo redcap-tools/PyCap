@@ -40,7 +40,6 @@ class FieldNames(Base):
             payload["field"] = field
 
         response, _ = self._call_api(payload, "exp_field_names")
-        # pylint: disable=duplicate-code
         if format in ("json", "csv", "xml"):
             return response
         if format != "df":
@@ -48,6 +47,5 @@ class FieldNames(Base):
         if not df_kwargs:
             df_kwargs = {"index_col": "original_field_name"}
         return self.read_csv(StringIO(response), **df_kwargs)
-        # pylint: enable=duplicate-code
 
     # pylint: enable=redefined-builtin
