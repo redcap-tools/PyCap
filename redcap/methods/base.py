@@ -1,5 +1,9 @@
 """The Base class for all REDCap methods"""
+import json
 import warnings
+
+from io import StringIO
+
 import semantic_version
 
 from redcap.request import RCRequest, RedcapError, RequestException
@@ -168,3 +172,53 @@ class Base:
         return dataframe
 
     # pylint: enable=import-outside-toplevel
+
+    # pylint: disable=redefined-builtin
+    def _initialize_import_payload(self, to_import, format, data_type):
+        """
+        Standardize the data to be imported and add it to the payload
+
+        Parameters
+        ----------
+        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
+            :note:
+                If you pass a csv or xml string, you should use the
+                ``format`` parameter appropriately.
+        format : ('json'),  'xml', 'csv'
+            Format of incoming data. By default, to_import will be json-encoded
+        data_type: 'record', 'metadata'
+            The kind of data that are imported
+
+        Returns
+        -------
+        payload : (dict, str)
+            The initialized payload dictionary and updated format
+        """
+
+        payload = self._basepl(data_type)
+        # pylint: disable=comparison-with-callable
+        if hasattr(to_import, "to_csv"):
+            # We'll assume it's a df
+            buf = StringIO()
+            if data_type == "record":
+                if self.is_longitudinal():
+                    csv_kwargs = {"index_label": [self.def_field, "redcap_event_name"]}
+                else:
+                    csv_kwargs = {"index_label": self.def_field}
+            elif data_type == "metadata":
+                csv_kwargs = {"index": False}
+            to_import.to_csv(buf, **csv_kwargs)
+            payload["data"] = buf.getvalue()
+            buf.close()
+            format = "csv"
+        elif format == "json":
+            payload["data"] = json.dumps(to_import, separators=(",", ":"))
+        else:
+            # don't do anything to csv/xml
+            payload["data"] = to_import
+        # pylint: enable=comparison-with-callable
+
+        payload["format"] = format
+        return payload
+
+    # pylint: enable=redefined-builtin

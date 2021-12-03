@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 """User facing class for interacting with a REDCap Project"""
 
-import json
-
 from io import StringIO
 
 from redcap.request import RedcapError
 from redcap.methods.field_names import FieldNames
+from redcap.methods.metadata import Metadata
 
 
 __author__ = "Scott Burns <scott.s.burnsgmail.com>"
@@ -22,7 +21,7 @@ __copyright__ = "2014, Vanderbilt University"
 # pylint: disable=consider-using-f-string
 # pylint: disable=consider-using-generator
 # pylint: disable=use-dict-literal
-class Project(FieldNames):
+class Project(FieldNames, Metadata):
     """Main class for interacting with REDCap projects"""
 
     def export_fem(self, arms=None, format="json", df_kwargs=None):
@@ -62,50 +61,6 @@ class Project(FieldNames):
         if not df_kwargs:
             df_kwargs = {}
 
-        return self.read_csv(StringIO(response), **df_kwargs)
-
-    def export_metadata(self, fields=None, forms=None, format="json", df_kwargs=None):
-        """
-        Export the project's metadata
-
-        Parameters
-        ----------
-        fields : list
-            Limit exported metadata to these fields
-        forms : list
-            Limit exported metadata to these forms
-        format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
-            Return the metadata in native objects, csv or xml.
-            ``'df'`` will return a ``pandas.DataFrame``.
-        df_kwargs : dict
-            Passed to ``pandas.read_csv`` to control construction of
-            returned DataFrame.
-            by default ``{'index_col': 'field_name'}``
-
-        Returns
-        -------
-        metadata : list, str, ``pandas.DataFrame``
-            metadata sttructure for the project.
-        """
-        ret_format = format
-        if format == "df":
-            ret_format = "csv"
-        payload = self._basepl("metadata", format=ret_format)
-        to_add = [fields, forms]
-        str_add = ["fields", "forms"]
-        for key, data in zip(str_add, to_add):
-            if data:
-                for i, value in enumerate(data):
-                    payload["{}[{}]".format(key, i)] = value
-
-        response, _ = self._call_api(payload, "metadata")
-        if format in ("json", "csv", "xml"):
-            return response
-        if format != "df":
-            raise ValueError(("Unsupported format: '{}'").format(format))
-
-        if not df_kwargs:
-            df_kwargs = {"index_col": "field_name"}
         return self.read_csv(StringIO(response), **df_kwargs)
 
     def delete_records(self, records):
@@ -402,90 +357,6 @@ class Project(FieldNames):
         if "error" in response:
             raise RedcapError(str(response))
         return response
-
-    def import_metadata(
-        self, to_import, format="json", return_format="json", date_format="YMD"
-    ):
-        """
-        Import metadata (DataDict) into the RedCap Project
-
-        Parameters
-        ----------
-        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
-            :note:
-                If you pass a csv or xml string, you should use the
-                ``format`` parameter appropriately.
-        format : ('json'),  'xml', 'csv'
-            Format of incoming data. By default, to_import will be json-encoded
-        return_format : ('json'), 'csv', 'xml'
-            Response format. By default, response will be json-decoded.
-        date_format : ('YMD'), 'DMY', 'MDY'
-            Describes the formatting of dates. By default, date strings
-            are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
-            strings are formatted as 'MM/DD/YYYY' set this parameter as
-            'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
-            other formattings are allowed.
-
-        Returns
-        -------
-        response : dict, str
-            response from REDCap API, json-decoded if ``return_format`` == ``'json'``
-            If successful, the number of imported fields
-        """
-        payload = self._initialize_import_payload(to_import, format, "metadata")
-        payload["returnFormat"] = return_format
-        payload["dateFormat"] = date_format
-        response = self._call_api(payload, "imp_metadata")[0]
-        if "error" in str(response):
-            raise RedcapError(str(response))
-        return response
-
-    def _initialize_import_payload(self, to_import, format, data_type):
-        """
-        Standardize the data to be imported and add it to the payload
-
-        Parameters
-        ----------
-        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
-            :note:
-                If you pass a csv or xml string, you should use the
-                ``format`` parameter appropriately.
-        format : ('json'),  'xml', 'csv'
-            Format of incoming data. By default, to_import will be json-encoded
-        data_type: 'record', 'metadata'
-            The kind of data that are imported
-
-        Returns
-        -------
-        payload : (dict, str)
-            The initialized payload dictionary and updated format
-        """
-
-        payload = self._basepl(data_type)
-        # pylint: disable=comparison-with-callable
-        if hasattr(to_import, "to_csv"):
-            # We'll assume it's a df
-            buf = StringIO()
-            if data_type == "record":
-                if self.is_longitudinal():
-                    csv_kwargs = {"index_label": [self.def_field, "redcap_event_name"]}
-                else:
-                    csv_kwargs = {"index_label": self.def_field}
-            elif data_type == "metadata":
-                csv_kwargs = {"index": False}
-            to_import.to_csv(buf, **csv_kwargs)
-            payload["data"] = buf.getvalue()
-            buf.close()
-            format = "csv"
-        elif format == "json":
-            payload["data"] = json.dumps(to_import, separators=(",", ":"))
-        else:
-            # don't do anything to csv/xml
-            payload["data"] = to_import
-        # pylint: enable=comparison-with-callable
-
-        payload["format"] = format
-        return payload
 
     def export_file(
         self, record, field, event=None, return_format="json", repeat_instance=None
