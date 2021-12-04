@@ -347,7 +347,7 @@ def test_fem_export_passes_filters_as_arrays(simple_project, mocker):
         simple_project, "_call_api", return_value=(None, None)
     )
 
-    simple_project.export_fem(arms=["arm0", "arm1", "arm2"])
+    simple_project.export_instrument_event_mappings(arms=["arm0", "arm1", "arm2"])
 
     args, _ = mocked_api_call.call_args
 
@@ -424,7 +424,7 @@ def test_export_methods_handle_empty_data_error(simple_project, mocker):
     dataframe = simple_project.export_records(format="df")
     assert dataframe.empty
 
-    dataframe = simple_project.export_fem(format="df")
+    dataframe = simple_project.export_instrument_event_mappings(format="df")
     assert dataframe.empty
 
     dataframe = simple_project.export_metadata(format="df")

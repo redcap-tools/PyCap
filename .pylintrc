@@ -17,3 +17,8 @@ ignore=docs
 disable=too-many-arguments,
         # this is be removed after refactoring
         duplicate-code
+
+[DESIGN]
+# Maximum number of parents for a class (see R0901).
+# Increased to 15 to cover all REDCap API categories
+max-parents=15

@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 """User facing class for interacting with a REDCap Project"""
 
-from io import StringIO
-
+from redcap.methods.instruments import Instruments
 from redcap.methods.field_names import FieldNames
 from redcap.methods.files import Files
 from redcap.methods.metadata import Metadata
@@ -24,47 +23,8 @@ __copyright__ = "2014, Vanderbilt University"
 # pylint: disable=consider-using-f-string
 # pylint: disable=consider-using-generator
 # pylint: disable=use-dict-literal
-class Project(FieldNames, Files, Metadata, ProjectInfo, Records, Reports):
+class Project(Instruments, FieldNames, Files, Metadata, ProjectInfo, Records, Reports):
     """Main class for interacting with REDCap projects"""
-
-    def export_fem(self, arms=None, format="json", df_kwargs=None):
-        """
-        Export the project's form to event mapping
-
-        Parameters
-        ----------
-        arms : list
-            Limit exported form event mappings to these arm numbers
-        format : (``'json'``), ``'csv'``, ``'xml'``
-            Return the form event mappings in native objects,
-            csv or xml, ``'df''`` will return a ``pandas.DataFrame``
-        df_kwargs : dict
-            Passed to pandas.read_csv to control construction of
-            returned DataFrame
-
-        Returns
-        -------
-        fem : list, str, ``pandas.DataFrame``
-            form-event mapping for the project
-        """
-        ret_format = format
-        if format == "df":
-            ret_format = "csv"
-        payload = self._basepl("formEventMapping", format=ret_format)
-
-        if arms:
-            for i, value in enumerate(arms):
-                payload["arms[{}]".format(i)] = value
-
-        response, _ = self._call_api(payload, "exp_fem")
-        if format in ("json", "csv", "xml"):
-            return response
-        if format != "df":
-            raise ValueError(("Unsupported format: '{}'").format(format))
-        if not df_kwargs:
-            df_kwargs = {}
-
-        return self.read_csv(StringIO(response), **df_kwargs)
 
     def metadata_type(self, field_name):
         """If the given field_name is validated by REDCap, return it's type"""

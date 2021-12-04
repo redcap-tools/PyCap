@@ -299,12 +299,12 @@ Exporting Form-Event Mappings
 
 Longitudinal projects have a mapping of what forms are available to collect data within each event. These mappings can be exported from the ``Project``::
 
-    fem = project.export_fem()
+    fem = project.export_instrument_event_mappings()
     # Only ask for particular arms
-    subset = project.export_fem(arms=['arm1'])
+    subset = project.export_instrument_event_mappings(arms=['arm1'])
 
     # You can also get a DataFrame of the FEM
-    fem_df = project.export_fem(format='df')
+    fem_df = project.export_instrument_event_mappings(format='df')
 
 Full API
 --------
