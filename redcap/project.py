@@ -7,6 +7,7 @@ from io import StringIO
 from redcap.methods.field_names import FieldNames
 from redcap.methods.files import Files
 from redcap.methods.metadata import Metadata
+from redcap.methods.project_info import ProjectInfo
 from redcap.methods.records import Records
 from redcap.methods.reports import Reports
 
@@ -23,7 +24,7 @@ __copyright__ = "2014, Vanderbilt University"
 # pylint: disable=consider-using-f-string
 # pylint: disable=consider-using-generator
 # pylint: disable=use-dict-literal
-class Project(FieldNames, Files, Metadata, Records, Reports):
+class Project(FieldNames, Files, Metadata, ProjectInfo, Records, Reports):
     """Main class for interacting with REDCap projects"""
 
     def export_fem(self, arms=None, format="json", df_kwargs=None):
@@ -129,20 +130,6 @@ class Project(FieldNames, Files, Metadata, Records, Reports):
         if event:
             payload["event"] = event
         return self._call_api(payload, "exp_survey_participant_list")[0]
-
-    def export_project_info(self, format="json"):
-        """
-        Export Project Information
-
-        Parameters
-        ----------
-        format: (json, xml, csv), json by default
-            Format of returned data
-        """
-
-        payload = self._basepl(content="project", format=format)
-
-        return self._call_api(payload, "exp_proj")[0]
 
 
 # pylint: enable=too-many-instance-attributes
