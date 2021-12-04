@@ -9,6 +9,7 @@ from redcap.methods.metadata import Metadata
 from redcap.methods.project_info import ProjectInfo
 from redcap.methods.records import Records
 from redcap.methods.reports import Reports
+from redcap.methods.users import Users
 
 
 __author__ = "Scott Burns <scott.s.burnsgmail.com>"
@@ -23,7 +24,9 @@ __copyright__ = "2014, Vanderbilt University"
 # pylint: disable=consider-using-f-string
 # pylint: disable=consider-using-generator
 # pylint: disable=use-dict-literal
-class Project(Instruments, FieldNames, Files, Metadata, ProjectInfo, Records, Reports):
+class Project(
+    Instruments, FieldNames, Files, Metadata, ProjectInfo, Records, Reports, Users
+):
     """Main class for interacting with REDCap projects"""
 
     def metadata_type(self, field_name):
@@ -31,42 +34,6 @@ class Project(Instruments, FieldNames, Files, Metadata, ProjectInfo, Records, Re
         return self._meta_metadata(
             field_name, "text_validation_type_or_show_slider_number"
         )
-
-    def export_users(self, format="json"):
-        """
-        Export the users of the Project
-
-        Notes
-        -----
-        Each user will have the following keys:
-
-            * ``'firstname'`` : User's first name
-            * ``'lastname'`` : User's last name
-            * ``'email'`` : Email address
-            * ``'username'`` : User's username
-            * ``'expiration'`` : Project access expiration date
-            * ``'data_access_group'`` : data access group ID
-            * ``'data_export'`` : (0=no access, 2=De-Identified, 1=Full Data Set)
-            * ``'forms'`` : a list of dicts with a single key as the form name and
-                value is an integer describing that user's form rights,
-                where: 0=no access, 1=view records/responses and edit
-                records (survey responses are read-only), 2=read only, and
-                3=edit survey responses,
-
-
-        Parameters
-        ----------
-        format : (``'json'``), ``'csv'``, ``'xml'``
-            response return format
-
-        Returns
-        -------
-        users: list, str
-            list of users dicts when ``'format'='json'``,
-            otherwise a string
-        """
-        payload = self._basepl(content="user", format=format)
-        return self._call_api(payload, "exp_user")[0]
 
     def export_survey_participant_list(self, instrument, event=None, format="json"):
         """
