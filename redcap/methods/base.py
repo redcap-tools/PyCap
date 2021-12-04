@@ -114,6 +114,19 @@ class Base:
 
         return resp
 
+    def _meta_metadata(self, field, key):
+        """Return the value for key for the field in the metadata"""
+        metadata_field = ""
+        try:
+            metadata_field = str(
+                [f[key] for f in self.metadata if f["field_name"] == field][0]
+            )
+        except IndexError:
+            print(f"{ key } not in metadata field:{ field }")
+            return metadata_field
+        else:
+            return metadata_field
+
     def is_longitudinal(self):
         """
         Returns
