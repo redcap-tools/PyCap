@@ -96,7 +96,7 @@ Usage
     >>> response = project.delete_records(['1'])
 
     # Export form event mappings
-    >>> fem = project.export_fem()
+    >>> fem = project.export_instrument_event_mappings()
     ...
 
     # Export Reports

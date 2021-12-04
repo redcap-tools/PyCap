@@ -96,7 +96,7 @@ def test_export_with_events(long_project):
 
 
 def test_fem_export(long_project):
-    fem = long_project.export_fem(format="json")
+    fem = long_project.export_instrument_event_mappings(format="json")
 
     assert isinstance(fem, list)
 
@@ -106,7 +106,7 @@ def test_fem_export(long_project):
 
 def test_fem_export_stricly_enforces_format(long_project):
     with pytest.raises(ValueError):
-        long_project.export_fem(format="unsupported")
+        long_project.export_instrument_event_mappings(format="unsupported")
 
 
 def test_export_to_df_gives_multi_index(long_project):
