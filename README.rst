@@ -93,14 +93,14 @@ Usage
     ...     # that isn't a file
 
     # Delete record
-    >>> response = project.delete_record(['1'])
+    >>> response = project.delete_records(['1'])
 
     # Export form event mappings
     >>> fem = project.export_fem()
     ...
 
     # Export Reports
-    >>> reports = project.export_reports(['1','2'])
+    >>> reports = project.export_report('1')
 
 Installation
 ------------
