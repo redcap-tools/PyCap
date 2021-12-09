@@ -1,4 +1,4 @@
-"""Test suite for Project class against real REDCap server"""
+"""Test suite for simple REDCap Project against real REDCap server"""
 # pylint: disable=missing-function-docstring
 import os
 
@@ -10,6 +10,11 @@ if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
         "Super user token not found, skipping integration tests",
         allow_module_level=True,
     )
+
+
+@pytest.mark.integration
+def test_is_not_longitudinal(simple_project):
+    assert not simple_project.is_longitudinal()
 
 
 @pytest.mark.integration
