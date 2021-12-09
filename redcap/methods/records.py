@@ -8,36 +8,6 @@ from redcap.methods.base import Base
 class Records(Base):
     """Responsible for all API methods under 'Records' in the API Playground"""
 
-    def _backfill_fields(self, fields, forms):
-        """
-        Properly backfill fields to explicitly request specific
-        keys. The issue is that >6.X servers *only* return requested fields
-        so to improve backwards compatiblity for PyCap clients, add specific fields
-        when required.
-
-        Parameters
-        ----------
-        fields: list
-            requested fields
-        forms: list
-            requested forms
-
-        Returns
-        -------
-            new fields, forms
-        """
-        if forms and not fields:
-            new_fields = [self.def_field]
-        elif fields and self.def_field not in fields:
-            new_fields = list(fields)
-            if self.def_field not in fields:
-                new_fields.append(self.def_field)
-        elif not fields:
-            new_fields = self.field_names
-        else:
-            new_fields = list(fields)
-        return new_fields
-
     # pylint: disable=redefined-builtin
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-locals
@@ -126,7 +96,6 @@ class Records(Base):
         if format == "df":
             ret_format = "csv"
         payload = self._basepl("record", format=ret_format, rec_type=type)
-        fields = self._backfill_fields(fields, forms)
         keys_to_add = (
             records,
             fields,
@@ -150,9 +119,6 @@ class Records(Base):
             "exportDataAccessGroups",
             "exportCheckboxLabel",
         )
-
-        if export_survey_fields:
-            fields.extend([name + "_complete" for name in self.forms])
 
         for key, data in zip(str_keys, keys_to_add):
             if data:
@@ -180,12 +146,12 @@ class Records(Base):
             if type == "eav":
                 df_kwargs = {}
             else:
-                if self.is_longitudinal():
+                if self.is_longitudinal:
                     df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
                 else:
                     df_kwargs = {"index_col": self.def_field}
         buf = StringIO(response)
-        dataframe = self.read_csv(buf, **df_kwargs)
+        dataframe = self._read_csv(buf, **df_kwargs)
         buf.close()
 
         return dataframe

@@ -76,13 +76,11 @@ def test_metadata_import_handles_api_error(long_project):
 
 
 def test_long_attrs_are_populated(long_project):
-    assert long_project.events is not None
-    assert long_project.arm_names is not None
-    assert long_project.arm_nums is not None
+    assert long_project.events
 
 
 def test_is_longitudinal(long_project):
-    assert long_project.is_longitudinal()
+    assert long_project.is_longitudinal
 
 
 def test_export_with_events(long_project):

@@ -47,6 +47,6 @@ class Instruments(Base):
         if not df_kwargs:
             df_kwargs = {}
 
-        return self.read_csv(StringIO(response), **df_kwargs)
+        return self._read_csv(StringIO(response), **df_kwargs)
 
     # pylint: enable=redefined-builtin

@@ -14,4 +14,4 @@ if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
 
 @pytest.mark.integration
 def test_is_longitudinal(long_project):
-    assert long_project.is_longitudinal()
+    assert long_project.is_longitudinal

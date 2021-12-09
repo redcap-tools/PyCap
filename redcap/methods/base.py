@@ -1,15 +1,21 @@
 """The Base class for all REDCap methods"""
 import json
 
+from typing import List, Optional, Tuple, Union
+
 from io import StringIO
 
 from redcap.request import RCRequest, RedcapError, RequestException
+
+# We're designing class to be lazy by default, and not hit the API unless
+# explicitly requested by the user
+# pylint: disable=attribute-defined-outside-init,too-many-instance-attributes
 
 
 class Base:
     """Base attributes and methods for the REDCap API"""
 
-    def __init__(self, url, token, verify_ssl=True, lazy=False):
+    def __init__(self, url: str, token: str, verify_ssl: Union[bool, str] = True):
         """
         Parameters
         ----------
@@ -20,70 +26,115 @@ class Base:
         verify_ssl : boolean, str
             Verify SSL, default True. Can pass path to CA_BUNDLE.
         """
+        self._validate_url_and_token(url, token)
+        self._url = url
+        self._token = token
+        self.verify_ssl = verify_ssl
 
-        self.token = token
-        self.url = url
-        self.verify = verify_ssl
-        self.metadata = None
-        self.field_names = None
-        # We'll use the first field as the default id for each row
-        self.def_field = None
-        self.forms = None
-        self.events = None
-        self.arm_nums = None
-        self.arm_names = None
+    @property
+    def url(self) -> str:
+        """Project url, with validation"""
+        return self._url
 
-        if not lazy:
-            self.configure()
+    @property
+    def token(self) -> str:
+        """Project token, with validation"""
+        return self._token
 
-    def configure(self):
-        """Fill in project attributes"""
+    @property
+    def metadata(self) -> List[dict]:
+        """Project metadata in JSON format"""
         try:
-            self.metadata = self._md()
+            return self._metadata
+        except AttributeError:
+            self._metadata = self._intialize_metadata()
+            return self._metadata
         except RequestException as request_fail:
             raise RedcapError(
                 "Exporting metadata failed. Check your URL and token."
             ) from request_fail
-        self.field_names = self.filter_metadata("field_name")
-        # we'll use the first field as the default id for each row
-        self.def_field = self.field_names[0]
-        self.forms = tuple(set(c["form_name"] for c in self.metadata))
-        # determine whether longitudinal
-        ev_data = self._call_api(self._basepl("event"), "exp_event")[0]
-        arm_data = self._call_api(self._basepl("arm"), "exp_arm")[0]
 
-        if isinstance(ev_data, dict) and ("error" in ev_data.keys()):
-            events = tuple([])
-        else:
-            events = ev_data
+    @property
+    def field_names(self) -> List[str]:
+        """Project field names. Note these are survey field names, not export field names"""
+        try:
+            return self._field_names
+        except AttributeError:
+            self._field_names = self.filter_metadata("field_name")
+            return self._field_names
 
-        if isinstance(arm_data, dict) and ("error" in arm_data.keys()):
-            arm_nums = tuple([])
-            arm_names = tuple([])
-        else:
-            arm_nums = tuple(a["arm_num"] for a in arm_data)
-            arm_names = tuple(a["name"] for a in arm_data)
-        self.events = events
-        self.arm_nums = arm_nums
-        self.arm_names = arm_names
+    @property
+    def def_field(self) -> str:
+        """The 'record_id' field equivalent for a project"""
+        try:
+            return self._def_field
+        except AttributeError:
+            self._def_field = self.field_names[0]
+            return self.def_field
 
-    def _md(self):
-        """Return the project's metadata structure"""
-        p_l = self._basepl("metadata")
-        p_l["content"] = "metadata"
-        return self._call_api(p_l, "metadata")[0]
+    @property
+    def events(self) -> Optional[str]:
+        """Events for a longitudinal project"""
+        try:
+            return self._events
+        except AttributeError:
+            events = self._call_api(self._basepl("event"), "exp_event")[0]
+            # we should only get a dict back if there were no events defined
+            # for the project
+            if isinstance(events, dict) and "error" in events.keys():
+                self._events = None
+            # otherwise, we should get JSON
+            else:
+                self._events = events
 
-    # pylint: disable=redefined-builtin
-    def _basepl(self, content, rec_type="flat", format="json"):
-        """Return a dictionary which can be used as is or added to for
-        payloads"""
-        payload_dict = {"token": self.token, "content": content, "format": format}
-        if content not in ["metapayload_dictata", "file"]:
-            payload_dict["type"] = rec_type
-        return payload_dict
+            return self._events
 
-    # pylint: enable=redefined-builtin
+    @property
+    def is_longitudinal(self) -> bool:
+        """The longitudinal status of this project"""
+        try:
+            return self._is_longitudinal
+        except AttributeError:
+            if self.events:
+                self._is_longitudinal = True
+            else:
+                self._is_longitudinal = False
 
+            return self._is_longitudinal
+
+    @staticmethod
+    def _validate_url_and_token(url: str, token: str) -> None:
+        url_actual_last_5 = url[-5:]
+        url_expected_last_5 = "/api/"
+
+        assert url_actual_last_5 == url_expected_last_5, (
+            f"Incorrect url format '{ url }', url must end with",
+            f"{ url_expected_last_5 }",
+        )
+
+        actual_token_len = len(token)
+        expected_token_len = 32
+
+        assert actual_token_len == expected_token_len, (
+            f"Incorrect token format '{ token }', token must must be",
+            f"{ expected_token_len } characters long",
+        )
+
+    # pylint: disable=import-outside-toplevel
+    @staticmethod
+    def _read_csv(buf, **df_kwargs):
+        """Wrapper around pandas read_csv that handles EmptyDataError"""
+        from pandas import DataFrame, read_csv
+        from pandas.errors import EmptyDataError
+
+        try:
+            dataframe = read_csv(buf, **df_kwargs)
+        except EmptyDataError:
+            dataframe = DataFrame()
+
+        return dataframe
+
+    # pylint: enable=import-outside-toplevel
     def _meta_metadata(self, field, key):
         """Return the value for key for the field in the metadata"""
         metadata_field = ""
@@ -97,18 +148,7 @@ class Base:
         else:
             return metadata_field
 
-    def is_longitudinal(self):
-        """
-        Returns
-        -------
-        boolean :
-            longitudinal status of this project
-        """
-        return (
-            len(self.events) > 0 and len(self.arm_nums) > 0 and len(self.arm_names) > 0
-        )
-
-    def filter_metadata(self, key):
+    def filter_metadata(self, key: str) -> Tuple[str, ...]:
         """
         Return a list of values for the metadata key from each field
         of the project's metadata.
@@ -123,7 +163,9 @@ class Base:
         filtered :
             attribute list from each field
         """
-        filtered = [field[key] for field in self.metadata if key in field]
+        # pylint: disable=consider-using-generator
+        filtered = tuple([field[key] for field in self.metadata if key in field])
+        # pylint: enable=consider-using-generator
         if len(filtered) == 0:
             raise KeyError("Key not found in metadata")
         return filtered
@@ -132,7 +174,7 @@ class Base:
         """Private method to build a dict for sending to RCRequest
 
         Other default kwargs to the http library should go here"""
-        return {"verify": self.verify}
+        return {"verify": self.verify_ssl}
 
     def _call_api(self, payload, typpe, **kwargs):
         request_kwargs = self._kwargs()
@@ -140,21 +182,22 @@ class Base:
         rcr = RCRequest(self.url, payload, typpe)
         return rcr.execute(**request_kwargs)
 
-    # pylint: disable=import-outside-toplevel
-    @staticmethod
-    def read_csv(buf, **df_kwargs):
-        """Wrapper around pandas read_csv that handles EmptyDataError"""
-        from pandas import DataFrame, read_csv
-        from pandas.errors import EmptyDataError
+    # pylint: disable=redefined-builtin
+    def _basepl(self, content, rec_type="flat", format="json"):
+        """Return a dictionary which can be used as is or added to for
+        payloads"""
+        payload_dict = {"token": self.token, "content": content, "format": format}
+        if content not in ["metapayload_dictata", "file"]:
+            payload_dict["type"] = rec_type
+        return payload_dict
 
-        try:
-            dataframe = read_csv(buf, **df_kwargs)
-        except EmptyDataError:
-            dataframe = DataFrame()
+    # pylint: enable=redefined-builtin
 
-        return dataframe
-
-    # pylint: enable=import-outside-toplevel
+    def _intialize_metadata(self):
+        """Return the project's metadata structure"""
+        p_l = self._basepl("metadata")
+        p_l["content"] = "metadata"
+        return self._call_api(p_l, "metadata")[0]
 
     # pylint: disable=redefined-builtin
     def _initialize_import_payload(self, to_import, format, data_type):
@@ -184,7 +227,7 @@ class Base:
             # We'll assume it's a df
             buf = StringIO()
             if data_type == "record":
-                if self.is_longitudinal():
+                if self.is_longitudinal:
                     csv_kwargs = {"index_label": [self.def_field, "redcap_event_name"]}
                 else:
                     csv_kwargs = {"index_label": self.def_field}
