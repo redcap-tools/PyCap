@@ -22,3 +22,6 @@ disable=too-many-arguments,
 # Maximum number of parents for a class (see R0901).
 # Increased to 15 to cover all REDCap API categories
 max-parents=15
+# Maximum number of attributes for a class (see R0902).
+# Increased to 10 to accomodate our convinience class (Project)
+max-attributes=10
