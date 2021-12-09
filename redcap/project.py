@@ -13,8 +13,9 @@ __license__ = "MIT"
 __copyright__ = "2014, Vanderbilt University"
 
 # We're designing this class to be lazy by default, and not hit the API unless
-# explicitly requested by the user
-# pylint: disable=attribute-defined-outside-init
+# explicitly requested by the user. We also want to keep the methods separated,
+# which means multi-layered inheritance is our best bet.
+# pylint: disable=attribute-defined-outside-init,too-many-ancestors
 
 
 class Project(

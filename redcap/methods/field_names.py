@@ -46,6 +46,6 @@ class FieldNames(Base):
             raise ValueError(f"Unsupported format: '{format}'")
         if not df_kwargs:
             df_kwargs = {"index_col": "original_field_name"}
-        return self.read_csv(StringIO(response), **df_kwargs)
+        return self._read_csv(StringIO(response), **df_kwargs)
 
     # pylint: enable=redefined-builtin

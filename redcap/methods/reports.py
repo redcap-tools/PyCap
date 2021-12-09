@@ -93,12 +93,12 @@ class Reports(Base):
             raise ValueError(f"Unsupported format: '{ format }'")
 
         if not df_kwargs:
-            if self.is_longitudinal():
+            if self.is_longitudinal:
                 df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
             else:
                 df_kwargs = {"index_col": self.def_field}
         buf = StringIO(response)
-        dataframe = self.read_csv(buf, **df_kwargs)
+        dataframe = self._read_csv(buf, **df_kwargs)
         buf.close()
 
         return dataframe

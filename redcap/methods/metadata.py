@@ -51,7 +51,7 @@ class Metadata(Base):
 
         if not df_kwargs:
             df_kwargs = {"index_col": "field_name"}
-        return self.read_csv(StringIO(response), **df_kwargs)
+        return self._read_csv(StringIO(response), **df_kwargs)
 
     def import_metadata(
         self, to_import, format="json", return_format="json", date_format="YMD"

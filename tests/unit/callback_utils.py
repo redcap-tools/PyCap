@@ -41,14 +41,6 @@ def parse_request(req: Request) -> List[Union[dict, str]]:
     return [data, headers, request_type]
 
 
-def handle_simple_project_arms_request(**kwargs) -> MockResponse:
-    """Handle arms export, used at project initialization"""
-    headers = kwargs["headers"]
-    resp = {"error": "no arms"}
-
-    return (201, headers, json.dumps(resp))
-
-
 def handle_long_project_arms_request(**kwargs) -> MockResponse:
     """Give back list of arms for long project"""
     headers = kwargs["headers"]
@@ -421,18 +413,11 @@ def handle_user_request(**kwargs) -> MockResponse:
 
 
 # pylint: disable=unused-argument
-def handle_simple_project_version_request(**kwargs) -> MockResponse:
+def handle_version_request(**kwargs) -> MockResponse:
     """Handle REDCap version request"""
     resp = b"11.2.3"
     headers = {"content-type": "text/csv; charset=utf-8"}
     return (201, headers, resp)
-
-
-def handle_long_project_version_request(**kwargs) -> MockResponse:
-    """Handle REDCap version request, where version is unavailable"""
-    resp = {"error": "no version found"}
-    headers = {"content-type": "text/csv; charset=utf-8"}
-    return (201, headers, json.dumps(resp))
 
 
 # pylint: enable=unused-argument
@@ -476,7 +461,6 @@ def handle_long_project_survey_participants_request(**kwargs) -> MockResponse:
 def get_simple_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
-        "arm": handle_simple_project_arms_request,
         "event": handle_simple_project_events_request,
         "exportFieldNames": handle_export_field_names_request,
         "file": handle_simple_project_file_request,
@@ -486,7 +470,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "record": handle_simple_project_records_request,
         "report": handle_simple_project_reports_request,
         "user": handle_user_request,
-        "version": handle_simple_project_version_request,
+        "version": handle_version_request,
     }
 
     return handlers_dict[request_type]
@@ -503,7 +487,6 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "participantList": handle_long_project_survey_participants_request,
         "record": handle_long_project_records_request,
         "report": handle_long_project_reports_request,
-        "version": handle_long_project_version_request,
     }
 
     return handlers_dict[request_type]
@@ -512,11 +495,9 @@ def get_long_project_request_handler(request_type: str) -> Callable:
 def get_survey_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
-        "arm": handle_simple_project_arms_request,
         "event": handle_simple_project_events_request,
         "metadata": handle_simple_project_metadata_request,
         "record": handle_survey_project_records_request,
-        "version": handle_simple_project_version_request,
     }
 
     return handlers_dict[request_type]

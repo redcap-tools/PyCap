@@ -8,7 +8,7 @@ import responses
 @pytest.fixture(scope="module")
 def project_token() -> str:
     """Project API token"""
-    return "supersecrettoken"
+    return "0" * 32
 
 
 @pytest.fixture(scope="module")
@@ -18,7 +18,6 @@ def project_urls() -> Dict[str, str]:
         "bad_url": "https://redcap.badproject.edu/api",
         "long_project": "https://redcap.longproject.edu/api/",
         "simple_project": "https://redcap.simpleproject.edu/api/",
-        "ssl_project": "https://redcap.sslproject.edu/api/",
         "survey_project": "https://redcap.surveyproject.edu/api/",
     }
 

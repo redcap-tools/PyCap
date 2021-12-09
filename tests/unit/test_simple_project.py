@@ -43,17 +43,30 @@ def simple_project(project_urls, project_token, mocked_responses) -> Project:
 
 
 def test_bad_creds(project_urls, project_token):
-    # this url is "bad" because we didn't set up an response fixture for it
     bad_url = project_urls["bad_url"]
+    bad_token = "1"
 
-    with pytest.raises(RedcapError):
+    with pytest.raises(AssertionError):
         Project(bad_url, project_token)
-    with pytest.raises(RedcapError):
-        Project(bad_url, "1")
+    with pytest.raises(AssertionError):
+        Project(project_urls["simple_project"], bad_token)
 
 
 def test_init(simple_project):
     assert isinstance(simple_project, Project)
+
+
+# pylint: disable=protected-access
+def test_verify_ssl_can_be_disabled(project_urls, project_token):
+    ssl_project = Project(
+        project_urls["simple_project"], project_token, verify_ssl=False
+    )
+    post_kwargs = ssl_project._kwargs()
+    assert "verify" in post_kwargs
+    assert not post_kwargs["verify"]
+
+
+# pylint: enable=protected-access
 
 
 def test_filter_metadata_enforces_strict_keys(simple_project):
@@ -94,35 +107,22 @@ def test_get_version(simple_project):
     assert simple_project.redcap_version == semantic_version.Version("11.2.3")
 
 
-def test_life_goes_on_without_the_version(simple_project, mocker):
-    mocker.patch.object(simple_project, "_rcv", side_effect=(Exception))
-
-    with pytest.raises(RedcapError):
-        simple_project.configure()
-
-
 def test_attrs(simple_project):
     for attr in (
         "metadata",
         "field_names",
-        "field_labels",
-        "forms",
         "events",
-        "arm_names",
-        "arm_nums",
         "def_field",
     ):
         assert hasattr(simple_project, attr)
 
 
 def test_is_not_longitudinal(simple_project):
-    assert not simple_project.is_longitudinal()
+    assert not simple_project.is_longitudinal
 
 
-def test_events_and_arms_attrs_are_empty(simple_project):
-    for attr in "events", "arm_names", "arm_nums":
-        attr_obj = getattr(simple_project, attr)
-        assert attr_obj == ()
+def test_events_are_empty(simple_project):
+    assert not simple_project.events
 
 
 # Right now it seems like this isn't acutally testing the date formatting?

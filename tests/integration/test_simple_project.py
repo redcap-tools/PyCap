@@ -14,7 +14,7 @@ if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
 
 @pytest.mark.integration
 def test_is_not_longitudinal(simple_project):
-    assert not simple_project.is_longitudinal()
+    assert not simple_project.is_longitudinal
 
 
 @pytest.mark.integration
@@ -32,7 +32,7 @@ def test_export_records_df(simple_project):
 @pytest.mark.integration
 def test_export_records_df_eav(simple_project):
     proj_records_export = simple_project.export_records(format="df", type="eav")
-    assert len(proj_records_export) == 31
+    assert len(proj_records_export) == 34
 
 
 @pytest.mark.integration
