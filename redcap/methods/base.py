@@ -1,20 +1,15 @@
 """The Base class for all REDCap methods"""
 import json
-import warnings
 
 from io import StringIO
 
-import semantic_version
-
 from redcap.request import RCRequest, RedcapError, RequestException
-
-# pylint: disable=too-many-instance-attributes
 
 
 class Base:
     """Base attributes and methods for the REDCap API"""
 
-    def __init__(self, url, token, name="", verify_ssl=True, lazy=False):
+    def __init__(self, url, token, verify_ssl=True, lazy=False):
         """
         Parameters
         ----------
@@ -22,27 +17,21 @@ class Base:
             API URL to your REDCap server
         token : str
             API token to your project
-        name : str, optional
-            name for project
         verify_ssl : boolean, str
             Verify SSL, default True. Can pass path to CA_BUNDLE.
         """
 
         self.token = token
-        self.name = name
         self.url = url
         self.verify = verify_ssl
         self.metadata = None
-        self.redcap_version = None
         self.field_names = None
         # We'll use the first field as the default id for each row
         self.def_field = None
-        self.field_labels = None
         self.forms = None
         self.events = None
         self.arm_nums = None
         self.arm_names = None
-        self.configured = False
 
         if not lazy:
             self.configure()
@@ -55,16 +44,9 @@ class Base:
             raise RedcapError(
                 "Exporting metadata failed. Check your URL and token."
             ) from request_fail
-        try:
-            self.redcap_version = self._rcv()
-        except Exception as general_fail:
-            raise RedcapError(
-                "Determination of REDCap version failed"
-            ) from general_fail
         self.field_names = self.filter_metadata("field_name")
         # we'll use the first field as the default id for each row
         self.def_field = self.field_names[0]
-        self.field_labels = self.filter_metadata("field_label")
         self.forms = tuple(set(c["form_name"] for c in self.metadata))
         # determine whether longitudinal
         ev_data = self._call_api(self._basepl("event"), "exp_event")[0]
@@ -84,7 +66,6 @@ class Base:
         self.events = events
         self.arm_nums = arm_nums
         self.arm_names = arm_names
-        self.configured = True
 
     def _md(self):
         """Return the project's metadata structure"""
@@ -102,17 +83,6 @@ class Base:
         return payload_dict
 
     # pylint: enable=redefined-builtin
-    def _rcv(self):
-        payload = self._basepl("version")
-        rcv = self._call_api(payload, "version")[0].decode("utf-8")
-        resp = None
-        if "error" in rcv:
-            warnings.warn("Version information not available for this REDCap instance")
-            resp = ""
-        if semantic_version.validate(rcv):
-            resp = semantic_version.Version(rcv)
-
-        return resp
 
     def _meta_metadata(self, field, key):
         """Return the value for key for the field in the metadata"""
