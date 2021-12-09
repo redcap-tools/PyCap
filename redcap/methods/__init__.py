@@ -9,3 +9,4 @@ import redcap.methods.records
 import redcap.methods.reports
 import redcap.methods.surveys
 import redcap.methods.users
+import redcap.methods.version
