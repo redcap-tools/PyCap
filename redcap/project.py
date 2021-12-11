@@ -35,14 +35,9 @@ class Project(
     @property
     def redcap_version(self) -> Optional[semantic_version.Version]:
         """REDCap version of the Project"""
+        self._redcap_version: Optional[semantic_version.Version]
         try:
             return self._redcap_version
         except AttributeError:
             self._redcap_version = self.export_version()
             return self._redcap_version
-
-    def metadata_type(self, field_name):
-        """If the given field_name is validated by REDCap, return it's type"""
-        return self._meta_metadata(
-            field_name, "text_validation_type_or_show_slider_number"
-        )

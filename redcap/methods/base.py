@@ -60,7 +60,7 @@ class Base:
         try:
             return self._field_names
         except AttributeError:
-            self._field_names = self.filter_metadata("field_name")
+            self._field_names = self._filter_metadata(key="field_name")
             return self._field_names
 
     @property
@@ -135,40 +135,36 @@ class Base:
         return dataframe
 
     # pylint: enable=import-outside-toplevel
-    def _meta_metadata(self, field, key):
-        """Return the value for key for the field in the metadata"""
-        metadata_field = ""
+    @overload
+    def _filter_metadata(
+        self,
+        key: str,
+        field_name: None = None,
+    ) -> List[str]:
+        ...
+
+    @overload
+    def _filter_metadata(self, key: str, field_name: str) -> str:
+        ...
+
+    def _filter_metadata(self, key: str, field_name: Optional[str] = None):
+        """Safely filter project metadata based off requested column and field_name"""
+        res: Union[str, List[str]] = ""
         try:
-            metadata_field = str(
-                [f[key] for f in self.metadata if f["field_name"] == field][0]
-            )
+            if field_name:
+                res = str(
+                    [
+                        row[key]
+                        for row in self.metadata
+                        if row["field_name"] == field_name
+                    ][0]
+                )
+            else:
+                res = [row[key] for row in self.metadata]
         except IndexError:
-            print(f"{ key } not in metadata field:{ field }")
-            return metadata_field
-        else:
-            return metadata_field
+            print(f"{ key } not in metadata field:{ field_name }")
 
-    def filter_metadata(self, key: str) -> Tuple[str, ...]:
-        """
-        Return a list of values for the metadata key from each field
-        of the project's metadata.
-
-        Parameters
-        ----------
-        key: str
-            A known key in the metadata structure
-
-        Returns
-        -------
-        filtered :
-            attribute list from each field
-        """
-        # pylint: disable=consider-using-generator
-        filtered = tuple([field[key] for field in self.metadata if key in field])
-        # pylint: enable=consider-using-generator
-        if len(filtered) == 0:
-            raise KeyError("Key not found in metadata")
-        return filtered
+        return res
 
     def _kwargs(self):
         """Private method to build a dict for sending to RCRequest

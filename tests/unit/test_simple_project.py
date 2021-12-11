@@ -66,23 +66,11 @@ def test_verify_ssl_can_be_disabled(project_urls, project_token):
     assert not post_kwargs["verify"]
 
 
-# pylint: enable=protected-access
-
-
 def test_filter_metadata_enforces_strict_keys(simple_project):
     with pytest.raises(KeyError):
-        simple_project.filter_metadata("fake_column")
+        simple_project._filter_metadata("fake_column")
 
 
-def test_metadata_type_catches_non_existent_fields(simple_project, capsys):
-    res = simple_project.metadata_type("fake_field")
-    out, _ = capsys.readouterr()
-
-    assert res == ""
-    assert "not in metadata field:fake_field" in out
-
-
-# pylint: disable=protected-access
 def test_verify_ssl_defaults_to_true(simple_project):
     post_kwargs = simple_project._kwargs()
     assert "verify" in post_kwargs
