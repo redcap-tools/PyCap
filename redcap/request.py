@@ -36,7 +36,7 @@ class RCRequest:
     biggest consumer.
     """
 
-    def __init__(self, url, payload, qtype, session=_session):
+    def __init__(self, url, payload, req_type, session=_session):
         """
         Constructor
 
@@ -46,15 +46,15 @@ class RCRequest:
             REDCap API URL
         payload : dict
             key,values corresponding to the REDCap API
-        qtype : str
+        req_type : str
             Used to validate payload contents against API
         """
         self.url = url
         self.payload = payload
-        self.type = qtype
+        self.type = req_type
         self.session = session
 
-        if qtype:
+        if req_type:
             self.validate()
         fmt_key = "returnFormat" if "returnFormat" in payload else "format"
         self.fmt = payload[fmt_key]

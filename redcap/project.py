@@ -4,7 +4,7 @@
 
 from typing import Optional
 
-import semantic_version
+import semantic_version  # type: ignore
 
 from redcap import methods
 

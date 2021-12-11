@@ -4,7 +4,7 @@ import warnings
 
 from typing import Optional
 
-import semantic_version
+import semantic_version  # type: ignore
 
 from redcap.methods.base import Base
 

@@ -1,11 +1,25 @@
 """The Base class for all REDCap methods"""
+from __future__ import annotations
+
 import json
 
-from typing import List, Optional, Tuple, Union
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    overload,
+    Tuple,
+    TYPE_CHECKING,
+    Union,
+)
 
 from io import StringIO
 
 from redcap.request import RCRequest, RedcapError, RequestException
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 # We're designing class to be lazy by default, and not hit the API unless
 # explicitly requested by the user
@@ -42,8 +56,9 @@ class Base:
         return self._token
 
     @property
-    def metadata(self) -> List[dict]:
+    def metadata(self) -> List[Dict[str, str]]:
         """Project metadata in JSON format"""
+        self._metadata: List[Dict[str, str]]
         try:
             return self._metadata
         except AttributeError:
@@ -57,6 +72,7 @@ class Base:
     @property
     def field_names(self) -> List[str]:
         """Project field names. Note these are survey field names, not export field names"""
+        self._field_names: List[str]
         try:
             return self._field_names
         except AttributeError:
@@ -66,6 +82,7 @@ class Base:
     @property
     def def_field(self) -> str:
         """The 'record_id' field equivalent for a project"""
+        self._def_field: str
         try:
             return self._def_field
         except AttributeError:
@@ -73,12 +90,13 @@ class Base:
             return self.def_field
 
     @property
-    def events(self) -> Optional[str]:
+    def events(self) -> Optional[List[dict]]:
         """Events for a longitudinal project"""
+        self._events: Optional[List[dict]]
         try:
             return self._events
         except AttributeError:
-            events = self._call_api(self._basepl("event"), "exp_event")[0]
+            events: List[dict] = self._call_api(self._basepl("event"), "exp_event")[0]
             # we should only get a dict back if there were no events defined
             # for the project
             if isinstance(events, dict) and "error" in events.keys():
@@ -92,6 +110,7 @@ class Base:
     @property
     def is_longitudinal(self) -> bool:
         """The longitudinal status of this project"""
+        self._is_longitudinal: bool
         try:
             return self._is_longitudinal
         except AttributeError:
@@ -122,7 +141,7 @@ class Base:
 
     # pylint: disable=import-outside-toplevel
     @staticmethod
-    def _read_csv(buf, **df_kwargs):
+    def _read_csv(buf: StringIO, **df_kwargs) -> pd.DataFrame:
         """Wrapper around pandas read_csv that handles EmptyDataError"""
         from pandas import DataFrame, read_csv
         from pandas.errors import EmptyDataError
@@ -166,20 +185,24 @@ class Base:
 
         return res
 
-    def _kwargs(self):
+    def _kwargs(self) -> Dict[str, Any]:
         """Private method to build a dict for sending to RCRequest
 
         Other default kwargs to the http library should go here"""
         return {"verify": self.verify_ssl}
 
-    def _call_api(self, payload, typpe, **kwargs):
+    def _call_api(
+        self, payload: Dict[str, Any], req_type: str, **kwargs
+    ) -> Tuple[List[dict], str]:
         request_kwargs = self._kwargs()
         request_kwargs.update(kwargs)
-        rcr = RCRequest(self.url, payload, typpe)
+        rcr = RCRequest(self.url, payload, req_type)
         return rcr.execute(**request_kwargs)
 
     # pylint: disable=redefined-builtin
-    def _basepl(self, content, rec_type="flat", format="json"):
+    def _basepl(
+        self, content: str, rec_type: str = "flat", format: str = "json"
+    ) -> Dict[str, str]:
         """Return a dictionary which can be used as is or added to for
         payloads"""
         payload_dict = {"token": self.token, "content": content, "format": format}
@@ -189,14 +212,19 @@ class Base:
 
     # pylint: enable=redefined-builtin
 
-    def _intialize_metadata(self):
+    def _intialize_metadata(self) -> List[Dict[str, str]]:
         """Return the project's metadata structure"""
         p_l = self._basepl("metadata")
         p_l["content"] = "metadata"
         return self._call_api(p_l, "metadata")[0]
 
     # pylint: disable=redefined-builtin
-    def _initialize_import_payload(self, to_import, format, data_type):
+    def _initialize_import_payload(
+        self,
+        to_import: Union[List[dict], str, pd.DataFrame],
+        format: str,
+        data_type: str,
+    ) -> Dict[str, Any]:
         """
         Standardize the data to be imported and add it to the payload
 
