@@ -9,7 +9,7 @@ class Files(Base):
     def _check_file_field(self, field):
         """Check that field exists and is a file field"""
         is_field = field in self.field_names
-        is_file = self._meta_metadata(field, "field_type") == "file"
+        is_file = self._filter_metadata(key="field_type", field_name=field) == "file"
         if not (is_field and is_file):
             msg = f"'{ field }' is not a field or not a 'file' field"
             raise ValueError(msg)
