@@ -41,6 +41,7 @@ jobs:
       run: |
         cd docs && poetry run make html
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
+    - uses: actions/checkout@master
+    - uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
