@@ -3,3 +3,5 @@ coverage:
     project:
       default:
         target: 100%
+comment:
+  layout: "diff, files"
