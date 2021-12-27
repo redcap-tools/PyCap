@@ -39,6 +39,9 @@ numpydoc = "^1.1.0"
 Sphinx = "^4.2.0"
 responses = "^0.14.0"
 pytest-mock = "^3.6.1"
+mypy = "^0.910"
+types-requests = "^2.26.1"
+pandas-stubs = "^1.2.0"
 
 [tool.poetry.extras]
 data_science = ["pandas"]
