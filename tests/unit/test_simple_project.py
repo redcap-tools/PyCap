@@ -13,6 +13,8 @@ import pytest
 import responses
 import semantic_version
 
+from requests import RequestException
+
 from redcap import Project, RedcapError
 from tests.unit.callback_utils import (
     is_json,
@@ -75,6 +77,16 @@ def test_verify_ssl_defaults_to_true(simple_project):
     post_kwargs = simple_project._kwargs()
     assert "verify" in post_kwargs
     assert post_kwargs["verify"]
+
+
+def test_user_is_alerted_about_initialization_issues(
+    project_urls, project_token, mocker
+):
+    bad_init_project = Project(project_urls["simple_project"], project_token)
+    mocker.patch.object(bad_init_project, "_call_api", side_effect=RequestException)
+
+    with pytest.raises(RedcapError):
+        bad_init_project.export_metadata()
 
 
 # pylint: enable=protected-access
