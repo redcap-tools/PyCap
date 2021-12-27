@@ -9,6 +9,7 @@ README
 build/
 docs/_build/
 _site/
+site/
 .idea/
 *.swp
 .vscode/

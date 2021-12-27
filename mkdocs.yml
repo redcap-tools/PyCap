@@ -1,0 +1,20 @@
+site_name: PyCap
+site_url: http://redcap-tools.github.io/PyCap/
+
+repo_name: redcap-tools/PyCap
+repo_url: https://github.com/redcap-tools/PyCap
+
+nav:
+    - Home: index.md
+    - Quick Start: quickstart.md
+theme:
+  name: material
+  palette:
+    primary: red
+    accent: red
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
