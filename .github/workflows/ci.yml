@@ -3,6 +3,7 @@ name: CI
 on:
   # Need to also run on pushes to master since PRs from a fork won't have
   # access to the super user token, thereby skipping the tests
+  # Also only updating gh-pages when on master
   push:
     branches:
       - master
@@ -39,6 +40,10 @@ jobs:
         poetry run pytest
     - name: Build docs
       run: |
-        cd docs && poetry run make html
+        poetry run mkdocs build
+    - name: Serve docs
+      if: github.ref == 'refs/heads/master'
+      run: |
+        poetry run mkdocs gh-deploy
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2.1.0
