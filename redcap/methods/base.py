@@ -62,12 +62,8 @@ class Base:
         try:
             return self._metadata
         except AttributeError:
-            self._metadata = self._intialize_metadata()
+            self._metadata = self._initialize_metadata()
             return self._metadata
-        except RequestException as request_fail:
-            raise RedcapError(
-                "Exporting metadata failed. Check your URL and token."
-            ) from request_fail
 
     @property
     def field_names(self) -> List[str]:
@@ -212,11 +208,17 @@ class Base:
 
     # pylint: enable=redefined-builtin
 
-    def _intialize_metadata(self) -> List[Dict[str, str]]:
+    def _initialize_metadata(self) -> List[Dict[str, str]]:
         """Return the project's metadata structure"""
         p_l = self._basepl("metadata")
         p_l["content"] = "metadata"
-        return self._call_api(p_l, "metadata")[0]
+
+        try:
+            return self._call_api(p_l, "metadata")[0]
+        except RequestException as request_fail:
+            raise RedcapError(
+                "Exporting metadata failed. Check your URL and token."
+            ) from request_fail
 
     # pylint: disable=redefined-builtin
     def _initialize_import_payload(
