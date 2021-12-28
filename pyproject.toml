@@ -35,7 +35,6 @@ pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
 pytest-black = {version = "^0.3.12", allow-prereleases = true}
 pytest-pylint = "^0.18.0"
-numpydoc = "^1.1.0"
 responses = "^0.14.0"
 pytest-mock = "^3.6.1"
 mypy = "^0.910"
