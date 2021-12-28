@@ -10,7 +10,7 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
+# pylint: disable=all
 import sys, os
 
 sys.path.insert(0, os.path.abspath(".."))
