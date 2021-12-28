@@ -16,6 +16,8 @@ nav:
         - Project Info: api_reference/project_info.md
 theme:
   name: material
+  logo: img/logo.png
+  favicon: img/logo.png
   palette:
     primary: red
     accent: red
