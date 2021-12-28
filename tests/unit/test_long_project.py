@@ -115,7 +115,7 @@ def test_export_to_df_gives_multi_index(long_project):
 
 def test_import_dataframe(long_project):
     long_dataframe = long_project.export_records(event_name="raw", format="df")
-    response = long_project.import_records(long_dataframe)
+    response = long_project.import_records(long_dataframe, format="df")
 
     assert "count" in response
     assert "error" not in response
