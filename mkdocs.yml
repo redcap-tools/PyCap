@@ -7,6 +7,13 @@ repo_url: https://github.com/redcap-tools/PyCap
 nav:
     - Home: index.md
     - Quick Start: quickstart.md
+    - API Reference:
+        - Project: api_reference/project.md
+        - Field Names: api_reference/field_names.md
+        - Files: api_reference/files.md
+        - Instruments: api_reference/instruments.md
+        - Metadata: api_reference/metadata.md
+        - Project Info: api_reference/project_info.md
 theme:
   name: material
   palette:
@@ -18,3 +25,6 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+plugins:
+  - search
+  - mkdocstrings
