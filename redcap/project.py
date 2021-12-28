@@ -30,7 +30,11 @@ class Project(
     methods.users.Users,
     methods.version.Version,
 ):
-    """Main class for interacting with REDCap projects"""
+    """Main class for interacting with REDCap projects
+
+    Attributes:
+        verify_ssl: Verify SSL, default True. Can pass path to CA_BUNDLE
+    """
 
     @property
     def redcap_version(self) -> Optional[semantic_version.Version]:

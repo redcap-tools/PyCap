@@ -1,36 +1,74 @@
 """REDCap API methods for Project metadata"""
 from io import StringIO
 
+from typing import TYPE_CHECKING, Dict, List, Optional, Union, overload
+
+from typing_extensions import Literal
+
 from redcap.methods.base import Base
 from redcap.request import RedcapError
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 class Metadata(Base):
     """Responsible for all API methods under 'Metadata' in the API Playground"""
 
     # pylint: disable=redefined-builtin
-    def export_metadata(self, fields=None, forms=None, format="json", df_kwargs=None):
+    @overload
+    def export_metadata(
+        self,
+        format: Literal["json"],
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        df_kwargs: Optional[Dict] = None,
+    ) -> List[Dict]:
+        ...
+
+    @overload
+    def export_metadata(
+        self,
+        format: Literal["csv", "xml"],
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        df_kwargs: Optional[Dict] = None,
+    ) -> str:
+        ...
+
+    @overload
+    def export_metadata(
+        self,
+        format: Literal["df"],
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        df_kwargs: Optional[Dict] = None,
+    ) -> "pd.DataFrame":
+        ...
+
+    def export_metadata(
+        self,
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        df_kwargs: Optional[Dict] = None,
+    ) -> Union[str, List[Dict], "pd.DataFrame"]:
         """
         Export the project's metadata
 
-        Parameters
-        ----------
-        fields : list
-            Limit exported metadata to these fields
-        forms : list
-            Limit exported metadata to these forms
-        format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
-            Return the metadata in native objects, csv or xml.
-            ``'df'`` will return a ``pandas.DataFrame``.
-        df_kwargs : dict
-            Passed to ``pandas.read_csv`` to control construction of
-            returned DataFrame.
-            by default ``{'index_col': 'field_name'}``
+        Args:
+            format:
+                Return the metadata in native objects, csv or xml.
+                `'df'` will return a `pandas.DataFrame`
+            fields: Limit exported metadata to these fields
+            forms: Limit exported metadata to these forms
+            df_kwargs:
+                Passed to `pandas.read_csv` to control construction of
+                returned DataFrame.
+                By default `{'index_col': 'field_name'}`
 
-        Returns
-        -------
-        metadata : list, str, ``pandas.DataFrame``
-            metadata sttructure for the project.
+        Returns:
+            Union[str, List[Dict], pd.DataFrame]: Metadata structure for the project.
         """
         ret_format = format
         if format == "df":
@@ -53,34 +91,55 @@ class Metadata(Base):
             df_kwargs = {"index_col": "field_name"}
         return self._read_csv(StringIO(response), **df_kwargs)
 
+    @overload
     def import_metadata(
-        self, to_import, format="json", return_format="json", date_format="YMD"
+        self,
+        to_import: Union[str, List[Dict], "pd.DataFrame"],
+        return_format: Literal["json"],
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
+    ) -> List[Dict]:
+        ...
+
+    @overload
+    def import_metadata(
+        self,
+        to_import: Union[str, List[Dict], "pd.DataFrame"],
+        return_format: Literal["csv", "xml"],
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
+    ) -> str:
+        ...
+
+    def import_metadata(
+        self,
+        to_import: Union[str, List[Dict], "pd.DataFrame"],
+        return_format: Literal["json", "csv", "xml"] = "json",
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
     ):
         """
-        Import metadata (DataDict) into the RedCap Project
+        Import metadata (Data Dictionary) into the REDCap Project
 
-        Parameters
-        ----------
-        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
-            :note:
-                If you pass a csv or xml string, you should use the
-                ``format`` parameter appropriately.
-        format : ('json'),  'xml', 'csv'
-            Format of incoming data. By default, to_import will be json-encoded
-        return_format : ('json'), 'csv', 'xml'
-            Response format. By default, response will be json-decoded.
-        date_format : ('YMD'), 'DMY', 'MDY'
-            Describes the formatting of dates. By default, date strings
-            are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
-            strings are formatted as 'MM/DD/YYYY' set this parameter as
-            'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
-            other formattings are allowed.
+        Args:
+            to_import: array of dicts, csv/xml string, `pandas.DataFrame`
+                Note:
+                    If you pass a csv or xml string, you should use the
+                    `format` parameter appropriately.
+            return_format:
+                Response format. By default, response will be json-decoded.
+            format:
+                Format of incoming data. By default, to_import will be json-encoded
+            date_format:
+                Describes the formatting of dates. By default, date strings
+                are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
+                strings are formatted as 'MM/DD/YYYY' set this parameter as
+                'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
+                other formattings are allowed.
 
-        Returns
-        -------
-        response : dict, str
-            response from REDCap API, json-decoded if ``return_format`` == ``'json'``
-            If successful, the number of imported fields
+        Returns:
+            Union[List[Dict], str]: Response from REDCap API, json-decoded if
+            `return_format == 'json'`. If successful, the number of imported fields
         """
         payload = self._initialize_import_payload(to_import, format, "metadata")
         payload["returnFormat"] = return_format

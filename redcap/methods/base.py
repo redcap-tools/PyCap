@@ -30,16 +30,7 @@ class Base:
     """Base attributes and methods for the REDCap API"""
 
     def __init__(self, url: str, token: str, verify_ssl: Union[bool, str] = True):
-        """
-        Parameters
-        ----------
-        url : str
-            API URL to your REDCap server
-        token : str
-            API token to your project
-        verify_ssl : boolean, str
-            Verify SSL, default True. Can pass path to CA_BUNDLE.
-        """
+        """Initialize a Project, validate url and token"""
         self._validate_url_and_token(url, token)
         self._url = url
         self._token = token
@@ -47,12 +38,12 @@ class Base:
 
     @property
     def url(self) -> str:
-        """Project url, with validation"""
+        """API URL to your REDCap server"""
         return self._url
 
     @property
     def token(self) -> str:
-        """Project token, with validation"""
+        """API token to your project"""
         return self._token
 
     @property
@@ -67,7 +58,11 @@ class Base:
 
     @property
     def field_names(self) -> List[str]:
-        """Project field names. Note these are survey field names, not export field names"""
+        """Project field names
+
+        Note:
+            These are survey field names, not export field names
+        """
         self._field_names: List[str]
         try:
             return self._field_names
@@ -87,7 +82,11 @@ class Base:
 
     @property
     def events(self) -> Optional[List[dict]]:
-        """Events for a longitudinal project"""
+        """Project defined events
+
+        Note:
+            Exists for longitudinal projects only
+        """
         self._events: Optional[List[dict]]
         try:
             return self._events
@@ -105,7 +104,7 @@ class Base:
 
     @property
     def is_longitudinal(self) -> bool:
-        """The longitudinal status of this project"""
+        """Whether or not this project is longitudinal"""
         self._is_longitudinal: bool
         try:
             return self._is_longitudinal
@@ -137,7 +136,7 @@ class Base:
 
     # pylint: disable=import-outside-toplevel
     @staticmethod
-    def _read_csv(buf: StringIO, **df_kwargs) -> pd.DataFrame:
+    def _read_csv(buf: StringIO, **df_kwargs) -> "pd.DataFrame":
         """Wrapper around pandas read_csv that handles EmptyDataError"""
         from pandas import DataFrame, read_csv
         from pandas.errors import EmptyDataError
@@ -223,34 +222,29 @@ class Base:
     # pylint: disable=redefined-builtin
     def _initialize_import_payload(
         self,
-        to_import: Union[List[dict], str, pd.DataFrame],
+        to_import: Union[List[dict], str, "pd.DataFrame"],
         format: str,
         data_type: str,
     ) -> Dict[str, Any]:
-        """
-        Standardize the data to be imported and add it to the payload
+        """Standardize the data to be imported and add it to the payload
 
-        Parameters
-        ----------
-        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
-            :note:
+        Args:
+        to_import: array of dicts, csv/xml string, ``pandas.DataFrame``
+            Note:
                 If you pass a csv or xml string, you should use the
-                ``format`` parameter appropriately.
-        format : ('json'),  'xml', 'csv'
+                `format` parameter appropriately.
+        format: ('json'),  'xml', 'csv'
             Format of incoming data. By default, to_import will be json-encoded
         data_type: 'record', 'metadata'
             The kind of data that are imported
 
-        Returns
-        -------
-        payload : (dict, str)
-            The initialized payload dictionary and updated format
+        Returns:
+            payload: The initialized payload dictionary and updated format
         """
 
         payload = self._basepl(data_type)
         # pylint: disable=comparison-with-callable
-        if hasattr(to_import, "to_csv"):
-            # We'll assume it's a df
+        if format == "df":
             buf = StringIO()
             if data_type == "record":
                 if self.is_longitudinal:
