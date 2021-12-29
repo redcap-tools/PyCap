@@ -86,7 +86,7 @@ def test_user_is_alerted_about_initialization_issues(
     mocker.patch.object(bad_init_project, "_call_api", side_effect=RequestException)
 
     with pytest.raises(RedcapError):
-        bad_init_project.export_metadata()
+        bad_init_project._initialize_metadata()
 
 
 # pylint: enable=protected-access

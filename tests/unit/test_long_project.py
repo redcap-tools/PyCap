@@ -41,6 +41,13 @@ def test_init(long_project):
     assert isinstance(long_project, Project)
 
 
+def test_user_is_warned_version_not_found(long_project):
+    with pytest.warns(UserWarning):
+        version = long_project.export_version()
+
+    assert version is None
+
+
 def test_file_export(long_project):
     record, field = "1", "file"
     content, _ = long_project.export_file(record, field, event="raw", repeat_instance=1)

@@ -413,9 +413,16 @@ def handle_user_request(**kwargs) -> MockResponse:
 
 
 # pylint: disable=unused-argument
-def handle_version_request(**kwargs) -> MockResponse:
+def handle_simple_project_version_request(**kwargs) -> MockResponse:
     """Handle REDCap version request"""
     resp = b"11.2.3"
+    headers = {"content-type": "text/csv; charset=utf-8"}
+    return (201, headers, resp)
+
+
+def handle_long_project_version_request(**kwargs) -> MockResponse:
+    """Return error for REDCap version request"""
+    resp = b"error"
     headers = {"content-type": "text/csv; charset=utf-8"}
     return (201, headers, resp)
 
@@ -470,7 +477,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "record": handle_simple_project_records_request,
         "report": handle_simple_project_reports_request,
         "user": handle_user_request,
-        "version": handle_version_request,
+        "version": handle_simple_project_version_request,
     }
 
     return handlers_dict[request_type]
@@ -487,6 +494,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "participantList": handle_long_project_survey_participants_request,
         "record": handle_long_project_records_request,
         "report": handle_long_project_reports_request,
+        "version": handle_long_project_version_request,
     }
 
     return handlers_dict[request_type]

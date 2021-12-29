@@ -176,7 +176,7 @@ class Base:
             else:
                 res = [row[key] for row in self.metadata]
         except IndexError:
-            print(f"{ key } not in metadata field:{ field_name }")
+            print(f"{ key } not in metadata field:{ field_name }")  # pragma: no cover
 
         return res
 
