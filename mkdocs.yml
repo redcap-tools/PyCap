@@ -15,6 +15,10 @@ nav:
         - Metadata: api_reference/metadata.md
         - Project Info: api_reference/project_info.md
         - Records: api_reference/records.md
+        - Reports: api_reference/reports.md
+        - Surveys: api_reference/surveys.md
+        - Users: api_reference/users.md
+        - Version: api_reference/version.md
 theme:
   name: material
   logo: img/logo.png

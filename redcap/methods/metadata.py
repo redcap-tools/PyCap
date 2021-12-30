@@ -98,7 +98,7 @@ class Metadata(Base):
         return_format: Literal["json"],
         format: Literal["json", "csv", "xml", "df"] = "json",
         date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
-    ) -> List[Dict]:
+    ) -> int:
         ...
 
     @overload
@@ -138,7 +138,7 @@ class Metadata(Base):
                 other formattings are allowed.
 
         Returns:
-            Union[List[Dict], str]: Response from REDCap API, json-decoded if
+            Union[int, str]: Response from REDCap API, json-decoded if
             `return_format == 'json'`. If successful, the number of imported fields
         """
         payload = self._initialize_import_payload(to_import, format, "metadata")
