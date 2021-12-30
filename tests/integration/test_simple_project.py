@@ -3,6 +3,7 @@
 import os
 
 import pytest
+import semantic_version
 
 
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
@@ -45,3 +46,56 @@ def test_import_and_delete_records(simple_project):
 
     res = simple_project.delete_records(new_record_ids)
     assert res == "3"
+
+
+@pytest.mark.integration
+def test_export_version(simple_project):
+    version = simple_project.export_version()
+    assert version >= semantic_version.Version("12.0.1")
+
+
+@pytest.mark.integration
+def test_export_users(simple_project):
+    users = simple_project.export_users()
+    # no need to create a test project with more than one user
+    assert len(users) == 1
+    # any user in this test project would by necessity have API access
+    assert users[0]["api_export"] == 1
+
+
+@pytest.mark.integration
+def test_export_field_names(simple_project):
+    field_names = simple_project.export_field_names()
+    assert len(field_names) == 16
+
+
+@pytest.mark.integration
+def test_export_one_field_name(simple_project):
+    field_names = simple_project.export_field_names(field="first_name")
+    assert len(field_names) == 1
+
+
+@pytest.mark.integration
+def test_export_field_names_df(simple_project):
+    field_names = simple_project.export_field_names(format="df")
+    assert all(field_names.columns == ["choice_value", "export_field_name"])
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("output_format", [("json")])
+def test_export_and_import_metadata(simple_project, output_format):
+    original_metadata = simple_project.export_metadata(format=output_format)
+    assert len(original_metadata) == 15
+
+    reduced_metadata = original_metadata[:14]
+    res = simple_project.import_metadata(reduced_metadata, format=output_format)
+    assert res == len(reduced_metadata)
+    # then "restore" it (though won't have data for the previouslu removed fields)
+    res = simple_project.import_metadata(original_metadata, format=output_format)
+    assert res == len(original_metadata)
+
+
+@pytest.mark.integration
+def test_export_project_info(simple_project):
+    project_info = simple_project.export_project_info()
+    assert project_info["is_longitudinal"] == 0
