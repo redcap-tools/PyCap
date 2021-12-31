@@ -47,7 +47,16 @@ class FieldNames(Base):
 
         Returns:
             Union[str, List[Dict], "pd.DataFrame"]: Metadata structure for the project.
-        """
+
+        Examples:
+            >>> proj.export_field_names()
+            [{'original_field_name': 'record_id', 'choice_value': '', 'export_field_name': 'record_id'},
+            {'original_field_name': 'field_1', 'choice_value': '', 'export_field_name': 'field_1'},
+            {'original_field_name': 'checkbox_field', 'choice_value': '1', 'export_field_name': 'checkbox_field___1'},
+            {'original_field_name': 'checkbox_field', 'choice_value': '2', 'export_field_name': 'checkbox_field___2'},
+            {'original_field_name': 'form_1_complete', 'choice_value': '', 'export_field_name': 'form_1_complete'}]
+        """  # pylint: disable=line-too-long
+        # pylint: enable=line-too-long
         ret_format = format
         if format == "df":
             ret_format = "csv"
