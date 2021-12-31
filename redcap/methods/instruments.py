@@ -61,6 +61,10 @@ class Instruments(Base):
 
         Returns:
             Union[str, List[Dict], pd.DataFrame]: Instrument-event mapping for the project
+
+        Examples:
+            >>> proj.export_instrument_event_mappings()
+            [{'arm_num': 1, 'unique_event_name': 'event_1_arm_1', 'form': 'form_1'}]
         """
         ret_format = format
         if format == "df":

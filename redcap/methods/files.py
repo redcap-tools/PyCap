@@ -2,6 +2,8 @@
 
 from typing import TYPE_CHECKING, Dict, Optional, Tuple, Union
 
+from typing_extensions import Literal
+
 from redcap.methods.base import Base
 
 if TYPE_CHECKING:
@@ -49,6 +51,13 @@ class Files(Base):
 
         Returns:
             Content of the file and content-type dictionary
+
+        Examples:
+            If your project has events, then you must specifiy the event of interest.
+            Otherwise, you can leave the event parameter blank
+
+            >>> proj.export_file(record="1", field="upload_field", event="event_1_arm_1")
+            (b'test upload\\n', {'name': 'test_upload.txt', 'charset': 'UTF-8'})
         """
         assert self._check_file_field(field)
         # load up payload
@@ -88,7 +97,7 @@ class Files(Base):
         event: Optional[str] = None,
         repeat_instance: Optional[Union[int, str]] = None,
         return_format: str = "json",
-    ) -> str:
+    ) -> Union[Dict, Literal[""]]:
         """
         Import the contents of a file represented by file_object to a
         particular records field
@@ -109,6 +118,21 @@ class Files(Base):
 
         Returns:
             Response from server as specified by `return_format`
+
+        Examples:
+            If your project has events, then you must specifiy the event of interest.
+            Otherwise, you can leave the event parameter blank
+
+            >>> import tempfile
+            >>> tmp_file = tempfile.TemporaryFile()
+            >>> proj.import_file(
+            ...     record="2",
+            ...     field="upload_field",
+            ...     file_name="myupload.txt",
+            ...     file_object=tmp_file,
+            ...     event="event_1_arm_1",
+            ... )
+            {}
         """
         self._check_file_field(field)
         # load up payload
@@ -130,9 +154,9 @@ class Files(Base):
         self,
         record: str,
         field: str,
-        return_format: str = "json",
         event: Optional[str] = None,
-    ) -> Union[str, Dict]:
+        return_format: str = "json",
+    ) -> Union[Dict, Literal[""]]:
         """
         Delete a file from REDCap
 
@@ -142,13 +166,29 @@ class Files(Base):
         Args:
             record: Record ID
             field: Field name
+            event: For longitudinal projects, the unique event name
             return_format:
                 `'json'`, `'csv'`, `'xml'`
                 Return format for error message
-            event: For longitudinal projects, the unique event name
 
         Returns:
             Response from REDCap after deleting file
+
+        Examples:
+            Import a tempfile and then delete it
+
+            >>> import tempfile
+            >>> tmp_file = tempfile.TemporaryFile()
+            >>> proj.import_file(
+            ...     record="2",
+            ...     field="upload_field",
+            ...     file_name="myupload.txt",
+            ...     file_object=tmp_file,
+            ...     event="event_1_arm_1",
+            ... )
+            {}
+            >>> proj.delete_file(record="2", field="upload_field", event="event_1_arm_1")
+            {}
         """
         self._check_file_field(field)
         # Load up payload
