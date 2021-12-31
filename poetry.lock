@@ -546,6 +546,21 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
 
 [[package]]
+name = "pytest-doctestplus"
+version = "0.11.2"
+description = "Pytest plugin with advanced doctest features."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+packaging = ">=17.0"
+pytest = ">=4.6"
+
+[package.extras]
+test = ["pytest-remotedata (>=0.3.2)", "sphinx"]
+
+[[package]]
 name = "pytest-mock"
 version = "3.6.1"
 description = "Thin-wrapper around the mock package for easier use with pytest"
@@ -774,7 +789,7 @@ data_science = ["pandas"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "499cd2e02aac20c8404069a5f1383c6ea8c0090aff012d1c5b3884900a4049af"
+content-hash = "f453f4a6a8177f0c1279b9301b90d6eec02121ff8e71f5150219346edd10f36b"
 
 [metadata.files]
 astroid = [
@@ -1136,6 +1151,10 @@ pytest-black = [
 pytest-cov = [
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
+]
+pytest-doctestplus = [
+    {file = "pytest-doctestplus-0.11.2.tar.gz", hash = "sha256:f393adf659709a5f111d6ca190871c61808a6f3611bd0a132e27e93b24dd3448"},
+    {file = "pytest_doctestplus-0.11.2-py3-none-any.whl", hash = "sha256:d3ecfa8a301ccd6fae36f0108a6b789d587d656f0d1e3eb413170c6f5b81eb9f"},
 ]
 pytest-mock = [
     {file = "pytest-mock-3.6.1.tar.gz", hash = "sha256:40217a058c52a63f1042f0784f62009e976ba824c418cced42e88d5f40ab0e62"},

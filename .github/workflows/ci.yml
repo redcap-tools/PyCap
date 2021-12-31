@@ -38,6 +38,11 @@ jobs:
     - name: Run tests
       run: |
         poetry run pytest
+    - name: Run doctests
+      # Forks can't run doctests, requires super user token
+      if: github.repository == 'redcap-tools/PyCap'
+      run: |
+        poetry run pytest --doctest-only
     - name: Build docs
       run: |
         poetry run mkdocs build
