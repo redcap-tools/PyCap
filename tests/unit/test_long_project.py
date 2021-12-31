@@ -41,11 +41,17 @@ def test_init(long_project):
     assert isinstance(long_project, Project)
 
 
-def test_user_is_warned_version_not_found(long_project):
-    with pytest.warns(UserWarning):
-        version = long_project.export_version()
-
+def test_user_is_warned_version_not_found(long_project, recwarn):
+    version = long_project.export_version()
     assert version is None
+
+    assert len(recwarn) == 1
+    warning = recwarn.pop()
+    assert warning.category == UserWarning
+    assert (
+        str(warning.message).lower()
+        == "version information not available for this redcap instance"
+    )
 
 
 def test_file_export(long_project):
