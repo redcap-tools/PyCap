@@ -100,6 +100,11 @@ class Reports(Base):
         Returns:
             Union[List[Dict], str, pd.DataFrame]: Data from the report ordered by
             the record (primary key of project) and then by event id
+
+        Examples:
+            >>> proj.export_report(report_id="4292") # doctest: +SKIP
+            [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1',
+            'checkbox_field___1': '0', 'checkbox_field___2': '1'}]
         """
 
         ret_format = format

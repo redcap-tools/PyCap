@@ -69,6 +69,16 @@ class Metadata(Base):
 
         Returns:
             Union[str, List[Dict], pd.DataFrame]: Metadata structure for the project.
+
+        Examples:
+            >>> proj.export_metadata(format="df")
+                           form_name  section_header  ... matrix_ranking field_annotation
+            field_name                                ...
+            record_id         form_1             NaN  ...            NaN              NaN
+            field_1           form_1             NaN  ...            NaN              NaN
+            checkbox_field    form_1             NaN  ...            NaN              NaN
+            upload_field      form_1             NaN  ...            NaN              NaN
+            ...
         """
         ret_format = format
         if format == "df":
@@ -140,6 +150,11 @@ class Metadata(Base):
         Returns:
             Union[int, str]: Response from REDCap API, json-decoded if
             `return_format == 'json'`. If successful, the number of imported fields
+
+        Examples:
+            >>> metadata = proj.export_metadata(format="csv")
+            >>> proj.import_metadata(metadata, format="csv")
+            4
         """
         payload = self._initialize_import_payload(to_import, format, "metadata")
         payload["returnFormat"] = return_format

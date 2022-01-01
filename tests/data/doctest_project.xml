@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redcap="https://projectredcap.org" xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 schema/odm/ODM1-3-1.xsd" ODMVersion="1.3.1" FileOID="000-00-0000" FileType="Snapshot" Description="Testing" AsOfDateTime="2021-12-30T21:01:56" CreationDateTime="2021-12-30T21:01:56" SourceSystem="REDCap" SourceSystemVersion="12.0.1">
-<Study OID="Project.Testing">
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redcap="https://projectredcap.org" xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 schema/odm/ODM1-3-1.xsd" ODMVersion="1.3.1" FileOID="000-00-0000" FileType="Snapshot" Description="PyCap doctest_project" AsOfDateTime="2022-01-01T10:22:32" CreationDateTime="2022-01-01T10:22:32" SourceSystem="REDCap" SourceSystemVersion="12.0.1">
+<Study OID="Project.PyCapDoctestproject">
 <GlobalVariables>
-	<StudyName>Testing</StudyName>
-	<StudyDescription>This file contains the metadata, events, and data for REDCap project "Testing".</StudyDescription>
-	<ProtocolName>Testing</ProtocolName>
+	<StudyName>PyCap doctest_project</StudyName>
+	<StudyDescription>This file contains the metadata, events, and data for REDCap project "PyCap doctest_project".</StudyDescription>
+	<ProtocolName>PyCap doctest_project</ProtocolName>
 	<redcap:RecordAutonumberingEnabled>1</redcap:RecordAutonumberingEnabled>
 	<redcap:CustomRecordLabel></redcap:CustomRecordLabel>
 	<redcap:SecondaryUniqueField></redcap:SecondaryUniqueField>
@@ -27,11 +27,14 @@
 	<redcap:ProtectedEmailModeCustomText></redcap:ProtectedEmailModeCustomText>
 	<redcap:ProtectedEmailModeTrigger>ALL</redcap:ProtectedEmailModeTrigger>
 	<redcap:ProtectedEmailModeLogo></redcap:ProtectedEmailModeLogo>
+	<redcap:ReportsGroup>
+		<redcap:Reports title="Example Report" unique_report_name="R-139MKP9FXE" report_order="1" user_access="ALL" user_edit_access="ALL" description="&lt;p&gt;Example report for testing purposes&lt;/p&gt;" combine_checkbox_values="0" output_dags="0" output_survey_fields="0" output_missing_data_codes="0" remove_line_breaks_in_values="1" orderby_field1="record_id" orderby_sort1="ASC" orderby_field2="" orderby_sort2="" orderby_field3="" orderby_sort3="" advanced_logic=" ([event-name][field_1] = &quot;1&quot;)" filter_type="RECORD" dynamic_filter1="" dynamic_filter2="" dynamic_filter3="" hash="WNPAJ7NX8C8PCW9C" short_url="" is_public="0" report_display_include_repeating_fields="1" report_display_header="BOTH" report_display_data="BOTH" limiter_logic="([field_1] = &quot;1&quot;)" redcap_reports_fields="record_id,checkbox_field" redcap_reports_filter_dags="" redcap_reports_filter_events="" ID="a86ea47254b1956667196a96b5b832a876c8bfca"/>
+	</redcap:ReportsGroup>
 	<redcap:MultilanguageSettingsGroup>
-		<redcap:MultilanguageSettings settings="YToxNDp7czo3OiJ2ZXJzaW9uIjtzOjY6IjEyLjAuMSI7czo1OiJsYW5ncyI7YTowOnt9czo5OiJwcm9qZWN0SWQiO3M6NToiMzU0MjEiO3M6MTU6ImRlc2lnbmF0ZWRGaWVsZCI7czowOiIiO3M6NToiZGVidWciO2I6MDtzOjc6InJlZkxhbmciO3M6MDoiIjtzOjEyOiJmYWxsYmFja0xhbmciO3M6MDoiIjtzOjg6ImRpc2FibGVkIjtiOjA7czoyNToiaGlnaGxpZ2h0TWlzc2luZ0RhdGFlbnRyeSI7YjowO3M6MjI6ImhpZ2hsaWdodE1pc3NpbmdTdXJ2ZXkiO2I6MDtzOjEyOiJhbGVydFNvdXJjZXMiO2E6MDp7fXM6MTQ6ImV4Y2x1ZGVkQWxlcnRzIjthOjA6e31zOjE0OiJleGNsdWRlZEZpZWxkcyI7YTowOnt9czoxNjoiZXhjbHVkZWRTZXR0aW5ncyI7YTowOnt9fQ=="/>
+		<redcap:MultilanguageSettings settings="YToxNDp7czo3OiJ2ZXJzaW9uIjtzOjY6IjEyLjAuMSI7czo1OiJsYW5ncyI7YTowOnt9czo5OiJwcm9qZWN0SWQiO3M6NToiMzU1OTUiO3M6MTU6ImRlc2lnbmF0ZWRGaWVsZCI7czowOiIiO3M6NToiZGVidWciO2I6MDtzOjc6InJlZkxhbmciO3M6MDoiIjtzOjEyOiJmYWxsYmFja0xhbmciO3M6MDoiIjtzOjg6ImRpc2FibGVkIjtiOjA7czoyNToiaGlnaGxpZ2h0TWlzc2luZ0RhdGFlbnRyeSI7YjowO3M6MjI6ImhpZ2hsaWdodE1pc3NpbmdTdXJ2ZXkiO2I6MDtzOjEyOiJhbGVydFNvdXJjZXMiO2E6MDp7fXM6MTQ6ImV4Y2x1ZGVkQWxlcnRzIjthOjA6e31zOjE0OiJleGNsdWRlZEZpZWxkcyI7YTowOnt9czoxNjoiZXhjbHVkZWRTZXR0aW5ncyI7YTowOnt9fQ=="/>
 	</redcap:MultilanguageSettingsGroup>
 </GlobalVariables>
-<MetaDataVersion OID="Metadata.Testing_2021-12-30_2101" Name="Testing" redcap:RecordIdField="record_id">
+<MetaDataVersion OID="Metadata.PyCapDoctestproject" Name="PyCap doctest_project" redcap:RecordIdField="record_id">
 	<Protocol>
 		<StudyEventRef StudyEventOID="Event.event_1_arm_1" OrderNumber="1" Mandatory="No"/>
 		<StudyEventRef StudyEventOID="Event.event_2_arm_1" OrderNumber="2" Mandatory="No"/>
@@ -81,11 +84,11 @@
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Yes</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>No</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="checkbox_field___1.choices" Name="checkbox_field___1" DataType="boolean" redcap:Variable="checkbox_field" redcap:CheckboxChoices="1, Option 1 | 2, Option 2">
+	<CodeList OID="checkbox_field___1.choices" Name="checkbox_field___1" DataType="boolean" redcap:Variable="checkbox_field" redcap:CheckboxChoices="1, Option 1|2, Option 2">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="checkbox_field___2.choices" Name="checkbox_field___2" DataType="boolean" redcap:Variable="checkbox_field" redcap:CheckboxChoices="1, Option 1 | 2, Option 2">
+	<CodeList OID="checkbox_field___2.choices" Name="checkbox_field___2" DataType="boolean" redcap:Variable="checkbox_field" redcap:CheckboxChoices="1, Option 1|2, Option 2">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
@@ -96,7 +99,7 @@
 	</CodeList>
 </MetaDataVersion>
 </Study>
-<ClinicalData StudyOID="Project.Testing" MetaDataVersionOID="Metadata.Testing_2021-12-30_2101">
+<ClinicalData StudyOID="Project.PyCapDoctestproject0101110113" MetaDataVersionOID="Metadata.PyCapDoctestproject">
 	<SubjectData SubjectKey="1" redcap:RecordIdField="record_id">
 		<StudyEventData StudyEventOID="Event.event_1_arm_1" StudyEventRepeatKey="1" redcap:UniqueEventName="event_1_arm_1">
 			<FormData FormOID="Form.form_1" FormRepeatKey="1">
@@ -121,6 +124,7 @@
 					<ItemData ItemOID="field_1" Value="0"/>
 					<ItemData ItemOID="checkbox_field___1" Value="0"/>
 					<ItemData ItemOID="checkbox_field___2" Value="0"/>
+					<ItemDataBase64Binary ItemOID="upload_field" redcap:DocName="myupload.txt" redcap:MimeType="inode/x-empty"><![CDATA[]]></ItemDataBase64Binary>
 				</ItemGroupData>
 				<ItemGroupData ItemGroupOID="form_1.form_1_complete" ItemGroupRepeatKey="1">
 					<ItemData ItemOID="form_1_complete" Value="0"/>

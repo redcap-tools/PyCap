@@ -26,6 +26,21 @@ class ProjectInfo(Base):
 
         Returns:
             Union[str, List[Dict]]: Project information
+
+        Examples:
+            >>> proj.export_project_info()
+            {'project_id': ...
+            ...
+            'in_production': 0,
+            'project_language': 'English',
+            'purpose': 0,
+            'purpose_other': '',
+            ...
+            'project_grant_number': '',
+            'project_pi_firstname': '',
+            'project_pi_lastname': '',
+            ...
+             'bypass_branching_erase_field_prompt': 0}
         """
 
         payload = self._basepl(content="project", format=format)
