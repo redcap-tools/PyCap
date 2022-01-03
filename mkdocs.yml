@@ -7,6 +7,7 @@ repo_url: https://github.com/redcap-tools/PyCap
 nav:
     - Home: index.md
     - Quick Start: quickstart.md
+    - Using PyCap in an app/package: using-in-app-or-package.md
     - API Reference:
         - Project: api_reference/project.md
         - Field Names: api_reference/field_names.md
