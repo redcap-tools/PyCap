@@ -30,7 +30,36 @@ class Project(
     methods.users.Users,
     methods.version.Version,
 ):
-    """Main class for interacting with REDCap projects"""
+    """Main class for interacting with REDCap projects
+
+    Attributes:
+        verify_ssl: Verify SSL, default True. Can pass path to CA_BUNDLE
+
+    Note:
+        Your REDCap token should be kept **secret**! Treat it like a password
+        and NEVER save it directly in your script/application. Rather it should be obscured
+        and retrieved 'behind the scenes'. For example, saving the token as an environment
+        variable and retrieving it with `os.getenv`. The creation of the `TOKEN` string in
+        the example is not shown, for the above reasons
+
+    Examples:
+        >>> from redcap import Project
+        >>> URL = "https://redcapdemo.vanderbilt.edu/api/"
+        >>> proj = Project(URL, TOKEN)
+        >>> proj.field_names
+        ['record_id', 'field_1', 'checkbox_field', 'upload_field']
+        >>> proj.is_longitudinal
+        True
+        >>> proj.def_field
+        'record_id'
+
+        The url and token attributes are read-only, to prevent users from accidentally
+        overwriting them
+        >>> proj.url = "whoops"
+        Traceback (most recent call last):
+        ...
+        AttributeError: can't set attribute
+    """
 
     @property
     def redcap_version(self) -> Optional[semantic_version.Version]:

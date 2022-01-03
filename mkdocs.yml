@@ -1,0 +1,38 @@
+site_name: PyCap
+site_url: http://redcap-tools.github.io/PyCap/
+
+repo_name: redcap-tools/PyCap
+repo_url: https://github.com/redcap-tools/PyCap
+
+nav:
+    - Home: index.md
+    - Quick Start: quickstart.md
+    - Using PyCap in an app/package: using-in-app-or-package.md
+    - API Reference:
+        - Project: api_reference/project.md
+        - Field Names: api_reference/field_names.md
+        - Files: api_reference/files.md
+        - Instruments: api_reference/instruments.md
+        - Metadata: api_reference/metadata.md
+        - Project Info: api_reference/project_info.md
+        - Records: api_reference/records.md
+        - Reports: api_reference/reports.md
+        - Surveys: api_reference/surveys.md
+        - Users: api_reference/users.md
+        - Version: api_reference/version.md
+theme:
+  name: material
+  logo: img/logo.png
+  favicon: img/logo.png
+  palette:
+    primary: red
+    accent: red
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+plugins:
+  - search
+  - mkdocstrings

@@ -41,6 +41,19 @@ def test_init(long_project):
     assert isinstance(long_project, Project)
 
 
+def test_user_is_warned_version_not_found(long_project, recwarn):
+    version = long_project.export_version()
+    assert version is None
+
+    assert len(recwarn) == 1
+    warning = recwarn.pop()
+    assert warning.category == UserWarning
+    assert (
+        str(warning.message).lower()
+        == "version information not available for this redcap instance"
+    )
+
+
 def test_file_export(long_project):
     record, field = "1", "file"
     content, _ = long_project.export_file(record, field, event="raw", repeat_instance=1)
@@ -115,7 +128,7 @@ def test_export_to_df_gives_multi_index(long_project):
 
 def test_import_dataframe(long_project):
     long_dataframe = long_project.export_records(event_name="raw", format="df")
-    response = long_project.import_records(long_dataframe)
+    response = long_project.import_records(long_dataframe, format="df")
 
     assert "count" in response
     assert "error" not in response

@@ -86,7 +86,7 @@ def test_user_is_alerted_about_initialization_issues(
     mocker.patch.object(bad_init_project, "_call_api", side_effect=RequestException)
 
     with pytest.raises(RedcapError):
-        bad_init_project.export_metadata()
+        bad_init_project._initialize_metadata()
 
 
 # pylint: enable=protected-access
@@ -293,7 +293,7 @@ def test_metadata_csv_import(simple_project):
 
 def test_metadata_df_import(simple_project):
     dataframe = simple_project.export_metadata(format="df")
-    response = simple_project.import_metadata(dataframe)
+    response = simple_project.import_metadata(dataframe, format="df")
 
     assert response == 1
 
@@ -451,7 +451,7 @@ def test_bad_import_throws_exception(simple_project):
 
 def test_df_import(simple_project):
     dataframe = simple_project.export_records(format="df")
-    response = simple_project.import_records(dataframe)
+    response = simple_project.import_records(dataframe, format="df")
 
     assert "count" in response
     assert not "error" in response

@@ -2,7 +2,8 @@ name: CI
 
 on:
   # Need to also run on pushes to master since PRs from a fork won't have
-  # access to the super user token, thereby skipping the tests
+  # access to the super user token, thereby skipping the integration tests
+  # and doctests
   push:
     branches:
       - master
@@ -34,11 +35,16 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install -E data_science
+    - name: Run doctests
+      # Forks can't run doctests, requires super user token
+      if: github.repository == 'redcap-tools/PyCap'
+      run: |
+        poetry run pytest --doctest-only
     - name: Run tests
       run: |
         poetry run pytest
     - name: Build docs
       run: |
-        cd docs && poetry run make html
+        poetry run mkdocs build
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2.1.0

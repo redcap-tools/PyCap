@@ -1,8 +1,15 @@
 """REDCap API methods for Project records"""
+from datetime import datetime
 from io import StringIO
+from typing import TYPE_CHECKING, Dict, List, Optional, Union, overload
+
+from typing_extensions import Literal
 
 from redcap.request import RedcapError
 from redcap.methods.base import Base
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 class Records(Base):
@@ -11,87 +18,179 @@ class Records(Base):
     # pylint: disable=redefined-builtin
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-locals
+    @overload
     def export_records(
         self,
-        records=None,
-        fields=None,
-        forms=None,
-        events=None,
-        raw_or_label="raw",
-        event_name="label",
-        type="flat",
-        format="json",
-        export_survey_fields=False,
-        export_data_access_groups=False,
-        df_kwargs=None,
-        export_checkbox_labels=False,
-        filter_logic=None,
-        date_begin=None,
-        date_end=None,
+        format: Literal["json"],
+        records: Optional[List[str]] = None,
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        events: Optional[List[str]] = None,
+        raw_or_label: Literal["raw", "label", "both"] = "raw",
+        event_name: Literal["label", "unique"] = "label",
+        type: Literal["flat", "eav"] = "flat",
+        export_survey_fields: bool = False,
+        export_data_access_groups: bool = False,
+        df_kwargs: Optional[Dict] = None,
+        export_checkbox_labels: bool = False,
+        filter_logic: Optional[str] = None,
+        date_begin: Optional[datetime] = None,
+        date_end: Optional[datetime] = None,
+    ) -> List[Dict]:
+        ...
+
+    @overload
+    def export_records(
+        self,
+        format: Literal["csv", "xml"],
+        records: Optional[List[str]] = None,
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        events: Optional[List[str]] = None,
+        raw_or_label: Literal["raw", "label", "both"] = "raw",
+        event_name: Literal["label", "unique"] = "label",
+        type: Literal["flat", "eav"] = "flat",
+        export_survey_fields: bool = False,
+        export_data_access_groups: bool = False,
+        df_kwargs: Optional[Dict] = None,
+        export_checkbox_labels: bool = False,
+        filter_logic: Optional[str] = None,
+        date_begin: Optional[datetime] = None,
+        date_end: Optional[datetime] = None,
+    ) -> str:
+        ...
+
+    @overload
+    def export_records(
+        self,
+        format: Literal["df"],
+        records: Optional[List[str]] = None,
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        events: Optional[List[str]] = None,
+        raw_or_label: Literal["raw", "label", "both"] = "raw",
+        event_name: Literal["label", "unique"] = "label",
+        type: Literal["flat", "eav"] = "flat",
+        export_survey_fields: bool = False,
+        export_data_access_groups: bool = False,
+        df_kwargs: Optional[Dict] = None,
+        export_checkbox_labels: bool = False,
+        filter_logic: Optional[str] = None,
+        date_begin: Optional[datetime] = None,
+        date_end: Optional[datetime] = None,
+    ) -> "pd.DataFrame":
+        ...
+
+    def export_records(
+        self,
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        records: Optional[List[str]] = None,
+        fields: Optional[List[str]] = None,
+        forms: Optional[List[str]] = None,
+        events: Optional[List[str]] = None,
+        raw_or_label: Literal["raw", "label", "both"] = "raw",
+        event_name: Literal["label", "unique"] = "label",
+        type: Literal["flat", "eav"] = "flat",
+        export_survey_fields: bool = False,
+        export_data_access_groups: bool = False,
+        df_kwargs: Optional[Dict] = None,
+        export_checkbox_labels: bool = False,
+        filter_logic: Optional[str] = None,
+        date_begin: Optional[datetime] = None,
+        date_end: Optional[datetime] = None,
     ):
         """
         Export data from the REDCap project.
 
-        Parameters
-        ----------
-        records : list
-            array of record names specifying specific records to export.
-            by default, all records are exported
-        fields : list
-            array of field names specifying specific fields to pull
-            by default, all fields are exported
-        forms : list
-            array of form names to export. If in the web UI, the form
-            name has a space in it, replace the space with an underscore
-            by default, all forms are exported
-        events : list
-            an array of unique event names from which to export records
+        Args:
+            format:
+                Format of returned data. `'json'` returns json-decoded
+                objects while `'csv'` and `'xml'` return other formats.
+                `'df'` will attempt to return a `pandas.DataFrame`
+            records:
+                Array of record names specifying specific records to export.
+                By default, all records are exported
+            fields:
+                Array of field names specifying specific fields to pull
+                by default, all fields are exported
+            forms:
+                Array of form names to export. If in the web UI, the form
+                name has a space in it, replace the space with an underscore
+                By default, all forms are exported
+            events:
+                An array of unique event names from which to export records
+                Note:
+                    This only applies to longitudinal projects
+            raw_or_label:
+                Export the raw coded values or labels for the options of
+                multiple choice fields, or both
+            event_name:
+                Export the unique event name or the event label
+            type:
+                Database output structure type
+            export_survey_fields:
+                Specifies whether or not to export the survey identifier
+                field (e.g., "redcap_survey_identifier") or survey timestamp
+                fields (e.g., form_name+"_timestamp") when surveys are
+                utilized in the project
+            export_data_access_groups:
+                Specifies whether or not to export the
+                `"redcap_data_access_group"` field when data access groups
+                are utilized in the project
 
-            :note: this only applies to longitudinal projects
-        raw_or_label : (``'raw'``), ``'label'``, ``'both'``
-            export the raw coded values or labels for the options of
-            multiple choice fields, or both
-        event_name : (``'label'``), ``'unique'``
-             export the unique event name or the event label
-        type : (``'flat'``), ``'eav'``
-             database output structure type
-        format : (``'json'``), ``'csv'``, ``'xml'``, ``'df'``
-            Format of returned data. ``'json'`` returns json-decoded
-            objects while ``'csv'`` and ``'xml'`` return other formats.
-            ``'df'`` will attempt to return a ``pandas.DataFrame``.
-        export_survey_fields : (``False``), True
-            specifies whether or not to export the survey identifier
-            field (e.g., "redcap_survey_identifier") or survey timestamp
-            fields (e.g., form_name+"_timestamp") when surveys are
-            utilized in the project.
-        export_data_access_groups : (``False``), ``True``
-            specifies whether or not to export the
-            ``"redcap_data_access_group"`` field when data access groups
-            are utilized in the project.
+                Note:
+                    This flag is only viable if the user whose token is
+                    being used to make the API request is *not* in a data
+                    access group. If the user is in a group, then this flag
+                    will revert to its default value.
+            df_kwargs:
+                Passed to `pandas.read_csv` to control construction of
+                returned DataFrame.
+                By default, `{'index_col': self.def_field}`
+            export_checkbox_labels:
+                Specify whether to export checkbox values as their label on
+                export.
+            filter_logic:
+                Filter which records are returned using REDCap conditional syntax
+            date_begin:
+                Filter on records created after a date
+            date_end:
+                Filter on records created before a date
 
-            :note: This flag is only viable if the user whose token is
-                being used to make the API request is *not* in a data
-                access group. If the user is in a group, then this flag
-                will revert to its default value.
-        df_kwargs : dict
-            Passed to ``pandas.read_csv`` to control construction of
-            returned DataFrame.
-            by default, ``{'index_col': self.def_field}``
-        export_checkbox_labels : (``False``), ``True``
-            specify whether to export checkbox values as their label on
-            export.
-        filter_logic : string
-            specify the filterLogic to be sent to the API.
-        date_begin : datetime
-            for the dateRangeBegin filtering of the API
-        date_end : datetime
-            for the dateRangeEnd filtering snet to the API
+        Returns:
+            Union[List[Dict], str, pd.DataFrame]: Exported data
 
-        Returns
-        -------
-        data : list, str, ``pandas.DataFrame``
-            exported data
-        """
+        Examples:
+            >>> proj.export_records()
+            [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1', 'field_1': '1',
+            'checkbox_field___1': '0', 'checkbox_field___2': '1', 'upload_field': 'test_upload.txt',
+            'form_1_complete': '2'},
+            {'record_id': '2', 'redcap_event_name': 'event_1_arm_1', 'field_1': '0',
+            'checkbox_field___1': '0', 'checkbox_field___2': '0', 'upload_field': 'myupload.txt',
+            'form_1_complete': '0'}]
+
+            >>> proj.export_records(filter_logic="[field_1] = 1")
+            [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1', 'field_1': '1',
+            'checkbox_field___1': '0', 'checkbox_field___2': '1', 'upload_field': 'test_upload.txt',
+            'form_1_complete': '2'}]
+
+            >>> proj.export_records(
+            ...     format="csv",
+            ...     fields=["field_1", "checkbox_field"],
+            ...     raw_or_label="label"
+            ... )
+            'field_1,checkbox_field___1,checkbox_field___2\\nYes,Unchecked,Checked\\nNo,Unchecked,Unchecked\\n'
+
+            >>> import pandas as pd
+            >>> pd.set_option("display.max_columns", 3)
+            >>> proj.export_records(format="df")
+                                         field_1  ...  form_1_complete
+            record_id redcap_event_name           ...
+            1         event_1_arm_1            1  ...                2
+            2         event_1_arm_1            0  ...                0
+            ...
+        """  # pylint: disable=line-too-long
+        # pylint: enable=line-too-long
         ret_format = format
         if format == "df":
             ret_format = "csv"
@@ -159,57 +258,89 @@ class Records(Base):
     # pylint: enable=too-many-branches
     # pylint: enable=too-many-locals
 
+    @overload
     def import_records(
         self,
-        to_import,
-        overwrite="normal",
-        format="json",
-        return_format="json",
-        return_content="count",
-        date_format="YMD",
-        force_auto_number=False,
+        to_import: Union[str, List[Dict], "pd.DataFrame"],
+        return_format: Literal["json"],
+        overwrite: Literal["normal", "overwrite"] = "normal",
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        return_content: Literal["count", "ids", "nothing"] = "count",
+        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
+        force_auto_number: bool = False,
+    ) -> Dict:
+        ...
+
+    @overload
+    def import_records(
+        self,
+        to_import: Union[str, List[Dict], "pd.DataFrame"],
+        return_format: Literal["csv", "xml"],
+        overwrite: Literal["normal", "overwrite"] = "normal",
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        return_content: Literal["count", "ids", "nothing"] = "count",
+        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
+        force_auto_number: bool = False,
+    ) -> str:
+        ...
+
+    def import_records(
+        self,
+        to_import: Union[str, List[Dict], "pd.DataFrame"],
+        return_format: Literal["json", "csv", "xml"] = "json",
+        overwrite: Literal["normal", "overwrite"] = "normal",
+        format: Literal["json", "csv", "xml", "df"] = "json",
+        return_content: Literal["count", "ids", "nothing"] = "count",
+        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
+        force_auto_number: bool = False,
     ):
         """
         Import data into the RedCap Project
 
-        Parameters
-        ----------
-        to_import : array of dicts, csv/xml string, ``pandas.DataFrame``
-            :note:
-                If you pass a csv or xml string, you should use the
-                ``format`` parameter appropriately.
-            :note:
-                Keys of the dictionaries should be subset of project's,
-                fields, but this isn't a requirement. If you provide keys
-                that aren't defined fields, the returned response will
-                contain an ``'error'`` key.
-        overwrite : ('normal'), 'overwrite'
-            ``'overwrite'`` will erase values previously stored in the
-            database if not specified in the to_import dictionaries.
-        format : ('json'),  'xml', 'csv'
-            Format of incoming data. By default, to_import will be json-encoded
-        return_format : ('json'), 'csv', 'xml'
-            Response format. By default, response will be json-decoded.
-        return_content : ('count'), 'ids', 'nothing'
-            By default, the response contains a 'count' key with the number of
-            records just imported. By specifying 'ids', a list of ids
-            imported will be returned. 'nothing' will only return
-            the HTTP status code and no message.
-        date_format : ('YMD'), 'DMY', 'MDY'
-            Describes the formatting of dates. By default, date strings
-            are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
-            strings are formatted as 'MM/DD/YYYY' set this parameter as
-            'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
-            other formattings are allowed.
-        force_auto_number : ('False') Enables automatic assignment of record IDs
-            of imported records by REDCap. If this is set to true, and auto-numbering
-            for records is enabled for the project, auto-numbering of imported records
-            will be enabled.
+        Args:
+            to_import:
+                Note:
+                    If you pass a df, csv, or xml string, you should use the
+                    `format` parameter appropriately.
+                Note:
+                    Keys of the dictionaries should be subset of project's,
+                    fields, but this isn't a requirement. If you provide keys
+                    that aren't defined fields, the returned response will
+                    contain an `'error'` key.
+            return_format:
+                Response format. By default, response will be json-decoded.
+            overwrite:
+                `'overwrite'` will erase values previously stored in the
+                database if not specified in the to_import dictionaries.
+            format:
+                Format of incoming data. By default, to_import will be json-encoded
+            return_content:
+                By default, the response contains a 'count' key with the number of
+                records just imported. By specifying 'ids', a list of ids
+                imported will be returned. 'nothing' will only return
+                the HTTP status code and no message.
+            date_format:
+                Describes the formatting of dates. By default, date strings
+                are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
+                strings are formatted as 'MM/DD/YYYY' set this parameter as
+                'MDY' and if formatted as 'DD/MM/YYYY' set as 'DMY'. No
+                other formattings are allowed.
+            force_auto_number:
+                Enables automatic assignment of record IDs
+                of imported records by REDCap. If this is set to true, and auto-numbering
+                for records is enabled for the project, auto-numbering of imported records
+                will be enabled.
 
-        Returns
-        -------
-        response : dict, str
-            response from REDCap API, json-decoded if ``return_format`` == ``'json'``
+        Raises:
+            RedcapError: Bad request made, double check field names and inputs
+
+        Returns:
+            Union[Dict, str]: response from REDCap API, json-decoded if `return_format` == `'json'`
+
+        Examples:
+            >>> new_record = [{"record_id": 3, "field_1": 1}]
+            >>> proj.import_records(new_record)
+            {'count': 1}
         """
         payload = self._initialize_import_payload(to_import, format, "record")
 
@@ -223,19 +354,22 @@ class Records(Base):
             raise RedcapError(str(response))
         return response
 
-    def delete_records(self, records):
+    def delete_records(self, records: List[str]) -> int:
         """
-        Delete records from the Project.
+        Delete records from the project.
 
-        Parameters
-        ----------
-        records : list
-            List of record IDs that you want to delete from the project
+        Args:
+            records: List of record IDs to delete from the project
 
-        Returns
-        -------
-        response : int
+        Returns:
             Number of records deleted
+
+        Examples:
+            >>> new_record = [{"record_id": 3, "field_1": 1}, {"record_id": 4}]
+            >>> proj.import_records(new_record)
+            {'count': 2}
+            >>> proj.delete_records(["3", "4"])
+            '2'
         """
         payload = {}
         payload["action"] = "delete"
@@ -253,8 +387,17 @@ class Records(Base):
 
         # pylint: disable=redefined-builtin
 
-    def generate_next_record_name(self):
-        """Return the next record name for auto-numbering records"""
+    def generate_next_record_name(self) -> int:
+        """
+        Get the next record name
+
+        Returns:
+            The next record name for a project with auto-numbering records enabled
+
+        Examples:
+            >>> proj.generate_next_record_name()
+            3
+        """
         payload = self._basepl(content="generateNextRecordName")
 
         return self._call_api(payload, "exp_next_id")[0]

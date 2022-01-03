@@ -1,12 +1,19 @@
 """REDCap API methods for Project files"""
 
+from typing import TYPE_CHECKING, Dict, Optional, Tuple, Union
+
+from typing_extensions import Literal
+
 from redcap.methods.base import Base
+
+if TYPE_CHECKING:
+    from io import TextIOWrapper
 
 
 class Files(Base):
     """Responsible for all API methods under 'Files' in the API Playground"""
 
-    def _check_file_field(self, field):
+    def _check_file_field(self, field: str) -> bool:
         """Check that field exists and is a file field"""
         is_field = field in self.field_names
         is_file = self._filter_metadata(key="field_type", field_name=field) == "file"
@@ -17,35 +24,42 @@ class Files(Base):
         return True
 
     def export_file(
-        self, record, field, event=None, return_format="json", repeat_instance=None
-    ):
+        self,
+        record: str,
+        field: str,
+        event: Optional[str] = None,
+        return_format: str = "json",
+        repeat_instance: Optional[int] = None,
+    ) -> Tuple[bytes, Dict]:
         """
         Export the contents of a file stored for a particular record
 
-        Notes
-        -----
-        Unlike other export methods, this works on a single record.
+        Note:
+            Unlike other export methods, this only works on a single record.
 
-        Parameters
-        ----------
-        record : str
-            record ID
-        field : str
-            field name containing the file to be exported.
-        event: str
-            for longitudinal projects, specify the unique event here
-        return_format: ('json'), 'csv', 'xml'
-            format of error message
-        repeat_instance: (None),str,int
+        Args:
+            record: Record ID
+            field: Field name containing the file to be exported.
+            event: For longitudinal projects, the unique event name
+            return_format:
+                `'json'`, `'csv'`, `'xml'`
+                Format of error message
+            repeat_instance:
+                (Only for projects with repeating instruments/events)
+                The repeat instance number of the repeating event (if longitudinal)
+                or the repeating instrument (if classic or longitudinal).
 
-        Returns
-        -------
-        content : bytes
-            content of the file
-        content_map : dict
-            content-type dictionary
+        Returns:
+            Content of the file and content-type dictionary
+
+        Examples:
+            If your project has events, then you must specifiy the event of interest.
+            Otherwise, you can leave the event parameter blank
+
+            >>> proj.export_file(record="1", field="upload_field", event="event_1_arm_1")
+            (b'test upload\\n', {'name': 'test_upload.txt', 'charset': 'UTF-8'})
         """
-        self._check_file_field(field)
+        assert self._check_file_field(field)
         # load up payload
         payload = self._basepl(content="file", format=return_format)
         # there's no format field in this call
@@ -76,41 +90,49 @@ class Files(Base):
 
     def import_file(
         self,
-        record,
-        field,
-        fname,
-        fobj,
-        event=None,
-        repeat_instance=None,
-        return_format="json",
-    ):
+        record: str,
+        field: str,
+        file_name: str,
+        file_object: "TextIOWrapper",
+        event: Optional[str] = None,
+        repeat_instance: Optional[Union[int, str]] = None,
+        return_format: str = "json",
+    ) -> Union[Dict, Literal[""]]:
         """
-        Import the contents of a file represented by fobj to a
+        Import the contents of a file represented by file_object to a
         particular records field
 
-        Parameters
-        ----------
-        record : str
-            record ID
-        field : str
-            field name where the file will go
-        fname : str
-            file name visible in REDCap UI
-        fobj : file object
-            file object as returned by `open`
-        event : str
-            for longitudinal projects, specify the unique event here
-        repeat_instance : int
-            (only for projects with repeating instruments/events)
-            The repeat instance number of the repeating event (if longitudinal)
-            or the repeating instrument (if classic or longitudinal).
-        return_format : ('json'), 'csv', 'xml'
-            format of error message
+        Args:
+            record: Record ID
+            field: Field name where the file will go
+            file_name: File name visible in REDCap UI
+            file_object: File object as returned by `open`
+            event: For longitudinal projects, the unique event name
+            repeat_instance:
+                (Only for projects with repeating instruments/events)
+                The repeat instance number of the repeating event (if longitudinal)
+                or the repeating instrument (if classic or longitudinal).
+            return_format:
+                `'json'`, `'csv'`, `'xml'`
+                Format of error message
 
-        Returns
-        -------
-        response :
-            response from server as specified by ``return_format``
+        Returns:
+            Response from server as specified by `return_format`
+
+        Examples:
+            If your project has events, then you must specifiy the event of interest.
+            Otherwise, you can leave the event parameter blank
+
+            >>> import tempfile
+            >>> tmp_file = tempfile.TemporaryFile()
+            >>> proj.import_file(
+            ...     record="2",
+            ...     field="upload_field",
+            ...     file_name="myupload.txt",
+            ...     file_object=tmp_file,
+            ...     event="event_1_arm_1",
+            ... )
+            {}
         """
         self._check_file_field(field)
         # load up payload
@@ -125,32 +147,48 @@ class Files(Base):
             payload["event"] = event
         if repeat_instance:
             payload["repeat_instance"] = repeat_instance
-        file_kwargs = {"files": {"file": (fname, fobj)}}
+        file_kwargs = {"files": {"file": (file_name, file_object)}}
         return self._call_api(payload, "imp_file", **file_kwargs)[0]
 
-    def delete_file(self, record, field, return_format="json", event=None):
+    def delete_file(
+        self,
+        record: str,
+        field: str,
+        event: Optional[str] = None,
+        return_format: str = "json",
+    ) -> Union[Dict, Literal[""]]:
         """
         Delete a file from REDCap
 
-        Notes
-        -----
-        There is no undo button to this.
+        Note:
+            There is no undo button to this.
 
-        Parameters
-        ----------
-        record : str
-            record ID
-        field : str
-            field name
-        return_format : (``'json'``), ``'csv'``, ``'xml'``
-            return format for error message
-        event : str
-            If longitudinal project, event to delete file from
+        Args:
+            record: Record ID
+            field: Field name
+            event: For longitudinal projects, the unique event name
+            return_format:
+                `'json'`, `'csv'`, `'xml'`
+                Return format for error message
 
-        Returns
-        -------
-        response : dict, str
-            response from REDCap after deleting file
+        Returns:
+            Response from REDCap after deleting file
+
+        Examples:
+            Import a tempfile and then delete it
+
+            >>> import tempfile
+            >>> tmp_file = tempfile.TemporaryFile()
+            >>> proj.import_file(
+            ...     record="2",
+            ...     field="upload_field",
+            ...     file_name="myupload.txt",
+            ...     file_object=tmp_file,
+            ...     event="event_1_arm_1",
+            ... )
+            {}
+            >>> proj.delete_file(record="2", field="upload_field", event="event_1_arm_1")
+            {}
         """
         self._check_file_field(field)
         # Load up payload
