@@ -1,4 +1,4 @@
-name: CI
+name: Generate docs
 
 on:
   push:
@@ -24,6 +24,9 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install -E data_science
+    - name: Build docs
+      run: |
+        poetry run mkdocs build
     - name: Serve docs
       run: |
         poetry run mkdocs gh-deploy
