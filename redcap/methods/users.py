@@ -44,6 +44,12 @@ class Users(Base):
 
         Returns:
             Union[List[Dict], str]: List of users with metadata
+
+        Examples:
+            >>> proj.export_users()
+            [{'username': ..., 'email': ..., 'expiration': '', 'data_access_group': '',
+            'data_access_group_id': '', 'design': 1, 'user_rights': 1, 'data_access_groups': 1,
+            'data_export': 1, ...}]
         """
         payload = self._basepl(content="user", format=format)
         return self._call_api(payload, "exp_user")[0]

@@ -43,15 +43,25 @@ class Surveys(Base):
         Args:
             instrument:
                 Name of instrument as seen in the Data Dictionary (metadata).
-            event:
-                Unique event name, only used in longitudinal projects
             format:
                 Format of returned data
+            event:
+                Unique event name, only used in longitudinal projects
 
         Returns:
             Union[List[Dict], str]: List of survey participants, along with other useful
             metadata such as the record, response status, etc.
-        """
+
+        Examples:
+            >>> proj.export_survey_participant_list(instrument="form_1", event="event_1_arm_1")
+            [{'email': '',
+            ...
+            'survey_access_code': ...},
+            {'email': '',
+            ...
+            'survey_access_code': ...}]
+        """  # pylint: disable=line-too-long
+        # pylint: enable=line-too-long
         payload = self._basepl(content="participantList", format=format)
         payload["instrument"] = instrument
         if event:
