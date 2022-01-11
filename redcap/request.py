@@ -8,7 +8,14 @@ Low-level HTTP functionality
 """
 
 import json
+from typing import TYPE_CHECKING, Tuple, Union
+
+from typing_extensions import TypedDict
+
 from requests import RequestException, Session
+
+if TYPE_CHECKING:
+    from io import TextIOWrapper
 
 __author__ = "Scott Burns <scott.s.burns@gmail.com>"
 __license__ = "MIT"
@@ -17,6 +24,12 @@ __copyright__ = "2014, Vanderbilt University"
 RedcapError = RequestException
 
 _session = Session()
+
+
+class FileUpload(TypedDict):
+    """Typing for the file upload API"""
+
+    file: Tuple[str, "TextIOWrapper"]
 
 
 class RCAPIError(Exception):
@@ -159,21 +172,24 @@ class RCRequest:
         if self.payload["content"] != req_content:
             raise RCAPIError(err_msg)
 
-    def execute(self, **kwargs):
+    def execute(
+        self, verify_ssl: Union[bool, str], file: FileUpload
+    ) -> Tuple[Union[dict, str], dict]:
         """Execute the API request and return data
 
-        Parameters
-        ----------
-        kwargs :
-            passed to requests.Session.post()
+        Args:
+            verify_ssl: Verify SSL. Can also be a path to CA_BUNDLE
 
-        Returns
-        -------
-        response : list, str
-            data object from JSON decoding process if format=='json',
+        Returns:
+            Data object from JSON decoding process if format=='json',
             else return raw string (ie format=='csv'|'xml')
+
+        Raises:
+            RedcapError: Bad requests/responses
         """
-        response = self.session.post(self.url, data=self.payload, **kwargs)
+        response = self.session.post(
+            self.url, data=self.payload, verify=verify_ssl, files=file
+        )
         # Raise if we need to
         self.raise_for_status(response)
         content = self.get_content(response)

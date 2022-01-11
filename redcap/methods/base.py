@@ -16,7 +16,7 @@ from typing import (
 
 from io import StringIO
 
-from redcap.request import RCRequest, RedcapError, RequestException
+from redcap.request import RCRequest, RedcapError, RequestException, FileUpload
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -187,12 +187,10 @@ class Base:
         return {"verify": self.verify_ssl}
 
     def _call_api(
-        self, payload: Dict[str, Any], req_type: str, **kwargs
+        self, payload: Dict[str, Any], req_type: str, file: Optional[FileUpload] = None
     ) -> Tuple[List[dict], str]:
-        request_kwargs = self._kwargs()
-        request_kwargs.update(kwargs)
         rcr = RCRequest(self.url, payload, req_type)
-        return rcr.execute(**request_kwargs)
+        return rcr.execute(verify_ssl=self.verify_ssl, file=file)
 
     # pylint: disable=redefined-builtin
     def _basepl(

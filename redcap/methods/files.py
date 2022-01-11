@@ -147,8 +147,8 @@ class Files(Base):
             payload["event"] = event
         if repeat_instance:
             payload["repeat_instance"] = repeat_instance
-        file_kwargs = {"files": {"file": (file_name, file_object)}}
-        return self._call_api(payload, "imp_file", **file_kwargs)[0]
+        file_upload_dict = {"file": (file_name, file_object)}
+        return self._call_api(payload, "imp_file", file=file_upload_dict)[0]
 
     def delete_file(
         self,

@@ -42,7 +42,7 @@ def test_newlines_are_handled():
     }
 
     args = ["https://redcap.vanderbilt.edu/api/", bad_metadata, "metadata"]
-    res = RCRequest(*args).execute()
+    res = RCRequest(*args).execute(verify_ssl=True, file=None)
 
     assert res is not None
     assert len(res) > 0
