@@ -52,5 +52,5 @@ class Users(Base):
             'data_export': 1, ...}]
         """
         payload = self._basepl(content="user", format=format)
-        return self._call_api(payload, "exp_user")[0]
+        return self._call_api(payload, "exp_user")
         # pylint: enable=redefined-builtin

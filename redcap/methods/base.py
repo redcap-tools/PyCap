@@ -16,11 +16,26 @@ from typing import (
 
 from io import StringIO
 
-from redcap.request import RCRequest, RedcapError, RequestException, FileUpload
+from typing_extensions import Literal
+
+from redcap.request import (
+    RCRequest,
+    RedcapError,
+    RequestException,
+    FileUpload,
+    ErrorResponse,
+)
 
 if TYPE_CHECKING:
     import pandas as pd
 
+NoHeadersRequests = Literal[
+    "imp_metadata",
+    "imp_record",
+    "del_record",
+    "exp_next_id",
+    "version",
+]
 # We're designing class to be lazy by default, and not hit the API unless
 # explicitly requested by the user
 # pylint: disable=attribute-defined-outside-init,too-many-instance-attributes
@@ -91,13 +106,15 @@ class Base:
         try:
             return self._events
         except AttributeError:
-            events: List[dict] = self._call_api(self._basepl("event"), "exp_event")[0]
-            # we should only get a dict back if there were no events defined
-            # for the project
-            if isinstance(events, dict) and "error" in events.keys():
-                self._events = None
+
+            try:
+                events: List[dict] = self._call_api(self._basepl("event"), "exp_event")
+            except RedcapError:
+                # we should only get a error back if there were no events defined
+                # for the project
+                events = None
             # otherwise, we should get JSON
-            else:
+            finally:
                 self._events = events
 
             return self._events
@@ -186,11 +203,76 @@ class Base:
         Other default kwargs to the http library should go here"""
         return {"verify": self.verify_ssl}
 
+    @overload
     def _call_api(
-        self, payload: Dict[str, Any], req_type: str, file: Optional[FileUpload] = None
-    ) -> Tuple[List[dict], str]:
+        self,
+        payload: Dict[str, Any],
+        req_type: Literal["exp_file"],
+        return_headers: Literal[True],
+        file: Optional[FileUpload] = None,
+    ) -> Tuple[bytes, dict]:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        req_type: Literal[
+            "exp_field_names",
+            "exp_fem",
+            "metadata",
+            "exp_proj",
+            "exp_record",
+            "exp_report",
+            "exp_survey_participant_list",
+            "exp_user",
+        ],
+        return_headers: Literal[False],
+        file: Optional[FileUpload] = None,
+    ) -> Union[List[Dict], str, ErrorResponse]:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        req_type: Literal["imp_file", "del_file"],
+        return_headers: Literal[False],
+        file: Optional[FileUpload] = None,
+    ) -> Union[dict, Literal[""], ErrorResponse]:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        req_type: Literal["imp_record"],
+        return_headers: Literal[False],
+        file: Optional[FileUpload] = None,
+    ) -> Union[dict, str, ErrorResponse]:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        req_type: str,
+        return_headers: bool,
+        file: Optional[FileUpload] = None,
+    ) -> Union[Tuple[Union[List[Dict], str], dict], Union[List[Dict], str]]:
+        ...
+
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        req_type: str,
+        return_headers: bool = False,
+        file: Optional[FileUpload] = None,
+    ):
         rcr = RCRequest(self.url, payload, req_type)
-        return rcr.execute(verify_ssl=self.verify_ssl, file=file)
+        return rcr.execute(
+            verify_ssl=self.verify_ssl, return_headers=return_headers, file=file
+        )
 
     # pylint: disable=redefined-builtin
     def _basepl(
@@ -199,7 +281,8 @@ class Base:
         """Return a dictionary which can be used as is or added to for
         payloads"""
         payload_dict = {"token": self.token, "content": content, "format": format}
-        if content not in ["metapayload_dictata", "file"]:
+
+        if content == "record":
             payload_dict["type"] = rec_type
         return payload_dict
 
@@ -207,11 +290,10 @@ class Base:
 
     def _initialize_metadata(self) -> List[Dict[str, str]]:
         """Return the project's metadata structure"""
-        p_l = self._basepl("metadata")
-        p_l["content"] = "metadata"
+        payload = self._basepl("metadata")
 
         try:
-            return self._call_api(p_l, "metadata")[0]
+            return self._call_api(payload, "metadata")
         except RequestException as request_fail:
             raise RedcapError(
                 "Exporting metadata failed. Check your URL and token."

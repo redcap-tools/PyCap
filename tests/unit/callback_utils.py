@@ -289,10 +289,7 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
     # mock a malformed request errors
     elif "bad_request" in str(data):
         status_code = 400
-        resp = {}
-    elif "server_error" in str(data):
-        status_code = 500
-        resp = {}
+        resp = {"error": "this is a bad request"}
     else:
         resp = [
             {"record_id": "1", "test": "test1"},

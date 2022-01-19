@@ -45,7 +45,7 @@ def test_import_and_delete_records(simple_project):
     assert res["count"] == len(test_records)
 
     res = simple_project.delete_records(new_record_ids)
-    assert res == "3"
+    assert res == 3
 
 
 @pytest.mark.integration

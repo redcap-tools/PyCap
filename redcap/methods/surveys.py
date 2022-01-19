@@ -66,5 +66,5 @@ class Surveys(Base):
         payload["instrument"] = instrument
         if event:
             payload["event"] = event
-        return self._call_api(payload, "exp_survey_participant_list")[0]
+        return self._call_api(payload, "exp_survey_participant_list")
         # pylint: enable=redefined-builtin

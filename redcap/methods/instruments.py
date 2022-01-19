@@ -75,7 +75,7 @@ class Instruments(Base):
             for i, value in enumerate(arms):
                 payload[f"arms[{ i }]"] = value
 
-        response, _ = self._call_api(payload, "exp_fem")
+        response = self._call_api(payload, "exp_fem")
         if format in ("json", "csv", "xml"):
             return response
         if format != "df":

@@ -1,6 +1,6 @@
 """REDCap API methods for Project files"""
 
-from typing import TYPE_CHECKING, Dict, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 from typing_extensions import Literal
 
@@ -30,7 +30,7 @@ class Files(Base):
         event: Optional[str] = None,
         return_format: str = "json",
         repeat_instance: Optional[int] = None,
-    ) -> Tuple[bytes, Dict]:
+    ) -> Tuple[bytes, dict]:
         """
         Export the contents of a file stored for a particular record
 
@@ -72,7 +72,11 @@ class Files(Base):
             payload["event"] = event
         if repeat_instance:
             payload["repeat_instance"] = str(repeat_instance)
-        content, headers = self._call_api(payload, "exp_file")
+        # This might just be due to some typing issues, maybe we can come back and
+        # remove this disable eventually.
+        # pylint: disable=unpacking-non-sequence
+        content, headers = self._call_api(payload, "exp_file", return_headers=True)
+        # pylint: enable=unpacking-non-sequence
         # REDCap adds some useful things in content-type
         content_map = {}
         if "content-type" in headers:
@@ -97,7 +101,7 @@ class Files(Base):
         event: Optional[str] = None,
         repeat_instance: Optional[Union[int, str]] = None,
         return_format: str = "json",
-    ) -> Union[Dict, Literal[""]]:
+    ) -> Union[dict, Literal[""]]:
         """
         Import the contents of a file represented by file_object to a
         particular records field
@@ -118,6 +122,9 @@ class Files(Base):
 
         Returns:
             Response from server as specified by `return_format`
+
+        Raises:
+            ValueError: Incorrect file field
 
         Examples:
             If your project has events, then you must specifiy the event of interest.
@@ -148,7 +155,7 @@ class Files(Base):
         if repeat_instance:
             payload["repeat_instance"] = repeat_instance
         file_upload_dict = {"file": (file_name, file_object)}
-        return self._call_api(payload, "imp_file", file=file_upload_dict)[0]
+        return self._call_api(payload, "imp_file", file=file_upload_dict)
 
     def delete_file(
         self,
@@ -156,7 +163,7 @@ class Files(Base):
         field: str,
         event: Optional[str] = None,
         return_format: str = "json",
-    ) -> Union[Dict, Literal[""]]:
+    ) -> Union[dict, Literal[""]]:
         """
         Delete a file from REDCap
 
@@ -200,4 +207,4 @@ class Files(Base):
         payload["field"] = field
         if event:
             payload["event"] = event
-        return self._call_api(payload, "del_file")[0]
+        return self._call_api(payload, "del_file")

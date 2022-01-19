@@ -8,9 +8,9 @@ Low-level HTTP functionality
 """
 
 import json
-from typing import TYPE_CHECKING, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union, overload
 
-from typing_extensions import TypedDict
+from typing_extensions import Literal, TypedDict
 
 from requests import RequestException, Session
 
@@ -30,6 +30,12 @@ class FileUpload(TypedDict):
     """Typing for the file upload API"""
 
     file: Tuple[str, "TextIOWrapper"]
+
+
+class ErrorResponse(TypedDict):
+    """Typing for a REDCap API error in a response"""
+
+    error: str
 
 
 class RCAPIError(Exception):
@@ -87,7 +93,7 @@ class RCRequest:
                 "Exporting field names, but content is not exportFieldNames",
             ),
             "del_record": (
-                ["format"],
+                ["action"],
                 "record",
                 "Deleting record but content is not record",
             ),
@@ -97,7 +103,7 @@ class RCRequest:
                 "Importing record but content is not record",
             ),
             "imp_metadata": (
-                ["type", "data", "format"],
+                ["data", "format"],
                 "metadata",
                 "Importing record but content is not record",
             ),
@@ -172,39 +178,82 @@ class RCRequest:
         if self.payload["content"] != req_content:
             raise RCAPIError(err_msg)
 
+    @overload
     def execute(
-        self, verify_ssl: Union[bool, str], file: FileUpload
-    ) -> Tuple[Union[dict, str], dict]:
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: Literal[True],
+        file: Optional[FileUpload],
+    ) -> Tuple[Union[List[dict], str, int, bytes, ErrorResponse], dict]:
+        ...
+
+    @overload
+    def execute(
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: Literal[False],
+        file: Optional[FileUpload],
+    ) -> Union[List[dict], str, int, bytes, ErrorResponse]:
+        ...
+
+    @overload
+    def execute(
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: bool,
+        file: Optional[FileUpload],
+    ) -> Union[
+        Tuple[Union[List[dict], str, int, bytes, ErrorResponse], dict],
+        Union[List[dict], str, int, bytes, ErrorResponse],
+    ]:
+        ...
+
+    def execute(
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: bool,
+        file: Optional[FileUpload],
+    ):
         """Execute the API request and return data
 
         Args:
             verify_ssl: Verify SSL. Can also be a path to CA_BUNDLE
+            return_headers:
+                Whether or not response headers should be returned along
+                with the request content
+            file: A file object to send along with the request
 
         Returns:
             Data object from JSON decoding process if format=='json',
             else return raw string (ie format=='csv'|'xml')
-
-        Raises:
-            RedcapError: Bad requests/responses
         """
         response = self.session.post(
             self.url, data=self.payload, verify=verify_ssl, files=file
         )
-        # Raise if we need to
-        self.raise_for_status(response)
+
         content = self.get_content(response)
-        return content, response.headers
+
+        try:
+            bad_request = "error" in content.keys()
+        except AttributeError:
+            # we're not dealing with an error dict
+            bad_request = False
+
+        if bad_request:
+            raise RedcapError(bad_request)
+
+        if return_headers:
+            return content, response.headers
+
+        return content
 
     # pylint: disable=invalid-name
     def get_content(self, r):
         """Abstraction for grabbing content from a returned response"""
-        if self.type == "exp_file":
-            # don't use the decoded r.text
-            return r.content
-        if self.type == "version":
-            return r.content
-        # pylint: disable=lost-exception
-        if self.fmt == "json":
+        if self.type in ["exp_file", "version"]:
+            # use bytes value
+            content = r.content
+        elif self.fmt == "json":
             content = {}
             # Decode
             try:
@@ -214,35 +263,13 @@ class RCRequest:
                 if not self.expect_empty_json():
                     # reraise for requests that shouldn't send empty json
                     raise ValueError(e) from e
-            finally:
-                return content
-        # pylint: enable=lost-exception
-        return r.text
+        else:
+            # don't do anything to csv/xml strings
+            content = r.text
+        return content
 
     # pylint: enable=invalid-name
 
     def expect_empty_json(self):
         """Some responses are known to send empty responses"""
         return self.type in ("imp_file", "del_file")
-
-    # pylint: disable=invalid-name
-    def raise_for_status(self, r):
-        """Given a response, raise for bad status for certain actions
-
-        Some redcap api methods don't return error messages
-        that the user could test for or otherwise use. Therefore, we
-        need to do the testing ourself
-
-        Raising for everything wouldn't let the user see the
-        (hopefully helpful) error message"""
-        if self.type in ("metadata", "exp_file", "imp_file", "del_file"):
-            r.raise_for_status()
-        # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-        # specifically 10.5
-        if 500 <= r.status_code < 600:
-            raise RedcapError(r.content)
-
-        if r.status_code == 400 and self.type == "exp_record":
-            raise RedcapError(r.content)
-
-    # pylint: enable=invalid-name

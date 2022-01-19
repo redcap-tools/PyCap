@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union, overload
 from typing_extensions import Literal
 
 from redcap.methods.base import Base
-from redcap.request import RedcapError
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -91,7 +90,7 @@ class Metadata(Base):
                 for i, value in enumerate(data):
                     payload[f"{key}[{i}]"] = value
 
-        response, _ = self._call_api(payload, "metadata")
+        response = self._call_api(payload, "metadata")
         if format in ("json", "csv", "xml"):
             return response
         if format != "df":
@@ -159,9 +158,8 @@ class Metadata(Base):
         payload = self._initialize_import_payload(to_import, format, "metadata")
         payload["returnFormat"] = return_format
         payload["dateFormat"] = date_format
-        response = self._call_api(payload, "imp_metadata")[0]
-        if "error" in str(response):
-            raise RedcapError(str(response))
+        response = self._call_api(payload, "imp_metadata")
+
         return response
 
     # pylint: enable=redefined-builtin

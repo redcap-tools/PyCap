@@ -129,7 +129,7 @@ class Reports(Base):
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 payload[key] = data
-        response, _ = self._call_api(payload, "exp_report")
+        response = self._call_api(payload, "exp_report")
         if format in ("json", "csv", "xml"):
             return response
         if format != "df":

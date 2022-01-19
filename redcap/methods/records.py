@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union, overload
 
 from typing_extensions import Literal
 
-from redcap.request import RedcapError
 from redcap.methods.base import Base
 
 if TYPE_CHECKING:
@@ -235,7 +234,7 @@ class Records(Base):
 
         if filter_logic:
             payload["filterLogic"] = filter_logic
-        response, _ = self._call_api(payload, "exp_record")
+        response = self._call_api(payload, "exp_record")
         if format in ("json", "csv", "xml"):
             return response
         if format != "df":
@@ -349,12 +348,24 @@ class Records(Base):
         payload["returnContent"] = return_content
         payload["dateFormat"] = date_format
         payload["forceAutoNumber"] = force_auto_number
-        response = self._call_api(payload, "imp_record")[0]
-        if "error" in response:
-            raise RedcapError(str(response))
-        return response
+        response = self._call_api(payload, "imp_record")
 
-    def delete_records(self, records: List[str]) -> int:
+        return response
+        # pylint: disable=redefined-builtin
+
+    @overload
+    def delete_records(self, records: List[str], return_format: Literal["json"]) -> int:
+        ...
+
+    @overload
+    def delete_records(
+        self, records: List[str], return_format: Literal["csv", "xml"]
+    ) -> str:
+        ...
+
+    def delete_records(
+        self, records: List[str], return_format: Literal["json", "csv", "xml"] = "json"
+    ):
         """
         Delete records from the project.
 
@@ -362,30 +373,27 @@ class Records(Base):
             records: List of record IDs to delete from the project
 
         Returns:
-            Number of records deleted
+            Union[int, str]: Number of records deleted
 
         Examples:
             >>> new_record = [{"record_id": 3, "field_1": 1}, {"record_id": 4}]
             >>> proj.import_records(new_record)
             {'count': 2}
             >>> proj.delete_records(["3", "4"])
-            '2'
+            2
         """
-        payload = {}
+        payload = self._basepl(content="record")
+        del payload["format"]
+        payload["returnFormat"] = return_format
         payload["action"] = "delete"
-        payload["content"] = "record"
-        payload["token"] = self.token
         # Turn list of records into dict, and append to payload
         records_dict = {
             f"records[{ idx }]": record for idx, record in enumerate(records)
         }
         payload.update(records_dict)
 
-        payload["format"] = format
-        response, _ = self._call_api(payload, "del_record")
+        response = self._call_api(payload, "del_record")
         return response
-
-        # pylint: disable=redefined-builtin
 
     def generate_next_record_name(self) -> int:
         """
@@ -400,4 +408,4 @@ class Records(Base):
         """
         payload = self._basepl(content="generateNextRecordName")
 
-        return self._call_api(payload, "exp_next_id")[0]
+        return self._call_api(payload, "exp_next_id")

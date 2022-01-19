@@ -92,12 +92,6 @@ def test_user_is_alerted_about_initialization_issues(
 # pylint: enable=protected-access
 
 
-def test_server_error_produces_redcap_error(simple_project):
-    # trigger the "server error" test with the "server_error" field
-    with pytest.raises(RedcapError):
-        simple_project.export_records(filter_logic=["server_error"])
-
-
 def test_bad_request_produces_redcap_error(simple_project):
     with pytest.raises(RedcapError):
         simple_project.export_records(filter_logic=["bad_request"])
@@ -189,7 +183,7 @@ def test_generate_next_record_name(simple_project):
 def test_delete_records(simple_project):
     response = simple_project.delete_records([1, 2, 3])
 
-    assert response == "3"
+    assert response == 3
 
 
 def test_delete_records_passes_filters_as_arrays(simple_project, mocker):
@@ -419,7 +413,7 @@ def test_export_data_access_groups(simple_project):
 
 
 def test_export_methods_handle_empty_data_error(simple_project, mocker):
-    mocker.patch.object(simple_project, "_call_api", return_value=("\n", {}))
+    mocker.patch.object(simple_project, "_call_api", return_value="\n")
 
     dataframe = simple_project.export_records(format="df")
     assert dataframe.empty
@@ -429,6 +423,15 @@ def test_export_methods_handle_empty_data_error(simple_project, mocker):
 
     dataframe = simple_project.export_metadata(format="df")
     assert dataframe.empty
+
+
+def test_empty_json_is_still_a_problem_for_other_methods(simple_project, mocker):
+    mocker.patch("json.loads", side_effect=ValueError)
+    with pytest.raises(ValueError):
+        # This method should _not_ return empty json, and so if it ever did
+        # then we should still get a ValueError, rather than just sweep it under
+        # the rug
+        simple_project.export_users()
 
 
 def test_import_records(simple_project):
@@ -443,10 +446,8 @@ def test_bad_import_throws_exception(simple_project):
     data = simple_project.export_records()
     data[0]["non_existent_key"] = "foo"
 
-    with pytest.raises(RedcapError) as assert_context:
+    with pytest.raises(RedcapError):
         simple_project.import_records(data)
-
-    assert "error" in repr(assert_context)
 
 
 def test_df_import(simple_project):

@@ -45,6 +45,6 @@ class ProjectInfo(Base):
 
         payload = self._basepl(content="project", format=format)
 
-        return self._call_api(payload, "exp_proj")[0]
+        return self._call_api(payload, "exp_proj")
 
     # pylint: enable=redefined-builtin

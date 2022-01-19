@@ -83,7 +83,7 @@ class FieldNames(Base):
         if field:
             payload["field"] = field
 
-        response, _ = self._call_api(payload, "exp_field_names")
+        response = self._call_api(payload, "exp_field_names")
         if format in ("json", "csv", "xml"):
             return response
         if format != "df":

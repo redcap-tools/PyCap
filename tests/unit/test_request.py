@@ -2,7 +2,6 @@
 """Test suite for RCRequest class"""
 # pylint: disable=missing-function-docstring
 import pytest
-import responses
 
 from redcap import RCAPIError, RCRequest
 
@@ -27,25 +26,6 @@ def test_rcrequest_checks_paylods():
     payload["content"] = "metadata"
     res = RCRequest(*args)
     assert isinstance(res, RCRequest)
-
-
-@responses.activate
-def test_newlines_are_handled():
-    """Test that newlines are appropriately dealt with"""
-
-    responses.add(responses.POST, "https://redcap.vanderbilt.edu/api/")
-    bad_metadata = {
-        "token": "B82CB05641E3BE8247E5F852EAFC5C21",
-        "format": "json",
-        "type": "flat",
-        "content": "metadata",
-    }
-
-    args = ["https://redcap.vanderbilt.edu/api/", bad_metadata, "metadata"]
-    res = RCRequest(*args).execute(verify_ssl=True, file=None)
-
-    assert res is not None
-    assert len(res) > 0
 
 
 def test_survey_participant_list_checks_content():

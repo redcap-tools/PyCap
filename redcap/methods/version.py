@@ -25,7 +25,7 @@ class Version(Base):
             >>> assert redcap_version >= semantic_version.Version("12.0.1")
         """
         payload = self._basepl("version")
-        redcap_version = self._call_api(payload, "version")[0].decode("utf-8")
+        redcap_version = self._call_api(payload, "version").decode("utf-8")
         resp: Optional[semantic_version.Version] = None
         if "error" in redcap_version:
             warnings.warn("Version information not available for this REDCap instance")
