@@ -1,6 +1,8 @@
 """REDCap API methods for Project field names"""
 from io import StringIO
-from typing import TYPE_CHECKING, Dict, List, Optional, overload, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, overload
+
+from typing_extensions import Literal
 
 from redcap.methods.base import Base
 
@@ -14,32 +16,47 @@ class FieldNames(Base):
     # pylint: disable=redefined-builtin
     @overload
     def export_field_names(
-        self, field: str, format: str = "json", df_kwargs: Optional[Dict] = None
+        self,
+        format: Literal["json"],
+        field: Optional[str],
+        df_kwargs: Optional[Dict] = None,
+    ) -> List[Dict]:
+        ...
+
+    @overload
+    def export_field_names(
+        self,
+        format: Literal["csv", "xml"],
+        field: Optional[str],
+        df_kwargs: Optional[Dict] = None,
     ) -> str:
         ...
 
     @overload
     def export_field_names(
-        self, field: None = None, format: str = "json", df_kwargs: Optional[Dict] = None
-    ) -> Union[List[Dict], "pd.DataFrame"]:
+        self,
+        format: Literal["df"],
+        field: Optional[str],
+        df_kwargs: Optional[Dict] = None,
+    ) -> "pd.DataFrame":
         ...
 
     def export_field_names(
         self,
+        format: Literal["json", "csv", "xml", "df"] = "json",
         field: Optional[str] = None,
-        format: str = "json",
         df_kwargs: Optional[Dict] = None,
     ):
         """
         Export the project's export field names
 
         Args:
-            field:
-                Limit exported field name to this field (only single field supported).
-                When not provided, all fields returned
             format: `'json'`, `'csv'`, `'xml'`, `'df'`
                 Return the metadata in native objects, csv or xml.
                 `'df'` will return a `pandas.DataFrame`
+            field:
+                Limit exported field name to this field (only single field supported).
+                When not provided, all fields returned
             df_kwargs:
                 Passed to `pandas.read_csv` to control construction of
                 returned DataFrame.
