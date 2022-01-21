@@ -18,27 +18,18 @@ from io import StringIO
 
 from typing_extensions import Literal
 
-from redcap.request import (
-    RCRequest,
-    RedcapError,
-    RequestException,
-    FileUpload,
-    ErrorResponse,
-)
+from redcap.request import _ContentConfig, _RCRequest, RedcapError, FileUpload
 
 if TYPE_CHECKING:
     import pandas as pd
 
-NoHeadersRequests = Literal[
-    "imp_metadata",
-    "imp_record",
-    "del_record",
-    "exp_next_id",
-    "version",
-]
 # We're designing class to be lazy by default, and not hit the API unless
 # explicitly requested by the user
-# pylint: disable=attribute-defined-outside-init,too-many-instance-attributes
+
+# return_type type aliases
+FileMap = Tuple[bytes, dict]
+Json = List[Dict[str, Any]]
+EmptyJson = List[dict]
 
 
 class Base:
@@ -50,26 +41,30 @@ class Base:
         self._url = url
         self._token = token
         self.verify_ssl = verify_ssl
+        # attributes which require API calls
+        self._metadata = None
+        self._field_names = None
+        self._def_field = None
+        self._is_longitudinal = None
 
     @property
     def url(self) -> str:
-        """API URL to your REDCap server"""
+        """API URL to a REDCap server"""
         return self._url
 
     @property
     def token(self) -> str:
-        """API token to your project"""
+        """API token to a project"""
         return self._token
 
     @property
-    def metadata(self) -> List[Dict[str, str]]:
+    def metadata(self) -> List[Dict[str, Any]]:
         """Project metadata in JSON format"""
-        self._metadata: List[Dict[str, str]]
-        try:
-            return self._metadata
-        except AttributeError:
-            self._metadata = self._initialize_metadata()
-            return self._metadata
+        if self._metadata is None:
+            payload = self._initialize_payload("metadata", format_type="json")
+            self._metadata = self._call_api(payload, return_type="json")
+
+        return self._metadata
 
     @property
     def field_names(self) -> List[str]:
@@ -78,63 +73,39 @@ class Base:
         Note:
             These are survey field names, not export field names
         """
-        self._field_names: List[str]
-        try:
-            return self._field_names
-        except AttributeError:
+        if self._field_names is None:
             self._field_names = self._filter_metadata(key="field_name")
-            return self._field_names
+
+        return self._field_names
 
     @property
     def def_field(self) -> str:
         """The 'record_id' field equivalent for a project"""
-        self._def_field: str
-        try:
-            return self._def_field
-        except AttributeError:
+        if self._def_field is None:
             self._def_field = self.field_names[0]
-            return self.def_field
 
-    @property
-    def events(self) -> Optional[List[dict]]:
-        """Project defined events
-
-        Note:
-            Exists for longitudinal projects only
-        """
-        self._events: Optional[List[dict]]
-        try:
-            return self._events
-        except AttributeError:
-
-            try:
-                events: List[dict] = self._call_api(self._basepl("event"), "exp_event")
-            except RedcapError:
-                # we should only get a error back if there were no events defined
-                # for the project
-                events = None
-            # otherwise, we should get JSON
-            finally:
-                self._events = events
-
-            return self._events
+        return self._def_field
 
     @property
     def is_longitudinal(self) -> bool:
         """Whether or not this project is longitudinal"""
-        self._is_longitudinal: bool
-        try:
-            return self._is_longitudinal
-        except AttributeError:
-            if self.events:
+        if self._is_longitudinal is None:
+            try:
+                payload = self._initialize_payload(
+                    content="formEventMapping", format_type="json"
+                )
+                self._call_api(payload, return_type="json")
                 self._is_longitudinal = True
-            else:
+            except RedcapError:
+                # we should only get a error back if there were no events defined
+                # for the project
                 self._is_longitudinal = False
 
-            return self._is_longitudinal
+        return self._is_longitudinal
 
     @staticmethod
     def _validate_url_and_token(url: str, token: str) -> None:
+        """Run basic valiation on user supplied url and token"""
         url_actual_last_5 = url[-5:]
         url_expected_last_5 = "/api/"
 
