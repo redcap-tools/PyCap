@@ -17,3 +17,6 @@ ignore=docs
 disable=too-many-arguments,
         # this is be removed after refactoring
         duplicate-code
+
+# make sure we're only disabling what we need to disable
+enable=useless-suppression

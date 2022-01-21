@@ -1,8 +1,10 @@
 """REDCap API methods for Project field names"""
 from io import StringIO
-from typing import TYPE_CHECKING, Dict, List, Optional, overload, Union
+from typing import TYPE_CHECKING, Dict, Optional, overload
 
-from redcap.methods.base import Base
+from typing_extensions import Literal
+
+from redcap.methods.base import Base, Json
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -11,42 +13,57 @@ if TYPE_CHECKING:
 class FieldNames(Base):
     """Responsible for all API methods under 'Field Names' in the API Playground"""
 
-    # pylint: disable=redefined-builtin
     @overload
     def export_field_names(
-        self, field: str, format: str = "json", df_kwargs: Optional[Dict] = None
+        self,
+        format_type: Literal["json"],
+        field: Optional[str],
+        df_kwargs: Optional[Dict] = None,
+    ) -> Json:
+        ...
+
+    @overload
+    def export_field_names(
+        self,
+        format_type: Literal["csv", "xml"],
+        field: Optional[str],
+        df_kwargs: Optional[Dict] = None,
     ) -> str:
         ...
 
     @overload
     def export_field_names(
-        self, field: None = None, format: str = "json", df_kwargs: Optional[Dict] = None
-    ) -> Union[List[Dict], "pd.DataFrame"]:
+        self,
+        format_type: Literal["df"],
+        field: Optional[str],
+        df_kwargs: Optional[Dict] = None,
+    ) -> "pd.DataFrame":
         ...
 
     def export_field_names(
         self,
+        format_type: Literal["json", "csv", "xml", "df"] = "json",
         field: Optional[str] = None,
-        format: str = "json",
         df_kwargs: Optional[Dict] = None,
     ):
+        # pylint: disable=line-too-long
         """
         Export the project's export field names
 
         Args:
+            format_type:
+                Return the metadata in native objects, csv or xml.
+                `'df'` will return a `pandas.DataFrame`
             field:
                 Limit exported field name to this field (only single field supported).
                 When not provided, all fields returned
-            format: `'json'`, `'csv'`, `'xml'`, `'df'`
-                Return the metadata in native objects, csv or xml.
-                `'df'` will return a `pandas.DataFrame`
             df_kwargs:
                 Passed to `pandas.read_csv` to control construction of
                 returned DataFrame.
                 by default `{'index_col': 'original_field_name'}`
 
         Returns:
-            Union[str, List[Dict], "pd.DataFrame"]: Metadata structure for the project.
+            Union[str, List[Dict[str, Any]], "pd.DataFrame"]: Metadata structure for the project.
 
         Examples:
             >>> proj.export_field_names()
@@ -55,24 +72,19 @@ class FieldNames(Base):
             {'original_field_name': 'checkbox_field', 'choice_value': '1', 'export_field_name': 'checkbox_field___1'},
             {'original_field_name': 'checkbox_field', 'choice_value': '2', 'export_field_name': 'checkbox_field___2'},
             {'original_field_name': 'form_1_complete', 'choice_value': '', 'export_field_name': 'form_1_complete'}]
-        """  # pylint: disable=line-too-long
+        """
         # pylint: enable=line-too-long
-        ret_format = format
-        if format == "df":
-            ret_format = "csv"
-
-        payload = self._basepl("exportFieldNames", format=ret_format)
+        payload = self._initialize_payload(
+            content="exportFieldNames", format_type=format_type
+        )
 
         if field:
             payload["field"] = field
 
-        response, _ = self._call_api(payload, "exp_field_names")
-        if format in ("json", "csv", "xml"):
+        return_type = self._lookup_return_type(format_type)
+        response = self._call_api(payload, return_type)
+        if format_type in ("json", "csv", "xml"):
             return response
-        if format != "df":
-            raise ValueError(f"Unsupported format: '{format}'")
         if not df_kwargs:
             df_kwargs = {"index_col": "original_field_name"}
         return self._read_csv(StringIO(response), **df_kwargs)
-
-    # pylint: enable=redefined-builtin

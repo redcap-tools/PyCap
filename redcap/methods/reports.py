@@ -1,10 +1,10 @@
 """REDCap API methods for Project reports"""
 from io import StringIO
-from typing import TYPE_CHECKING, Dict, List, Optional, overload
+from typing import TYPE_CHECKING, Dict, Optional, overload
 
 from typing_extensions import Literal
 
-from redcap.methods.base import Base
+from redcap.methods.base import Base, Json
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -13,26 +13,25 @@ if TYPE_CHECKING:
 class Reports(Base):
     """Responsible for all API methods under 'Reports' in the API Playground"""
 
-    # pylint: disable=redefined-builtin
     # pylint: disable=too-many-locals
     @overload
     def export_report(
         self,
         report_id: str,
-        format: Literal["json"],
+        format_type: Literal["json"],
         raw_or_label: Literal["raw", "label"] = "raw",
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
         csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
         df_kwargs: Optional[Dict] = None,
-    ) -> List[Dict]:
+    ) -> Json:
         ...
 
     @overload
     def export_report(
         self,
         report_id: str,
-        format: Literal["csv", "xml"],
+        format_type: Literal["csv", "xml"],
         raw_or_label: Literal["raw", "label"] = "raw",
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
@@ -45,7 +44,7 @@ class Reports(Base):
     def export_report(
         self,
         report_id: str,
-        format: Literal["df"],
+        format_type: Literal["df"],
         raw_or_label: Literal["raw", "label"] = "raw",
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
@@ -57,7 +56,7 @@ class Reports(Base):
     def export_report(
         self,
         report_id: str,
-        format: Literal["json", "csv", "xml", "df"] = "json",
+        format_type: Literal["json", "csv", "xml", "df"] = "json",
         raw_or_label: Literal["raw", "label"] = "raw",
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
@@ -71,7 +70,7 @@ class Reports(Base):
             report_id:
                 The report ID number provided next to the report name
                 on the report list page
-            format:
+            format_type:
                 Format of returned data. `'json'` returns json-decoded
                 objects while `'csv'` and `'xml'` return strings.
                 `'df'` will attempt to return a `pandas.DataFrame`.
@@ -98,7 +97,7 @@ class Reports(Base):
             ValueError: Unsupported format specified
 
         Returns:
-            Union[List[Dict], str, pd.DataFrame]: Data from the report ordered by
+            Union[List[Dict[str, Any]], str, pd.DataFrame]: Data from the report ordered by
             the record (primary key of project) and then by event id
 
         Examples:
@@ -106,12 +105,7 @@ class Reports(Base):
             [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1',
             'checkbox_field___1': '0', 'checkbox_field___2': '1'}]
         """
-
-        ret_format = format
-        if format == "df":
-            ret_format = "csv"
-
-        payload = self._basepl(content="report", format=ret_format)
+        payload = self._initialize_payload(content="report", format_type=format_type)
         keys_to_add = (
             report_id,
             raw_or_label,
@@ -129,11 +123,12 @@ class Reports(Base):
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 payload[key] = data
-        response, _ = self._call_api(payload, "exp_report")
-        if format in ("json", "csv", "xml"):
+
+        return_type = self._lookup_return_type(format_type)
+        response = self._call_api(payload, return_type)
+
+        if format_type in ("json", "csv", "xml"):
             return response
-        if format != "df":
-            raise ValueError(f"Unsupported format: '{ format }'")
 
         if not df_kwargs:
             if self.is_longitudinal:
@@ -147,4 +142,3 @@ class Reports(Base):
         return dataframe
 
     # pylint: enable=too-many-locals
-    # pylint: enable=redefined-builtin

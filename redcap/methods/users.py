@@ -1,24 +1,23 @@
 """REDCap API methods for Project users"""
-from typing import Dict, List, overload
+from typing import overload
 
 from typing_extensions import Literal
 
-from redcap.methods.base import Base
+from redcap.methods.base import Base, Json
 
 
 class Users(Base):
     """Responsible for all API methods under 'Users & User Privileges' in the API Playground"""
 
-    # pylint: disable=redefined-builtin
     @overload
-    def export_users(self, format: Literal["json"]) -> List[Dict]:
+    def export_users(self, format_type: Literal["json"]) -> Json:
         ...
 
     @overload
-    def export_users(self, format: Literal["csv", "xml"]) -> str:
+    def export_users(self, format_type: Literal["csv", "xml"]) -> str:
         ...
 
-    def export_users(self, format: Literal["json", "csv", "xml"] = "json"):
+    def export_users(self, format_type: Literal["json", "csv", "xml"] = "json"):
         """
         Export the users of the Project
 
@@ -39,11 +38,11 @@ class Users(Base):
                     3=edit survey responses,
 
         Args:
-            format:
+            format_type:
                 Response return format
 
         Returns:
-            Union[List[Dict], str]: List of users with metadata
+            Union[List[Dict[str, Any]], str]: List of users with metadata
 
         Examples:
             >>> proj.export_users()
@@ -51,6 +50,6 @@ class Users(Base):
             'data_access_group_id': '', 'design': 1, 'user_rights': 1, 'data_access_groups': 1,
             'data_export': 1, ...}]
         """
-        payload = self._basepl(content="user", format=format)
-        return self._call_api(payload, "exp_user")[0]
-        # pylint: enable=redefined-builtin
+        payload = self._initialize_payload(content="user", format_type=format_type)
+        return_type = self._lookup_return_type(format_type)
+        return self._call_api(payload, return_type)

@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=consider-using-f-string
-"""
+"""Low-level HTTP functionality"""
 
-Low-level HTTP functionality
+from collections import namedtuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, overload
 
-"""
+from typing_extensions import Literal, TypedDict
 
-import json
-from requests import RequestException, Session
+from requests import RequestException, Response, Session
+
+if TYPE_CHECKING:
+    from io import TextIOWrapper
 
 __author__ = "Scott Burns <scott.s.burns@gmail.com>"
 __license__ = "MIT"
@@ -19,214 +21,197 @@ RedcapError = RequestException
 _session = Session()
 
 
-class RCAPIError(Exception):
-    """Errors corresponding to a misuse of the REDCap API"""
+class FileUpload(TypedDict):
+    """Typing for the file upload API"""
+
+    file: Tuple[str, "TextIOWrapper"]
 
 
-class RCRequest:
+_ContentConfig = namedtuple("_ContentConfig", ["return_empty_json", "return_bytes"])
+
+
+class _RCRequest:
     """
     Private class wrapping the REDCap API. Decodes response from redcap
     and returns it.
-
-    References
-    ----------
-    https://redcap.vanderbilt.edu/api/help/
-
-    Users shouldn't really need to use this, the Project class is the
-    biggest consumer.
     """
 
-    def __init__(self, url, payload, req_type, session=_session):
-        """
-        Constructor
+    def __init__(
+        self,
+        url: str,
+        payload: Dict[str, Any],
+        config: _ContentConfig,
+        session=_session,
+    ):
+        """Constructor
 
-        Parameters
-        ----------
-        url : str
-            REDCap API URL
-        payload : dict
-            key,values corresponding to the REDCap API
-        req_type : str
-            Used to validate payload contents against API
+        Args:
+            url: REDCap API URL
+            payload: Keys and values corresponding to the REDCap API
+            config: Configuration values for getting content
         """
         self.url = url
         self.payload = payload
-        self.type = req_type
+        self.config = config
         self.session = session
+        self.fmt = self._get_format_key(payload)
 
-        if req_type:
-            self.validate()
-        fmt_key = "returnFormat" if "returnFormat" in payload else "format"
-        self.fmt = payload[fmt_key]
+    @staticmethod
+    def _get_format_key(
+        payload: Dict[str, Any]
+    ) -> Optional[Literal["json", "csv", "xml"]]:
+        """Determine format of the response
 
-    def validate(self):
-        """Checks that at least required params exist"""
-        required = ["token", "content"]
-        valid_data = {
-            "exp_record": (
-                ["type", "format"],
-                "record",
-                "Exporting record but content is not record",
-            ),
-            "exp_field_names": (
-                ["format"],
-                "exportFieldNames",
-                "Exporting field names, but content is not exportFieldNames",
-            ),
-            "del_record": (
-                ["format"],
-                "record",
-                "Deleting record but content is not record",
-            ),
-            "imp_record": (
-                ["type", "overwriteBehavior", "data", "format"],
-                "record",
-                "Importing record but content is not record",
-            ),
-            "imp_metadata": (
-                ["type", "data", "format"],
-                "metadata",
-                "Importing record but content is not record",
-            ),
-            "metadata": (
-                ["format"],
-                "metadata",
-                "Requesting metadata but content != metadata",
-            ),
-            "exp_file": (
-                ["action", "record", "field"],
-                "file",
-                "Exporting file but content is not file",
-            ),
-            "imp_file": (
-                ["action", "record", "field"],
-                "file",
-                "Importing file but content is not file",
-            ),
-            "del_file": (
-                ["action", "record", "field"],
-                "file",
-                "Deleteing file but content is not file",
-            ),
-            "exp_event": (
-                ["format"],
-                "event",
-                "Exporting events but content is not event",
-            ),
-            "exp_arm": (["format"], "arm", "Exporting arms but content is not arm"),
-            "exp_fem": (
-                ["format"],
-                "formEventMapping",
-                "Exporting form-event mappings but content != formEventMapping",
-            ),
-            "exp_next_id": (
-                [],
-                "generateNextRecordName",
-                "Generating next record name but content is not generateNextRecordName",
-            ),
-            "exp_proj": (
-                ["format"],
-                "project",
-                "Exporting project info but content is not project",
-            ),
-            "exp_user": (["format"], "user", "Exporting users but content is not user"),
-            "exp_survey_participant_list": (
-                ["instrument"],
-                "participantList",
-                "Exporting Survey Participant List but content != participantList",
-            ),
-            "exp_report": (
-                ["report_id", "format"],
-                "report",
-                "Exporting Reports but content is not reports",
-            ),
-            "version": (
-                ["format"],
-                "version",
-                "Requesting version but content != version",
-            ),
-        }
-        extra, req_content, err_msg = valid_data[self.type]
-        required.extend(extra)
-        required = set(required)
-        pl_keys = set(self.payload.keys())
-        # if req is not subset of payload keys, this call is wrong
-        if not set(required) <= pl_keys:
-            # what is not in pl_keys?
-            not_pre = required - pl_keys
-            raise RCAPIError("Required keys: %s" % ", ".join(not_pre))
-        # Check content, raise with err_msg if not good
-        if self.payload["content"] != req_content:
-            raise RCAPIError(err_msg)
+        Args:
+            payload: Payload to be sent in POST request
 
-    def execute(self, **kwargs):
+        Returns:
+            The expected format of the response, if a format
+            key was provided. Otherwise returns None to signal
+            a non-standard response format e.g bytes, empty json, etc.
+
+        Raises:
+            ValueError: Unsupported format
+        """
+        if "returnFormat" in payload:
+            fmt_key = "returnFormat"
+        elif "format" in payload:
+            fmt_key = "format"
+        else:
+            return None
+
+        return payload[fmt_key]
+
+    @overload
+    @staticmethod
+    def get_content(
+        response: Response,
+        format_type: None,
+        return_empty_json: Literal[True],
+        return_bytes: Literal[False],
+    ) -> List[dict]:
+        ...
+
+    @overload
+    @staticmethod
+    def get_content(
+        response: Response,
+        format_type: None,
+        return_empty_json: Literal[False],
+        return_bytes: Literal[True],
+    ) -> bytes:
+        ...
+
+    @overload
+    @staticmethod
+    def get_content(
+        response: Response,
+        format_type: Literal["json"],
+        return_empty_json: Literal[False],
+        return_bytes: Literal[False],
+    ) -> Union[List[Dict[str, Any]], Dict[str, str]]:
+        """This should return json, but might also return an error dict"""
+        ...
+
+    @overload
+    @staticmethod
+    def get_content(
+        response: Response,
+        format_type: Literal["csv", "xml"],
+        return_empty_json: Literal[False],
+        return_bytes: Literal[False],
+    ) -> str:
+        ...
+
+    @staticmethod
+    def get_content(
+        response: Response,
+        format_type: Optional[Literal["json", "csv", "xml"]],
+        return_empty_json: bool,
+        return_bytes: bool,
+    ):
+        """Abstraction for grabbing content from a returned response"""
+        if return_bytes:
+            return response.content
+
+        if return_empty_json:
+            return [{}]
+
+        if format_type == "json":
+            return response.json()
+
+        # don't do anything to csv/xml strings
+        return response.text
+
+    @overload
+    def execute(
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: Literal[True],
+        file: Optional[FileUpload],
+    ) -> Tuple[Union[List[Dict[str, Any]], str, bytes], dict]:
+        ...
+
+    @overload
+    def execute(
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: Literal[False],
+        file: Optional[FileUpload],
+    ) -> Union[List[Dict[str, Any]], str, bytes]:
+        ...
+
+    def execute(
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: bool,
+        file: Optional[FileUpload],
+    ):
         """Execute the API request and return data
 
-        Parameters
-        ----------
-        kwargs :
-            passed to requests.Session.post()
+        Args:
+            verify_ssl: Verify SSL. Can also be a path to CA_BUNDLE
+            return_headers:
+                Whether or not response headers should be returned along
+                with the request content
+            file: A file object to send along with the request
 
-        Returns
-        -------
-        response : list, str
-            data object from JSON decoding process if format=='json',
+        Returns:
+            Data object from JSON decoding process if format=='json',
             else return raw string (ie format=='csv'|'xml')
+
+        Raises:
+            RedcapError:
+                Badly formed request i.e record doesn't
+                exist, field doesn't exist, etc.
         """
-        response = self.session.post(self.url, data=self.payload, **kwargs)
-        # Raise if we need to
-        self.raise_for_status(response)
-        content = self.get_content(response)
-        return content, response.headers
+        response = self.session.post(
+            self.url, data=self.payload, verify=verify_ssl, files=file
+        )
 
-    # pylint: disable=invalid-name
-    def get_content(self, r):
-        """Abstraction for grabbing content from a returned response"""
-        if self.type == "exp_file":
-            # don't use the decoded r.text
-            return r.content
-        if self.type == "version":
-            return r.content
-        # pylint: disable=lost-exception
+        content = self.get_content(
+            response,
+            format_type=self.fmt,
+            return_empty_json=self.config.return_empty_json,
+            return_bytes=self.config.return_bytes,
+        )
+
         if self.fmt == "json":
-            content = {}
-            # Decode
             try:
-                # Watch out for bad/empty json
-                content = json.loads(r.text, strict=False)
-            except ValueError as e:
-                if not self.expect_empty_json():
-                    # reraise for requests that shouldn't send empty json
-                    raise ValueError(e) from e
-            finally:
-                return content
-        # pylint: enable=lost-exception
-        return r.text
+                bad_request = "error" in content.keys()
+            except AttributeError:
+                # we're not dealing with an error dict
+                bad_request = False
+        elif self.fmt == "csv":
+            bad_request = content.lower().startswith("error:")
+        # xml is the default returnFormat for error messages
+        elif self.fmt == "xml" or self.fmt is None:
+            bad_request = "<error>" in str(content).lower()
 
-    # pylint: enable=invalid-name
+        if bad_request:
+            raise RedcapError(content)
 
-    def expect_empty_json(self):
-        """Some responses are known to send empty responses"""
-        return self.type in ("imp_file", "del_file")
+        if return_headers:
+            return content, response.headers
 
-    # pylint: disable=invalid-name
-    def raise_for_status(self, r):
-        """Given a response, raise for bad status for certain actions
-
-        Some redcap api methods don't return error messages
-        that the user could test for or otherwise use. Therefore, we
-        need to do the testing ourself
-
-        Raising for everything wouldn't let the user see the
-        (hopefully helpful) error message"""
-        if self.type in ("metadata", "exp_file", "imp_file", "del_file"):
-            r.raise_for_status()
-        # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-        # specifically 10.5
-        if 500 <= r.status_code < 600:
-            raise RedcapError(r.content)
-
-        if r.status_code == 400 and self.type == "exp_record":
-            raise RedcapError(r.content)
-
-    # pylint: enable=invalid-name
+        return content
