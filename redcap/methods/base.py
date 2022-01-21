@@ -313,7 +313,7 @@ class Base:
         elif format_type in ["csv", "xml", "df"]:
             return_type = "str"
         else:
-            raise ValueError(f"Invalid option: { format_type= }")
+            raise ValueError(f"Invalid format_type: { format_type }")
 
         return return_type
 
