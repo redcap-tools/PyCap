@@ -1,29 +1,28 @@
 """REDCap API methods for Project surveys"""
-from typing import Dict, List, Optional, overload
+from typing import Optional, overload
 
 from typing_extensions import Literal
 
-from redcap.methods.base import Base
+from redcap.methods.base import Base, Json
 
 
 class Surveys(Base):
     """Responsible for all API methods under 'Surveys' in the API Playground"""
 
-    # pylint: disable=redefined-builtin
     @overload
     def export_survey_participant_list(
         self,
         instrument: str,
-        format: Literal["json"],
+        format_type: Literal["json"],
         event: Optional[str] = None,
-    ) -> List[Dict]:
+    ) -> Json:
         ...
 
     @overload
     def export_survey_participant_list(
         self,
         instrument: str,
-        format: Literal["csv", "xml"],
+        format_type: Literal["csv", "xml"],
         event: Optional[str] = None,
     ) -> str:
         ...
@@ -31,7 +30,7 @@ class Surveys(Base):
     def export_survey_participant_list(
         self,
         instrument: str,
-        format: Literal["json", "csv", "xml"] = "json",
+        format_type: Literal["json", "csv", "xml"] = "json",
         event: Optional[str] = None,
     ):
         """
@@ -43,13 +42,13 @@ class Surveys(Base):
         Args:
             instrument:
                 Name of instrument as seen in the Data Dictionary (metadata).
-            format:
+            format_type:
                 Format of returned data
             event:
                 Unique event name, only used in longitudinal projects
 
         Returns:
-            Union[List[Dict], str]: List of survey participants, along with other useful
+            Union[List[Dict[str, Any]], str]: List of survey participants, along with other useful
             metadata such as the record, response status, etc.
 
         Examples:
@@ -60,11 +59,13 @@ class Surveys(Base):
             {'email': '',
             ...
             'survey_access_code': ...}]
-        """  # pylint: disable=line-too-long
-        # pylint: enable=line-too-long
-        payload = self._basepl(content="participantList", format=format)
+        """
+        payload = self._initialize_payload(
+            content="participantList", format_type=format_type
+        )
         payload["instrument"] = instrument
         if event:
             payload["event"] = event
-        return self._call_api(payload, "exp_survey_participant_list")
-        # pylint: enable=redefined-builtin
+
+        return_type = self._lookup_return_type(format_type)
+        return self._call_api(payload, return_type)

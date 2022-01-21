@@ -1,7 +1,5 @@
 """REDCap API methods for Project REDCap version"""
 
-import warnings
-
 from typing import Optional
 
 import semantic_version  # type: ignore
@@ -24,11 +22,11 @@ class Version(Base):
             >>> redcap_version = proj.export_version()
             >>> assert redcap_version >= semantic_version.Version("12.0.1")
         """
-        payload = self._basepl("version")
-        redcap_version = self._call_api(payload, "version").decode("utf-8")
-        resp: Optional[semantic_version.Version] = None
-        if "error" in redcap_version:
-            warnings.warn("Version information not available for this REDCap instance")
+        payload = self._initialize_payload("version")
+        resp = None
+
+        redcap_version = self._call_api(payload, return_type="str")
+
         if semantic_version.validate(redcap_version):
             resp = semantic_version.Version(redcap_version)
 

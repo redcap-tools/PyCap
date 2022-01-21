@@ -1,31 +1,30 @@
 """REDCap API methods for Project info"""
-from typing import Dict, List, overload
+from typing import overload
 from typing_extensions import Literal
 
-from redcap.methods.base import Base
+from redcap.methods.base import Base, Json
 
 
 class ProjectInfo(Base):
     """Responsible for all API methods under 'Projects' in the API Playground"""
 
-    # pylint: disable=redefined-builtin
     @overload
-    def export_project_info(self, format: Literal["json"]) -> List[Dict]:
+    def export_project_info(self, format_type: Literal["json"]) -> Json:
         ...
 
     @overload
-    def export_project_info(self, format: Literal["csv", "xml"]) -> str:
+    def export_project_info(self, format_type: Literal["csv", "xml"]) -> str:
         ...
 
-    def export_project_info(self, format: Literal["json", "csv", "xml"] = "json"):
+    def export_project_info(self, format_type: Literal["json", "csv", "xml"] = "json"):
         """
         Export Project Information
 
         Args:
-            format: Format of returned data
+            format_type: Format of returned data
 
         Returns:
-            Union[str, List[Dict]]: Project information
+            Union[str, List[Dict[str, Any]]]: Project information
 
         Examples:
             >>> proj.export_project_info()
@@ -43,8 +42,7 @@ class ProjectInfo(Base):
              'bypass_branching_erase_field_prompt': 0}
         """
 
-        payload = self._basepl(content="project", format=format)
+        payload = self._initialize_payload(content="project", format_type=format_type)
+        return_type = self._lookup_return_type(format_type)
 
-        return self._call_api(payload, "exp_proj")
-
-    # pylint: enable=redefined-builtin
+        return self._call_api(payload, return_type)

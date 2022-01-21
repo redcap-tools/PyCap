@@ -1,10 +1,8 @@
 """REDCap API methods for Project files"""
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Optional, Union
 
-from typing_extensions import Literal
-
-from redcap.methods.base import Base
+from redcap.methods.base import Base, EmptyJson, FileMap
 
 if TYPE_CHECKING:
     from io import TextIOWrapper
@@ -13,24 +11,25 @@ if TYPE_CHECKING:
 class Files(Base):
     """Responsible for all API methods under 'Files' in the API Playground"""
 
-    def _check_file_field(self, field: str) -> bool:
+    def _check_file_field(self, field: str) -> None:
         """Check that field exists and is a file field"""
+        # Since we initialize self.field_names as None, pylint worries that this will
+        # produce an error
+        # pylint: disable=unsupported-membership-test
         is_field = field in self.field_names
+        # pylint: enable=unsupported-membership-test
         is_file = self._filter_metadata(key="field_type", field_name=field) == "file"
         if not (is_field and is_file):
             msg = f"'{ field }' is not a field or not a 'file' field"
             raise ValueError(msg)
-
-        return True
 
     def export_file(
         self,
         record: str,
         field: str,
         event: Optional[str] = None,
-        return_format: str = "json",
         repeat_instance: Optional[int] = None,
-    ) -> Tuple[bytes, dict]:
+    ) -> FileMap:
         """
         Export the contents of a file stored for a particular record
 
@@ -41,9 +40,6 @@ class Files(Base):
             record: Record ID
             field: Field name containing the file to be exported.
             event: For longitudinal projects, the unique event name
-            return_format:
-                `'json'`, `'csv'`, `'xml'`
-                Format of error message
             repeat_instance:
                 (Only for projects with repeating instruments/events)
                 The repeat instance number of the repeating event (if longitudinal)
@@ -52,6 +48,10 @@ class Files(Base):
         Returns:
             Content of the file and content-type dictionary
 
+        Raises:
+            ValueError: Incorrect file field
+            RedcapError: Bad Request e.g. invalid record_id
+
         Examples:
             If your project has events, then you must specifiy the event of interest.
             Otherwise, you can leave the event parameter blank
@@ -59,12 +59,10 @@ class Files(Base):
             >>> proj.export_file(record="1", field="upload_field", event="event_1_arm_1")
             (b'test upload\\n', {'name': 'test_upload.txt', 'charset': 'UTF-8'})
         """
-        assert self._check_file_field(field)
+        self._check_file_field(field)
         # load up payload
-        payload = self._basepl(content="file", format=return_format)
+        payload = self._initialize_payload(content="file")
         # there's no format field in this call
-        del payload["format"]
-        payload["returnFormat"] = return_format
         payload["action"] = "export"
         payload["field"] = field
         payload["record"] = record
@@ -75,7 +73,7 @@ class Files(Base):
         # This might just be due to some typing issues, maybe we can come back and
         # remove this disable eventually.
         # pylint: disable=unpacking-non-sequence
-        content, headers = self._call_api(payload, "exp_file", return_headers=True)
+        content, headers = self._call_api(payload=payload, return_type="file_map")
         # pylint: enable=unpacking-non-sequence
         # REDCap adds some useful things in content-type
         content_map = {}
@@ -100,8 +98,7 @@ class Files(Base):
         file_object: "TextIOWrapper",
         event: Optional[str] = None,
         repeat_instance: Optional[Union[int, str]] = None,
-        return_format: str = "json",
-    ) -> Union[dict, Literal[""]]:
+    ) -> EmptyJson:
         """
         Import the contents of a file represented by file_object to a
         particular records field
@@ -116,15 +113,13 @@ class Files(Base):
                 (Only for projects with repeating instruments/events)
                 The repeat instance number of the repeating event (if longitudinal)
                 or the repeating instrument (if classic or longitudinal).
-            return_format:
-                `'json'`, `'csv'`, `'xml'`
-                Format of error message
 
         Returns:
-            Response from server as specified by `return_format`
+            Empty JSON object
 
         Raises:
             ValueError: Incorrect file field
+            RedcapError: Bad Request e.g. invalid record_id
 
         Examples:
             If your project has events, then you must specifiy the event of interest.
@@ -139,14 +134,11 @@ class Files(Base):
             ...     file_object=tmp_file,
             ...     event="event_1_arm_1",
             ... )
-            {}
+            [{}]
         """
         self._check_file_field(field)
         # load up payload
-        payload = self._basepl(content="file", format=return_format)
-        # no format in this call
-        del payload["format"]
-        payload["returnFormat"] = return_format
+        payload = self._initialize_payload(content="file")
         payload["action"] = "import"
         payload["field"] = field
         payload["record"] = record
@@ -155,15 +147,17 @@ class Files(Base):
         if repeat_instance:
             payload["repeat_instance"] = repeat_instance
         file_upload_dict = {"file": (file_name, file_object)}
-        return self._call_api(payload, "imp_file", file=file_upload_dict)
+
+        return self._call_api(
+            payload=payload, return_type="empty_json", file=file_upload_dict
+        )
 
     def delete_file(
         self,
         record: str,
         field: str,
         event: Optional[str] = None,
-        return_format: str = "json",
-    ) -> Union[dict, Literal[""]]:
+    ) -> EmptyJson:
         """
         Delete a file from REDCap
 
@@ -174,12 +168,13 @@ class Files(Base):
             record: Record ID
             field: Field name
             event: For longitudinal projects, the unique event name
-            return_format:
-                `'json'`, `'csv'`, `'xml'`
-                Return format for error message
 
         Returns:
-            Response from REDCap after deleting file
+            Empty JSON object
+
+        Raises:
+            ValueError: Incorrect file field
+            RedcapError: Bad Request e.g. invalid record_id
 
         Examples:
             Import a tempfile and then delete it
@@ -193,18 +188,17 @@ class Files(Base):
             ...     file_object=tmp_file,
             ...     event="event_1_arm_1",
             ... )
-            {}
+            [{}]
             >>> proj.delete_file(record="2", field="upload_field", event="event_1_arm_1")
-            {}
+            [{}]
         """
         self._check_file_field(field)
         # Load up payload
-        payload = self._basepl(content="file", format=return_format)
-        del payload["format"]
-        payload["returnFormat"] = return_format
+        payload = self._initialize_payload(content="file")
         payload["action"] = "delete"
         payload["record"] = record
         payload["field"] = field
         if event:
             payload["event"] = event
-        return self._call_api(payload, "del_file")
+
+        return self._call_api(payload=payload, return_type="empty_json")
