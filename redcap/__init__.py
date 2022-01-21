@@ -12,7 +12,6 @@ Other API requests are available, such as exporting users & Form-Event Mappings.
 
 """
 
-from redcap.methods.field_names import FieldNames
 from redcap.project import Project
 from redcap.request import _RCRequest, RedcapError
 
