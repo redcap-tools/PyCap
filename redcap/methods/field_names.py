@@ -51,7 +51,7 @@ class FieldNames(Base):
         Export the project's export field names
 
         Args:
-            format_type: `'json'`, `'csv'`, `'xml'`, `'df'`
+            format_type:
                 Return the metadata in native objects, csv or xml.
                 `'df'` will return a `pandas.DataFrame`
             field:
