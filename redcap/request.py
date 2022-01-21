@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=consider-using-f-string
-"""
-
-Low-level HTTP functionality
-
-"""
+"""Low-level HTTP functionality"""
 
 from collections import namedtuple
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, overload
@@ -32,11 +27,7 @@ class FileUpload(TypedDict):
     file: Tuple[str, "TextIOWrapper"]
 
 
-class RCAPIError(Exception):
-    """Errors corresponding to a misuse of the REDCap API"""
-
-
-RCConfig = namedtuple("RCConfig", ["return_empty_json", "return_bytes"])
+_ContentConfig = namedtuple("_ContentConfig", ["return_empty_json", "return_bytes"])
 
 
 class _RCRequest:
@@ -46,7 +37,11 @@ class _RCRequest:
     """
 
     def __init__(
-        self, url: str, payload: Dict[str, Any], config: RCConfig, session=_session
+        self,
+        url: str,
+        payload: Dict[str, Any],
+        config: _ContentConfig,
+        session=_session,
     ):
         """Constructor
 
@@ -59,20 +54,39 @@ class _RCRequest:
         self.payload = payload
         self.config = config
         self.session = session
+        self.fmt = self._get_format_key(payload)
 
-        fmt_key = "returnFormat" if "returnFormat" in payload else "format"
-        fmt = payload[fmt_key]
+    @staticmethod
+    def _get_format_key(
+        payload: Dict[str, Any]
+    ) -> Optional[Literal["json", "csv", "xml"]]:
+        """Determine format of the response
 
-        if fmt in ["json", "csv", "xml"]:
-            self.fmt = fmt
+        Args:
+            payload: Payload to be sent in POST request
+
+        Returns:
+            The expected format of the response, if a format
+            key was provided. Otherwise returns None to signal
+            a non-standard response format e.g bytes, empty json, etc.
+
+        Raises:
+            ValueError: Unsupported format
+        """
+        if "returnFormat" in payload:
+            fmt_key = "returnFormat"
+        elif "format" in payload:
+            fmt_key = "format"
         else:
-            raise ValueError(f"Unsupported format: { fmt }")
+            return None
+
+        return payload[fmt_key]
 
     @overload
     @staticmethod
     def get_content(
         response: Response,
-        req_format: Literal["json", "csv", "xml"],
+        format_type: None,
         return_empty_json: Literal[True],
         return_bytes: Literal[False],
     ) -> List[dict]:
@@ -82,7 +96,7 @@ class _RCRequest:
     @staticmethod
     def get_content(
         response: Response,
-        req_format: Literal["json", "csv", "xml"],
+        format_type: None,
         return_empty_json: Literal[False],
         return_bytes: Literal[True],
     ) -> bytes:
@@ -92,7 +106,7 @@ class _RCRequest:
     @staticmethod
     def get_content(
         response: Response,
-        req_format: Literal["json"],
+        format_type: Literal["json"],
         return_empty_json: Literal[False],
         return_bytes: Literal[False],
     ) -> Union[List[Dict[str, Any]], Dict[str, str]]:
@@ -103,7 +117,7 @@ class _RCRequest:
     @staticmethod
     def get_content(
         response: Response,
-        req_format: Literal["csv", "xml"],
+        format_type: Literal["csv", "xml"],
         return_empty_json: Literal[False],
         return_bytes: Literal[False],
     ) -> str:
@@ -112,7 +126,7 @@ class _RCRequest:
     @staticmethod
     def get_content(
         response: Response,
-        req_format: Literal["json", "csv", "xml"],
+        format_type: Optional[Literal["json", "csv", "xml"]],
         return_empty_json: bool,
         return_bytes: bool,
     ):
@@ -123,7 +137,7 @@ class _RCRequest:
         if return_empty_json:
             return [{}]
 
-        if req_format == "json":
+        if format_type == "json":
             return response.json()
 
         # don't do anything to csv/xml strings
@@ -177,7 +191,7 @@ class _RCRequest:
 
         content = self.get_content(
             response,
-            req_format=self.fmt,
+            format_type=self.fmt,
             return_empty_json=self.config.return_empty_json,
             return_bytes=self.config.return_bytes,
         )
@@ -190,8 +204,9 @@ class _RCRequest:
                 bad_request = False
         elif self.fmt == "csv":
             bad_request = content.lower().startswith("error:")
-        elif self.fmt == "xml":
-            bad_request = "<error>" in content.lower()
+        # xml is the default returnFormat for error messages
+        elif self.fmt == "xml" or self.fmt is None:
+            bad_request = "<error>" in str(content).lower()
 
         if bad_request:
             raise RedcapError(content)

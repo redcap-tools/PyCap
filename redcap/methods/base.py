@@ -126,13 +126,13 @@ class Base:
     @staticmethod
     def _read_csv(buf: StringIO, **df_kwargs) -> "pd.DataFrame":
         """Wrapper around pandas read_csv that handles EmptyDataError"""
-        from pandas import DataFrame, read_csv
+        import pandas as pd
         from pandas.errors import EmptyDataError
 
         try:
-            dataframe = read_csv(buf, **df_kwargs)
+            dataframe = pd.read_csv(buf, **df_kwargs)
         except EmptyDataError:
-            dataframe = DataFrame()
+            dataframe = pd.DataFrame()
 
         return dataframe
 
@@ -142,7 +142,7 @@ class Base:
         self,
         key: str,
         field_name: None = None,
-    ) -> List[str]:
+    ) -> list:
         ...
 
     @overload
@@ -151,9 +151,8 @@ class Base:
 
     def _filter_metadata(self, key: str, field_name: Optional[str] = None):
         """Safely filter project metadata based off requested column and field_name"""
-        res: Union[str, List[str]] = ""
-        try:
-            if field_name:
+        if field_name:
+            try:
                 res = str(
                     [
                         row[key]
@@ -161,141 +160,102 @@ class Base:
                         if row["field_name"] == field_name
                     ][0]
                 )
-            else:
-                res = [row[key] for row in self.metadata]
-        except IndexError:
-            print(f"{ key } not in metadata field:{ field_name }")  # pragma: no cover
+            except IndexError:  # pragma: no cover
+                print(f"{ key } not in metadata field: { field_name }")
+                return ""
+        else:
+            res = [row[key] for row in self.metadata]
 
         return res
 
-    def _kwargs(self) -> Dict[str, Any]:
-        """Private method to build a dict for sending to RCRequest
-
-        Other default kwargs to the http library should go here"""
-        return {"verify": self.verify_ssl}
-
-    @overload
-    def _call_api(
+    def _initialize_payload(
         self,
-        payload: Dict[str, Any],
-        req_type: Literal["exp_file"],
-        return_headers: Literal[True],
-        file: Optional[FileUpload] = None,
-    ) -> Tuple[bytes, dict]:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        req_type: Literal[
-            "exp_field_names",
-            "exp_fem",
-            "metadata",
-            "exp_proj",
-            "exp_record",
-            "exp_report",
-            "exp_survey_participant_list",
-            "exp_user",
-        ],
-        return_headers: Literal[False],
-        file: Optional[FileUpload] = None,
-    ) -> Union[List[Dict], str, ErrorResponse]:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        req_type: Literal["imp_file", "del_file"],
-        return_headers: Literal[False],
-        file: Optional[FileUpload] = None,
-    ) -> Union[dict, Literal[""], ErrorResponse]:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        req_type: Literal["imp_record"],
-        return_headers: Literal[False],
-        file: Optional[FileUpload] = None,
-    ) -> Union[dict, str, ErrorResponse]:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        req_type: str,
-        return_headers: bool,
-        file: Optional[FileUpload] = None,
-    ) -> Union[Tuple[Union[List[Dict], str], dict], Union[List[Dict], str]]:
-        ...
-
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        req_type: str,
-        return_headers: bool = False,
-        file: Optional[FileUpload] = None,
-    ):
-        rcr = RCRequest(self.url, payload, req_type)
-        return rcr.execute(
-            verify_ssl=self.verify_ssl, return_headers=return_headers, file=file
-        )
-
-    # pylint: disable=redefined-builtin
-    def _basepl(
-        self, content: str, rec_type: str = "flat", format: str = "json"
+        content: str,
+        format_type: Optional[Literal["json", "csv", "xml", "df"]] = None,
+        return_format_type: Optional[Literal["json", "csv", "xml"]] = None,
+        record_type: Literal["flat", "eav"] = "flat",
     ) -> Dict[str, str]:
-        """Return a dictionary which can be used as is or added to for
-        payloads"""
-        payload_dict = {"token": self.token, "content": content, "format": format}
+        """Create the default dictionary for payloads
+
+        This can be used as is for simple API requests or added to
+        for more complex API requests.
+
+        Args:
+            content:
+                The 'content' parameter documented in the REDCap API.
+                e.g. 'record', 'metadata', 'file', 'event', etc.
+            format_type: Format of the data returned for export methods
+            return_format_type: Format of the data returned for import/delete methods
+            record_type: The type of records being exported/imported
+        """
+        payload = {"token": self.token, "content": content}
+
+        if format_type:
+            if format_type == "df":
+                payload["format"] = "csv"
+            else:
+                payload["format"] = format_type
+
+        if return_format_type:
+            payload["returnFormat"] = return_format_type
 
         if content == "record":
-            payload_dict["type"] = rec_type
-        return payload_dict
+            payload["type"] = record_type
 
-    # pylint: enable=redefined-builtin
+        return payload
 
-    def _initialize_metadata(self) -> List[Dict[str, str]]:
-        """Return the project's metadata structure"""
-        payload = self._basepl("metadata")
+    @overload
+    def _initialize_import_payload(
+        self,
+        to_import: List[dict],
+        import_format: Literal["json"],
+        return_format_type: Literal["json", "csv", "xml"],
+        data_type: Literal["record", "metadata"],
+    ) -> Dict[str, Any]:
+        ...
 
-        try:
-            return self._call_api(payload, "metadata")
-        except RequestException as request_fail:
-            raise RedcapError(
-                "Exporting metadata failed. Check your URL and token."
-            ) from request_fail
+    @overload
+    def _initialize_import_payload(
+        self,
+        to_import: str,
+        import_format: Literal["csv", "xml"],
+        return_format_type: Literal["json", "csv", "xml"],
+        data_type: Literal["record", "metadata"],
+    ) -> Dict[str, Any]:
+        ...
 
-    # pylint: disable=redefined-builtin
+    @overload
+    def _initialize_import_payload(
+        self,
+        to_import: "pd.DataFrame",
+        import_format: Literal["df"],
+        return_format_type: Literal["json", "csv", "xml"],
+        data_type: Literal["record", "metadata"],
+    ) -> Dict[str, Any]:
+        ...
+
     def _initialize_import_payload(
         self,
         to_import: Union[List[dict], str, "pd.DataFrame"],
-        format: str,
-        data_type: str,
-    ) -> Dict[str, Any]:
+        import_format: Literal["json", "csv", "xml", "df"],
+        return_format_type: Literal["json", "csv", "xml"],
+        data_type: Literal["record", "metadata"],
+    ):
         """Standardize the data to be imported and add it to the payload
 
         Args:
-        to_import: array of dicts, csv/xml string, ``pandas.DataFrame``
-            Note:
-                If you pass a csv or xml string, you should use the
-                `format` parameter appropriately.
-        format: ('json'),  'xml', 'csv'
-            Format of incoming data. By default, to_import will be json-encoded
-        data_type: 'record', 'metadata'
-            The kind of data that are imported
+            to_import: array of dicts, csv/xml string, ``pandas.DataFrame``
+            import_format: Format of incoming data.
+            data_type: The kind of data that are imported
 
         Returns:
             payload: The initialized payload dictionary and updated format
         """
 
-        payload = self._basepl(data_type)
-        # pylint: disable=comparison-with-callable
-        if format == "df":
+        payload = self._initialize_payload(
+            content=data_type, return_format_type=return_format_type
+        )
+        if import_format == "df":
             buf = StringIO()
             if data_type == "record":
                 if self.is_longitudinal:
@@ -307,15 +267,146 @@ class Base:
             to_import.to_csv(buf, **csv_kwargs)
             payload["data"] = buf.getvalue()
             buf.close()
-            format = "csv"
-        elif format == "json":
+            import_format = "csv"
+        elif import_format == "json":
             payload["data"] = json.dumps(to_import, separators=(",", ":"))
         else:
             # don't do anything to csv/xml
             payload["data"] = to_import
-        # pylint: enable=comparison-with-callable
 
-        payload["format"] = format
+        payload["format"] = import_format
         return payload
 
-    # pylint: enable=redefined-builtin
+    @staticmethod
+    def _lookup_return_type(
+        format_type: str,
+        request_type: Literal["export", "import", "delete"] = "export",
+        import_records_format: Optional[str] = None,
+    ) -> str:
+        """Look up a common return types based on format
+
+        Non-standard return types will need to be passed directly
+        to _call_api() via the return_type parameter.
+
+        Args:
+            format_type: The provided format for the API call
+            request_type:
+                The type of API request. Exports behave very differently
+                from imports/deletes
+            import_records_format:
+                Format options from the import_records method. We
+                need to use custom logic, because that method has
+                different possible return types compared to all other
+                methods
+        """
+        if format_type == "json":
+            if request_type == "export":
+                return_type = "json"
+            elif request_type in ["import", "delete"] and not import_records_format:
+                return_type = "int"
+            elif import_records_format in ["count", "auto_ids"]:
+                return_type = "count_dict"
+            elif import_records_format == "ids":
+                return_type = "ids_list"
+            elif import_records_format == "nothing":
+                return_type = "empty_json"
+        elif format_type in ["csv", "xml", "df"]:
+            return_type = "str"
+        else:
+            raise ValueError(f"Invalid option: { format_type= }")
+
+        return return_type
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal["file_map"],
+        file: FileUpload,
+    ) -> FileMap:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal["json"],
+        file: None = None,
+    ) -> Json:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal["empty_json"],
+        file: None = None,
+    ) -> EmptyJson:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal["count_dict"],
+        file: None = None,
+    ) -> Dict[str, int]:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal["ids_list"],
+        file: None = None,
+    ) -> List[str]:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal["int"],
+        file: None = None,
+    ) -> int:
+        ...
+
+    @overload
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal["str"],
+        file: None = None,
+    ) -> str:
+        ...
+
+    def _call_api(
+        self,
+        payload: Dict[str, Any],
+        return_type: Literal[
+            "file_map", "json", "empty_json", "count_dict", "ids_list", "str", "int"
+        ],
+        file: Optional[FileUpload] = None,
+    ):
+        """Make a POST Requst to the REDCap API
+
+        Args:
+            payload: Payload to send in POST request
+            return_type:
+                The data type of the return value. Used
+                primarily for static typing, and developer
+                understanding of the REDCap API
+            file:
+                File data to send with file-related API requests
+        """
+        config = _ContentConfig(
+            return_empty_json=return_type == "empty_json",
+            return_bytes=return_type == "file_map",
+        )
+
+        return_headers = return_type == "file_map"
+
+        rcr = _RCRequest(url=self.url, payload=payload, config=config)
+        return rcr.execute(
+            verify_ssl=self.verify_ssl, return_headers=return_headers, file=file
+        )
