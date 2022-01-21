@@ -26,13 +26,15 @@ def test_export_records(simple_project):
 
 @pytest.mark.integration
 def test_export_records_df(simple_project):
-    proj_records_export = simple_project.export_records(format="df")
+    proj_records_export = simple_project.export_records(format_type="df")
     assert len(proj_records_export) == 3
 
 
 @pytest.mark.integration
 def test_export_records_df_eav(simple_project):
-    proj_records_export = simple_project.export_records(format="df", type="eav")
+    proj_records_export = simple_project.export_records(
+        format_type="df", record_type="eav"
+    )
     assert len(proj_records_export) == 34
 
 
@@ -43,6 +45,12 @@ def test_import_and_delete_records(simple_project):
 
     res = simple_project.import_records(test_records)
     assert res["count"] == len(test_records)
+
+    res = simple_project.import_records(test_records, return_content="ids")
+    assert len(res) == len(test_records)
+
+    res = simple_project.import_records(test_records, return_content="nothing")
+    assert res == [{}]
 
     res = simple_project.delete_records(new_record_ids)
     assert res == 3
@@ -77,21 +85,21 @@ def test_export_one_field_name(simple_project):
 
 @pytest.mark.integration
 def test_export_field_names_df(simple_project):
-    field_names = simple_project.export_field_names(format="df")
+    field_names = simple_project.export_field_names(format_type="df")
     assert all(field_names.columns == ["choice_value", "export_field_name"])
 
 
 @pytest.mark.integration
 @pytest.mark.parametrize("output_format", [("json")])
 def test_export_and_import_metadata(simple_project, output_format):
-    original_metadata = simple_project.export_metadata(format=output_format)
+    original_metadata = simple_project.export_metadata(format_type=output_format)
     assert len(original_metadata) == 15
 
     reduced_metadata = original_metadata[:14]
-    res = simple_project.import_metadata(reduced_metadata, format=output_format)
+    res = simple_project.import_metadata(reduced_metadata, import_format=output_format)
     assert res == len(reduced_metadata)
-    # then "restore" it (though won't have data for the previouslu removed fields)
-    res = simple_project.import_metadata(original_metadata, format=output_format)
+    # then "restore" it (though won't have data for the previously removed fields)
+    res = simple_project.import_metadata(original_metadata, import_format=output_format)
     assert res == len(original_metadata)
 
 

@@ -41,19 +41,6 @@ def test_init(long_project):
     assert isinstance(long_project, Project)
 
 
-def test_user_is_warned_version_not_found(long_project, recwarn):
-    version = long_project.export_version()
-    assert version is None
-
-    assert len(recwarn) == 1
-    warning = recwarn.pop()
-    assert warning.category == UserWarning
-    assert (
-        str(warning.message).lower()
-        == "version information not available for this redcap instance"
-    )
-
-
 def test_file_export(long_project):
     record, field = "1", "file"
     content, _ = long_project.export_file(record, field, event="raw", repeat_instance=1)
@@ -64,15 +51,17 @@ def test_file_import(long_project):
     this_dir, _ = os.path.split(__file__)
     upload_fname = os.path.join(this_dir, "data.txt")
     with open(upload_fname, "r", encoding="UTF-8") as fobj:
-        long_project.import_file(
+        content = long_project.import_file(
             "1", "file", upload_fname, fobj, event="raw", repeat_instance=1
         )
+
+    assert content == [{}]
 
 
 def test_file_delete(long_project):
     record, field = "1", "file"
-    response = long_project.delete_file(record, field, event="raw")
-    assert response == {}
+    content = long_project.delete_file(record, field, event="raw")
+    assert content == [{}]
 
 
 def test_export_survey_participants_list(long_project):
@@ -88,16 +77,13 @@ def test_metadata_import_handles_api_error(long_project):
         long_project.import_metadata(metadata)
 
 
-def test_long_attrs_are_populated(long_project):
-    assert long_project.events
-
-
 def test_is_longitudinal(long_project):
     assert long_project.is_longitudinal
 
 
 def test_export_with_events(long_project):
-    unique_event = long_project.events[0]["unique_event_name"]
+    events = long_project.export_instrument_event_mappings()
+    unique_event = events[0]["unique_event_name"]
     data = long_project.export_records(events=[unique_event])
 
     assert isinstance(data, list)
@@ -107,7 +93,7 @@ def test_export_with_events(long_project):
 
 
 def test_fem_export(long_project):
-    fem = long_project.export_instrument_event_mappings(format="json")
+    fem = long_project.export_instrument_event_mappings(format_type="json")
 
     assert isinstance(fem, list)
 
@@ -117,24 +103,24 @@ def test_fem_export(long_project):
 
 def test_fem_export_stricly_enforces_format(long_project):
     with pytest.raises(ValueError):
-        long_project.export_instrument_event_mappings(format="unsupported")
+        long_project.export_instrument_event_mappings(format_type="unsupported")
 
 
 def test_export_to_df_gives_multi_index(long_project):
-    long_dataframe = long_project.export_records(format="df", event_name="raw")
+    long_dataframe = long_project.export_records(format_type="df", event_name="raw")
 
     assert hasattr(long_dataframe.index, "names")
 
 
 def test_import_dataframe(long_project):
-    long_dataframe = long_project.export_records(event_name="raw", format="df")
-    response = long_project.import_records(long_dataframe, format="df")
+    long_dataframe = long_project.export_records(event_name="raw", format_type="df")
+    response = long_project.import_records(long_dataframe, import_format="df")
 
     assert "count" in response
     assert "error" not in response
 
 
 def test_reports_df_export(long_project):
-    report = long_project.export_report(report_id="1", format="df")
+    report = long_project.export_report(report_id="1", format_type="df")
 
     assert isinstance(report, pd.DataFrame)
