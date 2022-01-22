@@ -1,6 +1,6 @@
 """REDCap API methods for Project field names"""
 from io import StringIO
-from typing import TYPE_CHECKING, Dict, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Optional, overload
 
 from typing_extensions import Literal
 
@@ -18,7 +18,7 @@ class FieldNames(Base):
         self,
         format_type: Literal["json"],
         field: Optional[str],
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> Json:
         ...
 
@@ -27,7 +27,7 @@ class FieldNames(Base):
         self,
         format_type: Literal["csv", "xml"],
         field: Optional[str],
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> str:
         ...
 
@@ -36,7 +36,7 @@ class FieldNames(Base):
         self,
         format_type: Literal["df"],
         field: Optional[str],
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> "pd.DataFrame":
         ...
 
@@ -44,7 +44,7 @@ class FieldNames(Base):
         self,
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         field: Optional[str] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ):
         # pylint: disable=line-too-long
         """

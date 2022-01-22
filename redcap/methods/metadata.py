@@ -20,7 +20,7 @@ class Metadata(Base):
         format_type: Literal["json"],
         fields: Optional[List[str]] = None,
         forms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> Json:
         ...
 
@@ -30,7 +30,7 @@ class Metadata(Base):
         format_type: Literal["csv", "xml"],
         fields: Optional[List[str]] = None,
         forms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> str:
         ...
 
@@ -40,7 +40,7 @@ class Metadata(Base):
         format_type: Literal["df"],
         fields: Optional[List[str]] = None,
         forms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> "pd.DataFrame":
         ...
 
@@ -49,7 +49,7 @@ class Metadata(Base):
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         fields: Optional[List[str]] = None,
         forms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """
         Export the project's metadata
