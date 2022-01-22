@@ -394,6 +394,28 @@ class Base:
         df_kwargs: Optional[Dict[str, Any]] = None,
         record_type: Literal["flat", "eav"] = "flat",
     ):
+        """Handle returning data for export methods
+
+        This mostly just stores the logic for the default
+        `df_kwargs` value for export methods, when returning
+        a dataframe.
+
+        Args:
+            response: Output from _call_api
+            content:
+                The 'content' parameter for the API call.
+                Same one used in _initialize_payload
+            format_type:
+                The format of the response.
+                Same one used in _initialize_payload
+            df_kwargs:
+                Passed to `pandas.read_csv` to control construction of
+                returned DataFrame. Different defaults exist for
+                different content
+            record_type:
+                Database output structure type.
+                Used only for records content
+        """
         if format_type in ("json", "csv", "xml"):
             return response
 
