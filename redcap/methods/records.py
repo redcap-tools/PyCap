@@ -1,6 +1,6 @@
 """REDCap API methods for Project records"""
 from datetime import datetime
-from io import StringIO
+
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, overload
 
 from typing_extensions import Literal
@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 class Records(Base):
     """Responsible for all API methods under 'Records' in the API Playground"""
 
-    # pylint: disable=too-many-branches
     # pylint: disable=too-many-locals
     @overload
     def export_records(
@@ -237,24 +236,14 @@ class Records(Base):
         return_type = self._lookup_return_type(format_type)
         response = self._call_api(payload, return_type)
 
-        if format_type in ("json", "csv", "xml"):
-            return response
+        return self._return_data(
+            response=response,
+            content="record",
+            format_type=format_type,
+            df_kwargs=df_kwargs,
+            record_type=record_type,
+        )
 
-        if not df_kwargs:
-            if record_type == "eav":
-                df_kwargs = {}
-            else:
-                if self.is_longitudinal:
-                    df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
-                else:
-                    df_kwargs = {"index_col": self.def_field}
-        buf = StringIO(response)
-        dataframe = self._read_csv(buf, **df_kwargs)
-        buf.close()
-
-        return dataframe
-
-    # pylint: enable=too-many-branches
     # pylint: enable=too-many-locals
 
     @overload

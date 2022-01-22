@@ -1,6 +1,4 @@
 """REDCap API methods for Project metadata"""
-from io import StringIO
-
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, overload
 
 from typing_extensions import Literal
@@ -88,12 +86,13 @@ class Metadata(Base):
 
         return_type = self._lookup_return_type(format_type)
         response = self._call_api(payload, return_type)
-        if format_type in ("json", "csv", "xml"):
-            return response
 
-        if not df_kwargs:
-            df_kwargs = {"index_col": "field_name"}
-        return self._read_csv(StringIO(response), **df_kwargs)
+        return self._return_data(
+            response=response,
+            content="metadata",
+            format_type=format_type,
+            df_kwargs=df_kwargs,
+        )
 
     @overload
     def import_metadata(
