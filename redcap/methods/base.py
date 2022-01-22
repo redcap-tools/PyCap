@@ -322,7 +322,14 @@ class Base:
         self,
         response: Json,
         content: Literal[
-            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+            "exportFieldNames",
+            "formEventMapping",
+            "metadata",
+            "participantList",
+            "project",
+            "record",
+            "report",
+            "user",
         ],
         format_type: Literal["json"],
         df_kwargs: None,
@@ -335,7 +342,14 @@ class Base:
         self,
         response: str,
         content: Literal[
-            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+            "exportFieldNames",
+            "formEventMapping",
+            "metadata",
+            "participantList",
+            "project",
+            "record",
+            "report",
+            "user",
         ],
         format_type: Literal["csv", "xml"],
         df_kwargs: None,
@@ -348,7 +362,14 @@ class Base:
         self,
         response: str,
         content: Literal[
-            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+            "exportFieldNames",
+            "formEventMapping",
+            "metadata",
+            "participantList",
+            "project",
+            "record",
+            "report",
+            "user",
         ],
         format_type: Literal["df"],
         df_kwargs: Optional[Dict[str, Any]],
@@ -360,7 +381,14 @@ class Base:
         self,
         response: Union[Json, str],
         content: Literal[
-            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+            "exportFieldNames",
+            "formEventMapping",
+            "metadata",
+            "participantList",
+            "project",
+            "record",
+            "report",
+            "user",
         ],
         format_type: Literal["json", "csv", "xml", "df"],
         df_kwargs: Optional[Dict[str, Any]] = None,
@@ -370,7 +398,10 @@ class Base:
             return response
 
         if not df_kwargs:
-            if content == "formEventMapping" or record_type == "eav":
+            if (
+                content in ["formEventMapping", "participantList", "project", "user"]
+                or record_type == "eav"
+            ):
                 df_kwargs = {}
             elif content == "exportFieldNames":
                 df_kwargs = {"index_col": "original_field_name"}
