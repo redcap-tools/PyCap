@@ -137,6 +137,46 @@ class Base:
         return dataframe
 
     # pylint: enable=import-outside-toplevel
+    @staticmethod
+    def _lookup_return_type(
+        format_type: str,
+        request_type: Literal["export", "import", "delete"] = "export",
+        import_records_format: Optional[str] = None,
+    ) -> str:
+        """Look up a common return types based on format
+
+        Non-standard return types will need to be passed directly
+        to _call_api() via the return_type parameter.
+
+        Args:
+            format_type: The provided format for the API call
+            request_type:
+                The type of API request. Exports behave very differently
+                from imports/deletes
+            import_records_format:
+                Format options from the import_records method. We
+                need to use custom logic, because that method has
+                different possible return types compared to all other
+                methods
+        """
+        if format_type == "json":
+            if request_type == "export":
+                return_type = "json"
+            elif request_type in ["import", "delete"] and not import_records_format:
+                return_type = "int"
+            elif import_records_format in ["count", "auto_ids"]:
+                return_type = "count_dict"
+            elif import_records_format == "ids":
+                return_type = "ids_list"
+            elif import_records_format == "nothing":
+                return_type = "empty_json"
+        elif format_type in ["csv", "xml", "df"]:
+            return_type = "str"
+        else:
+            raise ValueError(f"Invalid format_type: { format_type }")
+
+        return return_type
+
     @overload
     def _filter_metadata(
         self,
@@ -276,46 +316,6 @@ class Base:
 
         payload["format"] = import_format
         return payload
-
-    @staticmethod
-    def _lookup_return_type(
-        format_type: str,
-        request_type: Literal["export", "import", "delete"] = "export",
-        import_records_format: Optional[str] = None,
-    ) -> str:
-        """Look up a common return types based on format
-
-        Non-standard return types will need to be passed directly
-        to _call_api() via the return_type parameter.
-
-        Args:
-            format_type: The provided format for the API call
-            request_type:
-                The type of API request. Exports behave very differently
-                from imports/deletes
-            import_records_format:
-                Format options from the import_records method. We
-                need to use custom logic, because that method has
-                different possible return types compared to all other
-                methods
-        """
-        if format_type == "json":
-            if request_type == "export":
-                return_type = "json"
-            elif request_type in ["import", "delete"] and not import_records_format:
-                return_type = "int"
-            elif import_records_format in ["count", "auto_ids"]:
-                return_type = "count_dict"
-            elif import_records_format == "ids":
-                return_type = "ids_list"
-            elif import_records_format == "nothing":
-                return_type = "empty_json"
-        elif format_type in ["csv", "xml", "df"]:
-            return_type = "str"
-        else:
-            raise ValueError(f"Invalid format_type: { format_type }")
-
-        return return_type
 
     @overload
     def _call_api(
