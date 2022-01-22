@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redcap="https://projectredcap.org" xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 schema/odm/ODM1-3-1.xsd" ODMVersion="1.3.1" FileOID="000-00-0000" FileType="Snapshot" Description="PyCap Test Longitudinal Project" AsOfDateTime="2021-12-09T13:32:20" CreationDateTime="2021-12-09T13:32:20" SourceSystem="REDCap" SourceSystemVersion="12.0.1">
-<Study OID="Project.PyCapTestLongitudinalProject">
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redcap="https://projectredcap.org" xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 schema/odm/ODM1-3-1.xsd" ODMVersion="1.3.1" FileOID="000-00-0000" FileType="Snapshot" Description="PyCap test_long_project: 01-19 18:35:09" AsOfDateTime="2022-01-22T14:14:46" CreationDateTime="2022-01-22T14:14:46" SourceSystem="REDCap" SourceSystemVersion="12.1.0">
+<Study OID="Project.PyCapTestlongproject0119183509">
 <GlobalVariables>
-	<StudyName>PyCap Test Longitudinal Project</StudyName>
-	<StudyDescription>This file contains the metadata, events, and data for REDCap project "PyCap Test Longitudinal Project".</StudyDescription>
-	<ProtocolName>PyCap Test Longitudinal Project</ProtocolName>
+	<StudyName>PyCap test_long_project: 01-19 18:35:09</StudyName>
+	<StudyDescription>This file contains the metadata, events, and data for REDCap project "PyCap test_long_project: 01-19 18:35:09".</StudyDescription>
+	<ProtocolName>PyCap test_long_project: 01-19 18:35:09</ProtocolName>
 	<redcap:RecordAutonumberingEnabled>0</redcap:RecordAutonumberingEnabled>
 	<redcap:CustomRecordLabel></redcap:CustomRecordLabel>
 	<redcap:SecondaryUniqueField></redcap:SecondaryUniqueField>
 	<redcap:SchedulingEnabled>0</redcap:SchedulingEnabled>
-	<redcap:SurveysEnabled>0</redcap:SurveysEnabled>
+	<redcap:SurveysEnabled>1</redcap:SurveysEnabled>
 	<redcap:SurveyInvitationEmailField></redcap:SurveyInvitationEmailField>
 	<redcap:Purpose>0</redcap:Purpose>
 	<redcap:PurposeOther></redcap:PurposeOther>
@@ -27,11 +27,16 @@
 	<redcap:ProtectedEmailModeCustomText></redcap:ProtectedEmailModeCustomText>
 	<redcap:ProtectedEmailModeTrigger>ALL</redcap:ProtectedEmailModeTrigger>
 	<redcap:ProtectedEmailModeLogo></redcap:ProtectedEmailModeLogo>
+	<redcap:SurveysGroup>
+		<redcap:Surveys form_name="contact_info" title="Contact Info" instructions="&lt;p&gt;&lt;strong&gt;Please complete the survey below.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Thank you!&lt;/p&gt;" offline_instructions="" acknowledgement="&lt;p&gt;&lt;strong&gt;Thank you for taking the survey.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Have a nice day!&lt;/p&gt;" stop_action_acknowledgement="" stop_action_delete_response="0" question_by_section="0" display_page_number="0" question_auto_numbering="1" survey_enabled="1" save_and_return="0" save_and_return_code_bypass="0" logo="" hide_title="0" view_results="0" min_responses_view_results="10" check_diversity_view_results="0" end_survey_redirect_url="" survey_expiration="" promis_skip_question="0" survey_auth_enabled_single="0" edit_completed_response="0" hide_back_button="0" show_required_field_text="1" confirmation_email_subject="" confirmation_email_content="" confirmation_email_from="" confirmation_email_from_display="" confirmation_email_attach_pdf="0" confirmation_email_attachment="" text_to_speech="0" text_to_speech_language="en" end_survey_redirect_next_survey="0" end_survey_redirect_next_survey_logic="" theme="" text_size="1" font_family="16" theme_text_buttons="" theme_bg_page="" theme_text_title="" theme_bg_title="" theme_text_sectionheader="" theme_bg_sectionheader="" theme_text_question="" theme_bg_question="" enhanced_choices="0" repeat_survey_enabled="0" repeat_survey_btn_text="" repeat_survey_btn_location="HIDDEN" response_limit="" response_limit_include_partials="1" response_limit_custom_text="&lt;p&gt;Thank you for your interest; however, the survey is closed because the maximum number of responses has been reached.&lt;/p&gt;" survey_time_limit_days="" survey_time_limit_hours="" survey_time_limit_minutes="" email_participant_field="" end_of_survey_pdf_download="0" pdf_save_to_field="" pdf_save_to_event_id="" pdf_auto_archive="0" pdf_econsent_version="" pdf_econsent_type="" pdf_econsent_firstname_field="" pdf_econsent_firstname_event_id="" pdf_econsent_lastname_field="" pdf_econsent_lastname_event_id="" pdf_econsent_dob_field="" pdf_econsent_dob_event_id="" pdf_econsent_allow_edit="1" pdf_econsent_signature_field1="" pdf_econsent_signature_field2="" pdf_econsent_signature_field3="" pdf_econsent_signature_field4="" pdf_econsent_signature_field5=""/>
+	</redcap:SurveysGroup>
 	<redcap:MultilanguageSettingsGroup>
-		<redcap:MultilanguageSettings settings="YToxNDp7czo3OiJ2ZXJzaW9uIjtzOjY6IjEyLjAuMSI7czo1OiJsYW5ncyI7YTowOnt9czo5OiJwcm9qZWN0SWQiO3M6NToiMzQ5MTUiO3M6MTU6ImRlc2lnbmF0ZWRGaWVsZCI7czowOiIiO3M6NToiZGVidWciO2I6MDtzOjc6InJlZkxhbmciO3M6MDoiIjtzOjEyOiJmYWxsYmFja0xhbmciO3M6MDoiIjtzOjg6ImRpc2FibGVkIjtiOjA7czoyNToiaGlnaGxpZ2h0TWlzc2luZ0RhdGFlbnRyeSI7YjowO3M6MjI6ImhpZ2hsaWdodE1pc3NpbmdTdXJ2ZXkiO2I6MDtzOjEyOiJhbGVydFNvdXJjZXMiO2E6MDp7fXM6MTQ6ImV4Y2x1ZGVkQWxlcnRzIjthOjA6e31zOjE0OiJleGNsdWRlZEZpZWxkcyI7YTowOnt9czoxNjoiZXhjbHVkZWRTZXR0aW5ncyI7YTowOnt9fQ=="/>
+		<redcap:MultilanguageSettings settings="YToxNDp7czo3OiJ2ZXJzaW9uIjtzOjY6IjEyLjEuMCI7czo1OiJsYW5ncyI7YTowOnt9czo5OiJwcm9qZWN0SWQiO3M6NToiMzYxNTkiO3M6MTU6ImRlc2lnbmF0ZWRGaWVsZCI7czowOiIiO3M6NToiZGVidWciO2I6MDtzOjc6InJlZkxhbmciO3M6MDoiIjtzOjEyOiJmYWxsYmFja0xhbmciO3M6MDoiIjtzOjg6ImRpc2FibGVkIjtiOjA7czoyNToiaGlnaGxpZ2h0TWlzc2luZ0RhdGFlbnRyeSI7YjowO3M6MjI6ImhpZ2hsaWdodE1pc3NpbmdTdXJ2ZXkiO2I6MDtzOjEyOiJhbGVydFNvdXJjZXMiO2E6MDp7fXM6MTQ6ImV4Y2x1ZGVkQWxlcnRzIjthOjA6e31zOjE0OiJleGNsdWRlZEZpZWxkcyI7YTowOnt9czoxNjoiZXhjbHVkZWRTZXR0aW5ncyI7YTowOnt9fQ=="/>
 	</redcap:MultilanguageSettingsGroup>
 </GlobalVariables>
-<MetaDataVersion OID="Metadata.PyCapTestLongitudinalProject_2021-12-09_1332" Name="PyCap Test Longitudinal Project" redcap:RecordIdField="study_id">
+<MetaDataVersion OID="Metadata.PyCapTestlongproject0119183509_2022-01-22_1414" Name="PyCap test_long_project: 01-19 18:35:09" redcap:RecordIdField="study_id">
 	<Protocol>
 		<StudyEventRef StudyEventOID="Event.enrollment_arm_1" OrderNumber="1" Mandatory="No"/>
 		<StudyEventRef StudyEventOID="Event.dose_1_arm_1" OrderNumber="2" Mandatory="No"/>
@@ -140,7 +145,7 @@
 		<ItemGroupRef ItemGroupOID="demographics.demographics_complete" Mandatory="No"/>
 	</FormDef>
 	<FormDef OID="Form.contact_info" Name="Contact Info" Repeating="No" redcap:FormName="contact_info">
-		<ItemGroupRef ItemGroupOID="contact_info.dialysis_unit_name" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="contact_info.contact_info_timestamp" Mandatory="No"/>
 		<ItemGroupRef ItemGroupOID="contact_info.contact_info_complete" Mandatory="No"/>
 	</FormDef>
 	<FormDef OID="Form.baseline_data" Name="Baseline Data" Repeating="No" redcap:FormName="baseline_data">
@@ -176,6 +181,7 @@
 	</FormDef>
 	<ItemGroupDef OID="demographics.study_id" Name="Demographics" Repeating="No">
 		<ItemRef ItemOID="study_id" Mandatory="No" redcap:Variable="study_id"/>
+		<ItemRef ItemOID="redcap_survey_identifier" Mandatory="No" redcap:Variable="redcap_survey_identifier"/>
 	</ItemGroupDef>
 	<ItemGroupDef OID="demographics.date_enrolled" Name="Consent Information" Repeating="No">
 		<ItemRef ItemOID="date_enrolled" Mandatory="No" redcap:Variable="date_enrolled"/>
@@ -242,7 +248,8 @@
 	<ItemGroupDef OID="demographics.demographics_complete" Name="Form Status" Repeating="No">
 		<ItemRef ItemOID="demographics_complete" Mandatory="No" redcap:Variable="demographics_complete"/>
 	</ItemGroupDef>
-	<ItemGroupDef OID="contact_info.dialysis_unit_name" Name="Contact Info" Repeating="No">
+	<ItemGroupDef OID="contact_info.contact_info_timestamp" Name="Contact Info" Repeating="No">
+		<ItemRef ItemOID="contact_info_timestamp" Mandatory="No" redcap:Variable="contact_info_timestamp"/>
 		<ItemRef ItemOID="dialysis_unit_name" Mandatory="No" redcap:Variable="dialysis_unit_name"/>
 		<ItemRef ItemOID="dialysis_unit_phone" Mandatory="No" redcap:Variable="dialysis_unit_phone"/>
 		<ItemRef ItemOID="dialysis_schedule_days" Mandatory="No" redcap:Variable="dialysis_schedule_days"/>
@@ -362,6 +369,9 @@
 	<ItemDef OID="study_id" Name="study_id" DataType="text" Length="999" redcap:Variable="study_id" redcap:FieldType="text">
 		<Question><TranslatedText>Study ID</TranslatedText></Question>
 	</ItemDef>
+	<ItemDef OID="redcap_survey_identifier" Name="redcap_survey_identifier" DataType="text" Length="999" redcap:Variable="redcap_survey_identifier">
+		<Question><TranslatedText>Survey Identifier</TranslatedText></Question>
+	</ItemDef>
 	<ItemDef OID="date_enrolled" Name="date_enrolled" DataType="date" Length="999" redcap:Variable="date_enrolled" redcap:FieldType="text" redcap:TextValidationType="date_ymd" redcap:FieldNote="YYYY-MM-DD" redcap:SectionHeader="Consent Information">
 		<Question><TranslatedText>Date subject signed consent</TranslatedText></Question>
 	</ItemDef>
@@ -409,7 +419,7 @@
 		<Question><TranslatedText>How many times has the patient given birth?</TranslatedText></Question>
 		<RangeCheck Comparator="GE" SoftHard="Soft">
 			<CheckValue>0</CheckValue>
-			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (0 - no limit). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range (0 - no limit). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
 		</RangeCheck>
 	</ItemDef>
 	<ItemDef OID="gym___0" Name="gym___0" DataType="boolean" Length="1" redcap:Variable="gym" redcap:FieldType="checkbox" redcap:SectionHeader="Please provide the patient&#039;s weekly schedule for the activities below." redcap:MatrixGroupName="weekly_schedule">
@@ -519,22 +529,22 @@
 		<Question><TranslatedText>Height (cm)</TranslatedText></Question>
 		<RangeCheck Comparator="GE" SoftHard="Soft">
 			<CheckValue>130</CheckValue>
-			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (130 - 215). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range (130 - 215). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
 		</RangeCheck>
 		<RangeCheck Comparator="LE" SoftHard="Soft">
 			<CheckValue>215</CheckValue>
-			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (130 - 215). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range (130 - 215). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
 		</RangeCheck>
 	</ItemDef>
 	<ItemDef OID="weight" Name="weight" DataType="integer" Length="999" redcap:Variable="weight" redcap:FieldType="text" redcap:TextValidationType="int">
 		<Question><TranslatedText>Weight (kilograms)</TranslatedText></Question>
 		<RangeCheck Comparator="GE" SoftHard="Soft">
 			<CheckValue>35</CheckValue>
-			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (35 - 200). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range (35 - 200). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
 		</RangeCheck>
 		<RangeCheck Comparator="LE" SoftHard="Soft">
 			<CheckValue>200</CheckValue>
-			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range. (35 - 200). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
+			<ErrorMessage><TranslatedText>The value you provided is outside the suggested range (35 - 200). This value is admissible, but you may wish to double check it.</TranslatedText></ErrorMessage>
 		</RangeCheck>
 	</ItemDef>
 	<ItemDef OID="bmi" Name="bmi" DataType="float" Length="999" redcap:Variable="bmi" redcap:FieldType="calc" redcap:Calculation="round(([weight]*10000)/(([height])^(2)),1)">
@@ -546,6 +556,9 @@
 	<ItemDef OID="demographics_complete" Name="demographics_complete" DataType="text" Length="1" redcap:Variable="demographics_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
 		<Question><TranslatedText>Complete?</TranslatedText></Question>
 		<CodeListRef CodeListOID="demographics_complete.choices"/>
+	</ItemDef>
+	<ItemDef OID="contact_info_timestamp" Name="contact_info_timestamp" DataType="datetime" Length="999" redcap:Variable="contact_info_timestamp">
+		<Question><TranslatedText>Survey Timestamp</TranslatedText></Question>
 	</ItemDef>
 	<ItemDef OID="dialysis_unit_name" Name="dialysis_unit_name" DataType="text" Length="999" redcap:Variable="dialysis_unit_name" redcap:FieldType="text" redcap:TextValidationType="phone" redcap:FieldNote="Include Area Code">
 		<Question><TranslatedText>Emergency Contact Phone Number</TranslatedText></Question>
@@ -846,103 +859,103 @@
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Yes</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>No</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="gym___0.choices" Name="gym___0" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="gym___0.choices" Name="gym___0" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="gym___1.choices" Name="gym___1" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="gym___1.choices" Name="gym___1" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="gym___2.choices" Name="gym___2" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="gym___2.choices" Name="gym___2" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="gym___3.choices" Name="gym___3" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="gym___3.choices" Name="gym___3" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="gym___4.choices" Name="gym___4" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="gym___4.choices" Name="gym___4" DataType="boolean" redcap:Variable="gym" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="aerobics___0.choices" Name="aerobics___0" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="aerobics___0.choices" Name="aerobics___0" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="aerobics___1.choices" Name="aerobics___1" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="aerobics___1.choices" Name="aerobics___1" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="aerobics___2.choices" Name="aerobics___2" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="aerobics___2.choices" Name="aerobics___2" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="aerobics___3.choices" Name="aerobics___3" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="aerobics___3.choices" Name="aerobics___3" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="aerobics___4.choices" Name="aerobics___4" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="aerobics___4.choices" Name="aerobics___4" DataType="boolean" redcap:Variable="aerobics" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="eat___0.choices" Name="eat___0" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="eat___0.choices" Name="eat___0" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="eat___1.choices" Name="eat___1" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="eat___1.choices" Name="eat___1" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="eat___2.choices" Name="eat___2" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="eat___2.choices" Name="eat___2" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="eat___3.choices" Name="eat___3" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="eat___3.choices" Name="eat___3" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="eat___4.choices" Name="eat___4" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="eat___4.choices" Name="eat___4" DataType="boolean" redcap:Variable="eat" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="drink___0.choices" Name="drink___0" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="drink___0.choices" Name="drink___0" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="drink___1.choices" Name="drink___1" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="drink___1.choices" Name="drink___1" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="drink___2.choices" Name="drink___2" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="drink___2.choices" Name="drink___2" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="drink___3.choices" Name="drink___3" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="drink___3.choices" Name="drink___3" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="drink___4.choices" Name="drink___4" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday | 1, Tuesday | 2, Wednesday | 3, Thursday | 4, Friday">
+	<CodeList OID="drink___4.choices" Name="drink___4" DataType="boolean" redcap:Variable="drink" redcap:CheckboxChoices="0, Monday|1, Tuesday|2, Wednesday|3, Thursday|4, Friday">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="meds___1.choices" Name="meds___1" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro | 2, Celexa | 3, Prozac | 4, Paxil | 5, Zoloft">
+	<CodeList OID="meds___1.choices" Name="meds___1" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro|2, Celexa|3, Prozac|4, Paxil|5, Zoloft">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="meds___2.choices" Name="meds___2" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro | 2, Celexa | 3, Prozac | 4, Paxil | 5, Zoloft">
+	<CodeList OID="meds___2.choices" Name="meds___2" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro|2, Celexa|3, Prozac|4, Paxil|5, Zoloft">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="meds___3.choices" Name="meds___3" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro | 2, Celexa | 3, Prozac | 4, Paxil | 5, Zoloft">
+	<CodeList OID="meds___3.choices" Name="meds___3" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro|2, Celexa|3, Prozac|4, Paxil|5, Zoloft">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="meds___4.choices" Name="meds___4" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro | 2, Celexa | 3, Prozac | 4, Paxil | 5, Zoloft">
+	<CodeList OID="meds___4.choices" Name="meds___4" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro|2, Celexa|3, Prozac|4, Paxil|5, Zoloft">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
-	<CodeList OID="meds___5.choices" Name="meds___5" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro | 2, Celexa | 3, Prozac | 4, Paxil | 5, Zoloft">
+	<CodeList OID="meds___5.choices" Name="meds___5" DataType="boolean" redcap:Variable="meds" redcap:CheckboxChoices="1, Lexapro|2, Celexa|3, Prozac|4, Paxil|5, Zoloft">
 		<CodeListItem CodedValue="1"><Decode><TranslatedText>Checked</TranslatedText></Decode></CodeListItem>
 		<CodeListItem CodedValue="0"><Decode><TranslatedText>Unchecked</TranslatedText></Decode></CodeListItem>
 	</CodeList>
@@ -1145,7 +1158,7 @@
 	</CodeList>
 </MetaDataVersion>
 </Study>
-<ClinicalData StudyOID="Project.PyCapTestLongitudinalProject" MetaDataVersionOID="Metadata.PyCapTestLongitudinalProject_2021-12-09_1332">
+<ClinicalData StudyOID="Project.PyCapTestlongproject0119183509" MetaDataVersionOID="Metadata.PyCapTestlongproject0119183509_2022-01-22_1414">
 	<SubjectData SubjectKey="1" redcap:RecordIdField="study_id">
 		<StudyEventData StudyEventOID="Event.enrollment_arm_1" StudyEventRepeatKey="1" redcap:UniqueEventName="enrollment_arm_1">
 			<FormData FormOID="Form.demographics" FormRepeatKey="1">
