@@ -18,7 +18,7 @@ class Instruments(Base):
         self,
         format_type: Literal["json"],
         arms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
         ...
 
@@ -27,7 +27,7 @@ class Instruments(Base):
         self,
         format_type: Literal["csv", "xml"],
         arms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> str:
         ...
 
@@ -36,7 +36,7 @@ class Instruments(Base):
         self,
         format_type: Literal["df"],
         arms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> "pd.DataFrame":
         ...
 
@@ -44,7 +44,7 @@ class Instruments(Base):
         self,
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         arms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """
         Export the project's instrument to event mapping

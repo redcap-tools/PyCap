@@ -1,6 +1,6 @@
 """REDCap API methods for Project reports"""
 from io import StringIO
-from typing import TYPE_CHECKING, Dict, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Optional, overload
 
 from typing_extensions import Literal
 
@@ -23,7 +23,7 @@ class Reports(Base):
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
         csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> Json:
         ...
 
@@ -36,7 +36,7 @@ class Reports(Base):
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
         csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> str:
         ...
 
@@ -49,7 +49,7 @@ class Reports(Base):
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
         csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> "pd.DataFrame":
         ...
 
@@ -61,7 +61,7 @@ class Reports(Base):
         raw_or_label_headers: Literal["raw", "label"] = "raw",
         export_checkbox_labels: bool = False,
         csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
-        df_kwargs: Optional[Dict] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """
         Export a report of the Project
