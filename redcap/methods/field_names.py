@@ -1,5 +1,4 @@
 """REDCap API methods for Project field names"""
-from io import StringIO
 from typing import TYPE_CHECKING, Any, Dict, Optional, overload
 
 from typing_extensions import Literal
@@ -8,7 +7,6 @@ from redcap.methods.base import Base, Json
 
 if TYPE_CHECKING:
     import pandas as pd
-
 
 class FieldNames(Base):
     """Responsible for all API methods under 'Field Names' in the API Playground"""
@@ -83,8 +81,10 @@ class FieldNames(Base):
 
         return_type = self._lookup_return_type(format_type)
         response = self._call_api(payload, return_type)
-        if format_type in ("json", "csv", "xml"):
-            return response
-        if not df_kwargs:
-            df_kwargs = {"index_col": "original_field_name"}
-        return self._read_csv(StringIO(response), **df_kwargs)
+
+        return self._return_data(
+            response=response,
+            content="exportFieldNames",
+            format_type=format_type,
+            df_kwargs=df_kwargs,
+        )

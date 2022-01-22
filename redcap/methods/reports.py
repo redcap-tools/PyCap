@@ -1,5 +1,4 @@
 """REDCap API methods for Project reports"""
-from io import StringIO
 from typing import TYPE_CHECKING, Any, Dict, Optional, overload
 
 from typing_extensions import Literal
@@ -9,11 +8,9 @@ from redcap.methods.base import Base, Json
 if TYPE_CHECKING:
     import pandas as pd
 
-
 class Reports(Base):
     """Responsible for all API methods under 'Reports' in the API Playground"""
 
-    # pylint: disable=too-many-locals
     @overload
     def export_report(
         self,
@@ -127,18 +124,9 @@ class Reports(Base):
         return_type = self._lookup_return_type(format_type)
         response = self._call_api(payload, return_type)
 
-        if format_type in ("json", "csv", "xml"):
-            return response
-
-        if not df_kwargs:
-            if self.is_longitudinal:
-                df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
-            else:
-                df_kwargs = {"index_col": self.def_field}
-        buf = StringIO(response)
-        dataframe = self._read_csv(buf, **df_kwargs)
-        buf.close()
-
-        return dataframe
-
-    # pylint: enable=too-many-locals
+        return self._return_data(
+            response=response,
+            content="report",
+            format_type=format_type,
+            df_kwargs=df_kwargs,
+        )

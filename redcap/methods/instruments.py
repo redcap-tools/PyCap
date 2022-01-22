@@ -1,5 +1,4 @@
 """REDCap API methods for Project instruments"""
-from io import StringIO
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, overload
 
 from typing_extensions import Literal
@@ -76,9 +75,9 @@ class Instruments(Base):
         return_type = self._lookup_return_type(format_type)
         response = self._call_api(payload, return_type)
 
-        if format_type in ("json", "csv", "xml"):
-            return response
-        if not df_kwargs:
-            df_kwargs = {}
-
-        return self._read_csv(StringIO(response), **df_kwargs)
+        return self._return_data(
+            response=response,
+            content="formEventMapping",
+            format_type=format_type,
+            df_kwargs=df_kwargs,
+        )

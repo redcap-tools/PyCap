@@ -15,7 +15,9 @@ ignore=docs
 
 # we're going to support as many arguments as the API calls have
 disable=too-many-arguments,
-        # this is be removed after refactoring
+        # unfortunately this has to be disabled because of similar
+        # import statements across different methods (which are
+        # separated by different files by design)
         duplicate-code
 
 # make sure we're only disabling what we need to disable

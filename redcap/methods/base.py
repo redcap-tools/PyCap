@@ -318,6 +318,77 @@ class Base:
         return payload
 
     @overload
+    def _return_data(
+        self,
+        response: Json,
+        content: Literal[
+            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+        ],
+        format_type: Literal["json"],
+        df_kwargs: None,
+        record_type: Literal["flat", "eav"],
+    ) -> Json:
+        ...
+
+    @overload
+    def _return_data(
+        self,
+        response: str,
+        content: Literal[
+            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+        ],
+        format_type: Literal["csv", "xml"],
+        df_kwargs: None,
+        record_type: Literal["flat", "eav"],
+    ) -> str:
+        ...
+
+    @overload
+    def _return_data(
+        self,
+        response: str,
+        content: Literal[
+            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+        ],
+        format_type: Literal["df"],
+        df_kwargs: Optional[Dict[str, Any]],
+        record_type: Literal["flat", "eav"],
+    ) -> "pd.DataFrame":
+        ...
+
+    def _return_data(
+        self,
+        response: Union[Json, str],
+        content: Literal[
+            "exportFieldNames", "formEventMapping", "metadata", "record", "report"
+        ],
+        format_type: Literal["json", "csv", "xml", "df"],
+        df_kwargs: Optional[Dict[str, Any]] = None,
+        record_type: Literal["flat", "eav"] = "flat",
+    ):
+        if format_type in ("json", "csv", "xml"):
+            return response
+
+        if not df_kwargs:
+            if content == "formEventMapping" or record_type == "eav":
+                df_kwargs = {}
+            elif content == "exportFieldNames":
+                df_kwargs = {"index_col": "original_field_name"}
+            elif content == "metadata":
+                df_kwargs = {"index_col": "field_name"}
+            elif content in ["report", "record"]:
+                if self.is_longitudinal:
+                    df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
+                else:
+                    df_kwargs = {"index_col": self.def_field}
+
+        buf = StringIO(response)
+        dataframe = self._read_csv(buf, **df_kwargs)
+        buf.close()
+
+        return dataframe
+
+    @overload
     def _call_api(
         self,
         payload: Dict[str, Any],
