@@ -8,6 +8,7 @@ from redcap.methods.base import Base, Json
 if TYPE_CHECKING:
     import pandas as pd
 
+
 class Reports(Base):
     """Responsible for all API methods under 'Reports' in the API Playground"""
 
