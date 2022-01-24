@@ -67,7 +67,7 @@ class Users(Base):
             'data_export': 1, ...}]
         """
         payload = self._initialize_payload(content="user", format_type=format_type)
-        return_type = self._lookup_return_type(format_type)
+        return_type = self._lookup_return_type(format_type, request_type="export")
         response = self._call_api(payload, return_type)
 
         return self._return_data(

@@ -64,7 +64,7 @@ class ProjectInfo(Base):
         """
 
         payload = self._initialize_payload(content="project", format_type=format_type)
-        return_type = self._lookup_return_type(format_type)
+        return_type = self._lookup_return_type(format_type, request_type="export")
 
         response = self._call_api(payload, return_type)
 

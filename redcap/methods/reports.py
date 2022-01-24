@@ -122,7 +122,7 @@ class Reports(Base):
             if data:
                 payload[key] = data
 
-        return_type = self._lookup_return_type(format_type)
+        return_type = self._lookup_return_type(format_type, request_type="export")
         response = self._call_api(payload, return_type)
 
         return self._return_data(

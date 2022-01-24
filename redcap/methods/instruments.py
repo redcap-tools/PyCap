@@ -72,7 +72,7 @@ class Instruments(Base):
             for i, value in enumerate(arms):
                 payload[f"arms[{ i }]"] = value
 
-        return_type = self._lookup_return_type(format_type)
+        return_type = self._lookup_return_type(format_type, request_type="export")
         response = self._call_api(payload, return_type)
 
         return self._return_data(
