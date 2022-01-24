@@ -1,5 +1,5 @@
 """REDCap API methods for Project field names"""
-from typing import TYPE_CHECKING, Any, Dict, Optional, overload
+from typing import TYPE_CHECKING, Any, cast, Dict, Optional, overload
 
 from typing_extensions import Literal
 
@@ -80,7 +80,7 @@ class FieldNames(Base):
         if field:
             payload["field"] = field
 
-        return_type = self._lookup_return_type(format_type)
+        return_type = self._lookup_return_type(format_type, request_type="export")
         response = self._call_api(payload, return_type)
 
         return self._return_data(
