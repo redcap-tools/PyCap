@@ -18,7 +18,14 @@ from io import StringIO
 
 from typing_extensions import Literal
 
-from redcap.request import _ContentConfig, _RCRequest, RedcapError, FileUpload
+from redcap.request import (
+    _ContentConfig,
+    _RCRequest,
+    RedcapError,
+    FileUpload,
+    Json,
+    EmptyJson,
+)
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -28,8 +35,6 @@ if TYPE_CHECKING:
 
 # return_type type aliases
 FileMap = Tuple[bytes, dict]
-Json = List[Dict[str, Any]]
-EmptyJson = List[dict]
 
 
 class Base:
@@ -139,10 +144,12 @@ class Base:
     # pylint: enable=import-outside-toplevel
     @staticmethod
     def _lookup_return_type(
-        format_type: str,
-        request_type: Literal["export", "import", "delete"] = "export",
-        import_records_format: Optional[str] = None,
-    ) -> str:
+        format_type: Literal["json", "csv", "xml", "df"],
+        request_type: Literal["export", "import", "delete"],
+        import_records_format: Optional[
+            Literal["count", "ids", "auto_ids", "nothing"]
+        ] = None,
+    ) -> Literal["json", "str", "int", "count_dict", "ids_list", "empty_json"]:
         """Look up a common return types based on format
 
         Non-standard return types will need to be passed directly
@@ -159,23 +166,22 @@ class Base:
                 different possible return types compared to all other
                 methods
         """
+        if format_type in ["csv", "xml", "df"]:
+            return "str"
+
         if format_type == "json":
             if request_type == "export":
-                return_type = "json"
-            elif request_type in ["import", "delete"] and not import_records_format:
-                return_type = "int"
-            elif import_records_format in ["count", "auto_ids"]:
-                return_type = "count_dict"
-            elif import_records_format == "ids":
-                return_type = "ids_list"
-            elif import_records_format == "nothing":
-                return_type = "empty_json"
-        elif format_type in ["csv", "xml", "df"]:
-            return_type = "str"
-        else:
-            raise ValueError(f"Invalid format_type: { format_type }")
+                return "json"
+            if request_type in ["import", "delete"] and not import_records_format:
+                return "int"
+            if import_records_format in ["count", "auto_ids"]:
+                return "count_dict"
+            if import_records_format == "ids":
+                return "ids_list"
+            if import_records_format == "nothing":
+                return "empty_json"
 
-        return return_type
+        raise ValueError(f"Invalid format_type: { format_type }")
 
     @overload
     def _filter_metadata(
@@ -333,7 +339,7 @@ class Base:
         ],
         format_type: Literal["json"],
         df_kwargs: None,
-        record_type: Literal["flat", "eav"],
+        record_type: Literal["flat", "eav"] = "flat",
     ) -> Json:
         ...
 
@@ -353,7 +359,7 @@ class Base:
         ],
         format_type: Literal["csv", "xml"],
         df_kwargs: None,
-        record_type: Literal["flat", "eav"],
+        record_type: Literal["flat", "eav"] = "flat",
     ) -> str:
         ...
 
@@ -373,7 +379,7 @@ class Base:
         ],
         format_type: Literal["df"],
         df_kwargs: Optional[Dict[str, Any]],
-        record_type: Literal["flat", "eav"],
+        record_type: Literal["flat", "eav"] = "flat",
     ) -> "pd.DataFrame":
         ...
 
@@ -416,7 +422,7 @@ class Base:
                 Database output structure type.
                 Used only for records content
         """
-        if format_type in ("json", "csv", "xml"):
+        if format_type != "df":
             return response
 
         if not df_kwargs:
@@ -446,7 +452,7 @@ class Base:
         self,
         payload: Dict[str, Any],
         return_type: Literal["file_map"],
-        file: FileUpload,
+        file: None,
     ) -> FileMap:
         ...
 
@@ -464,7 +470,7 @@ class Base:
         self,
         payload: Dict[str, Any],
         return_type: Literal["empty_json"],
-        file: None = None,
+        file: FileUpload,
     ) -> EmptyJson:
         ...
 
@@ -511,7 +517,7 @@ class Base:
             "file_map", "json", "empty_json", "count_dict", "ids_list", "str", "int"
         ],
         file: Optional[FileUpload] = None,
-    ):
+    ) -> Union[FileMap, Json, Dict[str, int], List[dict], List[str], int, str]:
         """Make a POST Requst to the REDCap API
 
         Args:

@@ -1,5 +1,5 @@
 """REDCap API methods for Project field names"""
-from typing import TYPE_CHECKING, Any, cast, Dict, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Optional, overload
 
 from typing_extensions import Literal
 

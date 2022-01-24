@@ -12,6 +12,9 @@ from requests import RequestException, Response, Session
 if TYPE_CHECKING:
     from io import TextIOWrapper
 
+Json = List[Dict[str, Any]]
+EmptyJson = List[dict]
+
 __author__ = "Scott Burns <scott.s.burns@gmail.com>"
 __license__ = "MIT"
 __copyright__ = "2014, Vanderbilt University"
@@ -89,7 +92,7 @@ class _RCRequest:
         format_type: None,
         return_empty_json: Literal[True],
         return_bytes: Literal[False],
-    ) -> List[dict]:
+    ) -> EmptyJson:
         ...
 
     @overload
@@ -109,7 +112,7 @@ class _RCRequest:
         format_type: Literal["json"],
         return_empty_json: Literal[False],
         return_bytes: Literal[False],
-    ) -> Union[List[Dict[str, Any]], Dict[str, str]]:
+    ) -> Union[Json, Dict[str, str]]:
         """This should return json, but might also return an error dict"""
         ...
 
@@ -149,7 +152,7 @@ class _RCRequest:
         verify_ssl: Union[bool, str],
         return_headers: Literal[True],
         file: Optional[FileUpload],
-    ) -> Tuple[Union[List[Dict[str, Any]], str, bytes], dict]:
+    ) -> Tuple[Union[Json, str, bytes], dict]:
         ...
 
     @overload
