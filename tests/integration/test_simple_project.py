@@ -2,6 +2,7 @@
 # pylint: disable=missing-function-docstring
 import os
 
+import pandas as pd
 import pytest
 import semantic_version
 
@@ -90,17 +91,43 @@ def test_export_field_names_df(simple_project):
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("output_format", [("json")])
-def test_export_and_import_metadata(simple_project, output_format):
-    original_metadata = simple_project.export_metadata(format_type=output_format)
+def test_export_and_import_metadata(simple_project):
+    original_metadata = simple_project.export_metadata()
     assert len(original_metadata) == 15
 
     reduced_metadata = original_metadata[:14]
-    res = simple_project.import_metadata(reduced_metadata, import_format=output_format)
+    res = simple_project.import_metadata(reduced_metadata)
     assert res == len(reduced_metadata)
     # then "restore" it (though won't have data for the previously removed fields)
-    res = simple_project.import_metadata(original_metadata, import_format=output_format)
+    res = simple_project.import_metadata(original_metadata)
     assert res == len(original_metadata)
+
+
+@pytest.mark.integration
+def test_export_and_import_metadata_csv(simple_project):
+    metadata = simple_project.export_metadata("csv")
+    assert "field_name,form_name" in metadata
+    res = simple_project.import_metadata(to_import=metadata, import_format="csv")
+    assert res == 15
+
+
+@pytest.mark.integration
+def test_export_and_import_metadata_df(simple_project):
+    metadata = simple_project.export_metadata(
+        format_type="df",
+        # We don't want to convert these to floats (what pandas does by default)
+        # since we need the to stay integers when re-importing into REDCap
+        df_kwargs={
+            "index_col": "field_name",
+            "dtype": {
+                "text_validation_min": pd.Int64Dtype(),
+                "text_validation_max": pd.Int64Dtype(),
+            },
+        },
+    )
+    assert metadata.index.name == "field_name"
+    res = simple_project.import_metadata(to_import=metadata, import_format="df")
+    assert res == 15
 
 
 @pytest.mark.integration
