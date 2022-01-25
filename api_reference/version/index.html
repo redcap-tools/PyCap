@@ -476,13 +476,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redcap.methods.version.Version.events" class="md-nav__link">
-    events
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#redcap.methods.version.Version.field_names" class="md-nav__link">
     field_names
   </a>
@@ -588,13 +581,6 @@
           <li class="md-nav__item">
   <a href="#redcap.methods.version.Version.def_field" class="md-nav__link">
     def_field
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#redcap.methods.version.Version.events" class="md-nav__link">
-    events
   </a>
   
 </li>
@@ -717,11 +703,11 @@ Version            (<span title="redcap.methods.base.Base">Base</span>)
 <a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">            &gt;&gt;&gt; redcap_version = proj.export_version()</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">            &gt;&gt;&gt; assert redcap_version &gt;= semantic_version.Version(&quot;12.0.1&quot;)</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basepl</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="n">redcap_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="n">resp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">semantic_version</span><span class="o">.</span><span class="n">Version</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="k">if</span> <span class="s2">&quot;error&quot;</span> <span class="ow">in</span> <span class="n">redcap_version</span><span class="p">:</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Version information not available for this REDCap instance&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_payload</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="n">resp</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="n">redcap_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>        <span class="k">if</span> <span class="n">semantic_version</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">redcap_version</span><span class="p">):</span>
 <a id="__codelineno-0-22" name="__codelineno-0-22"></a>            <span class="n">resp</span> <span class="o">=</span> <span class="n">semantic_version</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">redcap_version</span><span class="p">)</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>
@@ -756,32 +742,6 @@ Version            (<span title="redcap.methods.base.Base">Base</span>)
     <div class="doc doc-contents ">
 
       <p>The 'record_id' field equivalent for a project</p>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="redcap.methods.version.Version.events" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">events</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
-      <small class="doc doc-property doc-property-property"><code>property</code></small>
-      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
-  </span>
-
-</h3>
-
-    <div class="doc doc-contents ">
-
-      <p>Project defined events</p>
-<p>!!! note
-    Exists for longitudinal projects only</p>
     </div>
 
   </div>
@@ -843,7 +803,7 @@ Version            (<span title="redcap.methods.base.Base">Base</span>)
 
 
 <h3 id="redcap.methods.version.Version.metadata" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span></code>
+<code class="highlight language-python"><span class="n">metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
@@ -879,7 +839,7 @@ Version            (<span title="redcap.methods.base.Base">Base</span>)
 
     <div class="doc doc-contents ">
 
-      <p>API token to your project</p>
+      <p>API token to a project</p>
     </div>
 
   </div>
@@ -903,7 +863,7 @@ Version            (<span title="redcap.methods.base.Base">Base</span>)
 
     <div class="doc doc-contents ">
 
-      <p>API URL to your REDCap server</p>
+      <p>API URL to a REDCap server</p>
     </div>
 
   </div>
@@ -963,11 +923,11 @@ Version            (<span title="redcap.methods.base.Base">Base</span>)
 <a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">        &gt;&gt;&gt; redcap_version = proj.export_version()</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">        &gt;&gt;&gt; assert redcap_version &gt;= semantic_version.Version(&quot;12.0.1&quot;)</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basepl</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="n">redcap_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="n">resp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">semantic_version</span><span class="o">.</span><span class="n">Version</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="k">if</span> <span class="s2">&quot;error&quot;</span> <span class="ow">in</span> <span class="n">redcap_version</span><span class="p">:</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Version information not available for this REDCap instance&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_payload</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="n">resp</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="n">redcap_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="k">if</span> <span class="n">semantic_version</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">redcap_version</span><span class="p">):</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="n">resp</span> <span class="o">=</span> <span class="n">semantic_version</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">redcap_version</span><span class="p">)</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>

@@ -406,13 +406,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redcap.methods.project_info.ProjectInfo.events" class="md-nav__link">
-    events
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#redcap.methods.project_info.ProjectInfo.field_names" class="md-nav__link">
     field_names
   </a>
@@ -593,13 +586,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redcap.methods.project_info.ProjectInfo.events" class="md-nav__link">
-    events
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#redcap.methods.project_info.ProjectInfo.field_names" class="md-nav__link">
     field_names
   </a>
@@ -705,46 +691,68 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
           <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">class</span> <span class="nc">ProjectInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a>    <span class="sd">&quot;&quot;&quot;Responsible for all API methods under &#39;Projects&#39; in the API Playground&quot;&quot;&quot;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>    <span class="c1"># pylint: disable=redefined-builtin</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>    <span class="nd">@overload</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>    <span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>        <span class="o">...</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>    <span class="nd">@overload</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>    <span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>        <span class="o">...</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>        <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        Export Project Information</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">            format: Format of returned data</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">            Union[str, List[Dict]]: Project information</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        Examples:</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">            &gt;&gt;&gt; proj.export_project_info()</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">            {&#39;project_id&#39;: ...</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">            ...</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">            &#39;in_production&#39;: 0,</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">            &#39;project_language&#39;: &#39;English&#39;,</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">            &#39;purpose&#39;: 0,</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">            &#39;purpose_other&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">            ...</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">            &#39;project_grant_number&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">            &#39;project_pi_firstname&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">            &#39;project_pi_lastname&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">            ...</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">             &#39;bypass_branching_erase_field_prompt&#39;: 0}</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a>    <span class="nd">@overload</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a>    <span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">format_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">],</span> <span class="n">df_kwargs</span><span class="p">:</span> <span class="kc">None</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Json</span><span class="p">:</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a>        <span class="o">...</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a>    <span class="nd">@overload</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>    <span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">format_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">],</span> <span class="n">df_kwargs</span><span class="p">:</span> <span class="kc">None</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>        <span class="o">...</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="nd">@overload</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">format_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;df&quot;</span><span class="p">],</span> <span class="n">df_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">:</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>        <span class="o">...</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">format_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">df_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="p">):</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">        Export Project Information</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">            format_type: Format of returned data</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">            df_kwargs:</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">                Passed to `pandas.read_csv` to control construction of</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">                returned DataFrame. By default, nothing</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">            Union[str, List[Dict[str, Any]], pandas.DataFrame]: Project information</span>
 <a id="__codelineno-0-38" name="__codelineno-0-38"></a>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basepl</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;exp_proj&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="c1"># pylint: enable=redefined-builtin</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        Examples:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">            &gt;&gt;&gt; proj.export_project_info()</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">            {&#39;project_id&#39;: ...</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">            ...</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">            &#39;in_production&#39;: 0,</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">            &#39;project_language&#39;: &#39;English&#39;,</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">            &#39;purpose&#39;: 0,</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">            &#39;purpose_other&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">            ...</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">            &#39;project_grant_number&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">            &#39;project_pi_firstname&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">            &#39;project_pi_lastname&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">            ...</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">             &#39;bypass_branching_erase_field_prompt&#39;: 0}</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a>        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_payload</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">)</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a>        <span class="n">return_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lookup_return_type</span><span class="p">(</span><span class="n">format_type</span><span class="p">,</span> <span class="n">request_type</span><span class="o">=</span><span class="s2">&quot;export&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">return_type</span><span class="p">)</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_data</span><span class="p">(</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a>            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a>            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>            <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>            <span class="n">df_kwargs</span><span class="o">=</span><span class="n">df_kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>        <span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -775,32 +783,6 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
     <div class="doc doc-contents ">
 
       <p>The 'record_id' field equivalent for a project</p>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="redcap.methods.project_info.ProjectInfo.events" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">events</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
-      <small class="doc doc-property doc-property-property"><code>property</code></small>
-      <small class="doc doc-property doc-property-readonly"><code>readonly</code></small>
-  </span>
-
-</h3>
-
-    <div class="doc doc-contents ">
-
-      <p>Project defined events</p>
-<p>!!! note
-    Exists for longitudinal projects only</p>
     </div>
 
   </div>
@@ -862,7 +844,7 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
 
 
 <h3 id="redcap.methods.project_info.ProjectInfo.metadata" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span></code>
+<code class="highlight language-python"><span class="n">metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
@@ -898,7 +880,7 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
 
     <div class="doc doc-contents ">
 
-      <p>API token to your project</p>
+      <p>API token to a project</p>
     </div>
 
   </div>
@@ -922,7 +904,7 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
 
     <div class="doc doc-contents ">
 
-      <p>API URL to your REDCap server</p>
+      <p>API URL to a REDCap server</p>
     </div>
 
   </div>
@@ -938,7 +920,7 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
 
 
 <h3 id="redcap.methods.project_info.ProjectInfo.export_project_info" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">export_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">export_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_type</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="n">df_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 </h3>
@@ -959,10 +941,17 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
   </thead>
   <tbody>
       <tr>
-        <td><code>format</code></td>
-        <td><code>Literal[&#39;json&#39;, &#39;csv&#39;, &#39;xml&#39;]</code></td>
+        <td><code>format_type</code></td>
+        <td><code>Literal[&#39;json&#39;, &#39;csv&#39;, &#39;xml&#39;, &#39;df&#39;]</code></td>
         <td><p>Format of returned data</p></td>
         <td><code>&#39;json&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>df_kwargs</code></td>
+        <td><code>Optional[Dict[str, Any]]</code></td>
+        <td><p>Passed to <code>pandas.read_csv</code> to control construction of
+returned DataFrame. By default, nothing</p></td>
+        <td><code>None</code></td>
       </tr>
   </tbody>
 </table>
@@ -976,7 +965,7 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
   </thead>
   <tbody>
     <tr>
-      <td><code>Union[str, List[Dict]]</code></td>
+      <td><code>Union[str, List[Dict[str, Any]], pandas.DataFrame]</code></td>
       <td><p>Project information</p></td>
     </tr>
   </tbody>
@@ -999,35 +988,50 @@ ProjectInfo            (<span title="redcap.methods.base.Base">Base</span>)
 
         <details class="quote">
           <summary>Source code in <code>redcap/methods/project_info.py</code></summary>
-          <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="sd">    Export Project Information</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="sd">        format: Format of returned data</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="sd">        Union[str, List[Dict]]: Project information</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">        &gt;&gt;&gt; proj.export_project_info()</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">        {&#39;project_id&#39;: ...</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">        ...</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        &#39;in_production&#39;: 0,</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        &#39;project_language&#39;: &#39;English&#39;,</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        &#39;purpose&#39;: 0,</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">        &#39;purpose_other&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        ...</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        &#39;project_grant_number&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        &#39;project_pi_firstname&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        &#39;project_pi_lastname&#39;: &#39;&#39;,</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        ...</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">         &#39;bypass_branching_erase_field_prompt&#39;: 0}</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basepl</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s2">&quot;exp_proj&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+          <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">def</span> <span class="nf">export_project_info</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a>    <span class="n">format_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a>    <span class="n">df_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="p">):</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="sd">    Export Project Information</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">        format_type: Format of returned data</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">        df_kwargs:</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">            Passed to `pandas.read_csv` to control construction of</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">            returned DataFrame. By default, nothing</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        Union[str, List[Dict[str, Any]], pandas.DataFrame]: Project information</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        &gt;&gt;&gt; proj.export_project_info()</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        {&#39;project_id&#39;: ...</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        ...</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        &#39;in_production&#39;: 0,</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        &#39;project_language&#39;: &#39;English&#39;,</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        &#39;purpose&#39;: 0,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        &#39;purpose_other&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">        ...</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">        &#39;project_grant_number&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">        &#39;project_pi_firstname&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">        &#39;project_pi_lastname&#39;: &#39;&#39;,</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        ...</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">         &#39;bypass_branching_erase_field_prompt&#39;: 0}</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_payload</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">)</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">return_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lookup_return_type</span><span class="p">(</span><span class="n">format_type</span><span class="p">,</span> <span class="n">request_type</span><span class="o">=</span><span class="s2">&quot;export&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_api</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">return_type</span><span class="p">)</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_data</span><span class="p">(</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a>        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a>        <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="n">df_kwargs</span><span class="o">=</span><span class="n">df_kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
