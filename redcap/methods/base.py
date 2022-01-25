@@ -309,7 +309,7 @@ class Base:
                 else:
                     csv_kwargs = {"index_label": self.def_field}
             elif data_type == "metadata":
-                csv_kwargs = {"index": False}
+                csv_kwargs = {"index_label": "field_name"}
             to_import.to_csv(buf, **csv_kwargs)
             payload["data"] = buf.getvalue()
             buf.close()
