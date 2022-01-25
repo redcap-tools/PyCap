@@ -8,6 +8,8 @@
     :target: https://badge.fury.io/py/PyCap
 .. image:: https://img.shields.io/badge/code%20style-black-black
     :target: https://pypi.org/project/black/
+.. image:: https://mperlet.github.io/pybadge/badges/10.svg
+    :target: https://pypi.org/project/pylint/
 
 Intro
 =====
