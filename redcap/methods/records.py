@@ -24,6 +24,7 @@ class Records(Base):
         forms: Optional[List[str]] = None,
         events: Optional[List[str]] = None,
         raw_or_label: Literal["raw", "label", "both"] = "raw",
+        raw_or_label_headers: Literal["raw", "label"] = "raw",
         event_name: Literal["label", "unique"] = "label",
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
@@ -45,6 +46,7 @@ class Records(Base):
         forms: Optional[List[str]] = None,
         events: Optional[List[str]] = None,
         raw_or_label: Literal["raw", "label", "both"] = "raw",
+        raw_or_label_headers: Literal["raw", "label"] = "raw",
         event_name: Literal["label", "unique"] = "label",
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
@@ -66,6 +68,7 @@ class Records(Base):
         forms: Optional[List[str]] = None,
         events: Optional[List[str]] = None,
         raw_or_label: Literal["raw", "label", "both"] = "raw",
+        raw_or_label_headers: Literal["raw", "label"] = "raw",
         event_name: Literal["label", "unique"] = "label",
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
@@ -86,6 +89,7 @@ class Records(Base):
         forms: Optional[List[str]] = None,
         events: Optional[List[str]] = None,
         raw_or_label: Literal["raw", "label", "both"] = "raw",
+        raw_or_label_headers: Literal["raw", "label"] = "raw",
         event_name: Literal["label", "unique"] = "label",
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
@@ -122,6 +126,9 @@ class Records(Base):
             raw_or_label:
                 Export the raw coded values or labels for the options of
                 multiple choice fields, or both
+            raw_or_label_headers:
+                Export the column names of the instrument as their raw
+                value or their labeled value
             event_name:
                 Export the unique event name or the event label
             record_type:
@@ -198,6 +205,7 @@ class Records(Base):
             forms,
             events,
             raw_or_label,
+            raw_or_label_headers,
             event_name,
             export_survey_fields,
             export_data_access_groups,
@@ -210,6 +218,7 @@ class Records(Base):
             "forms",
             "events",
             "rawOrLabel",
+            "rawOrLabelHeaders",
             "eventName",
             "exportSurveyFields",
             "exportDataAccessGroups",
