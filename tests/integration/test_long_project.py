@@ -37,3 +37,8 @@ def test_project_info_export(long_project):
 def test_users_export(long_project):
     data = long_project.export_users(format_type="df", df_kwargs={"index_col": "email"})
     assert data.index.name == "email"
+
+
+def test_records_export_labeled_headers(long_project):
+    data = long_project.export_records(format_type="csv", raw_or_label_headers="label")
+    assert "Study ID" in data
