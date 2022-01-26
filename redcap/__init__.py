@@ -18,4 +18,3 @@ from redcap.request import _RCRequest, RedcapError
 __author__ = "Scott Burns <scott.s.burns@gmail.com>"
 __license__ = "MIT"
 __copyright__ = "2014, Vanderbilt University"
-__version__ = "1.1.3"
