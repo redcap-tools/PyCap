@@ -21,7 +21,6 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 2.7",
 ]
 packages = [
     { include = "redcap" }
