@@ -437,7 +437,7 @@ class Records(Base):
         response = self._call_api(payload, return_type)
         return response
 
-    def generate_next_record_name(self) -> int:
+    def generate_next_record_name(self) -> str:
         """
         Get the next record name
 
@@ -446,10 +446,12 @@ class Records(Base):
 
         Examples:
             >>> proj.generate_next_record_name()
-            3
+            '3'
         """
+        # Force the csv format here since if the project uses data access groups
+        # or just non-standard record names then the result will not be JSON-compliant
         payload = self._initialize_payload(
-            content="generateNextRecordName", format_type="json"
+            content="generateNextRecordName", format_type="csv"
         )
 
-        return self._call_api(payload, return_type="int")
+        return self._call_api(payload, return_type="str")
