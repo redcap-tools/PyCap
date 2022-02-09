@@ -163,7 +163,7 @@ def test_user_export(simple_project):
 def test_generate_next_record_name(simple_project):
     next_name = simple_project.generate_next_record_name()
 
-    assert next_name == 123
+    assert next_name == "123"
 
 
 def test_delete_records(simple_project):
