@@ -1,2 +1,0 @@
-include README.rst HISTORY.rst
-recursive-include examples *.py
