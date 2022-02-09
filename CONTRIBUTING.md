@@ -6,7 +6,32 @@ PyCap follows the [Fork-Pull workflow](https://help.github.com/articles/using-pu
 
 1. If you don't already have an account on GitHub, please make one.
 2. Fork [this repo](https://github.com/redcap-tools/PyCap) to your own account.
-3. Checkout a branch & commit your changes. Tests are definitely appreciated :100:!
+3. Checkout a branch & commit your changes. See the section on `poetry` below for instructions how to set up your local development environment. Tests are definitely appreciated :100:!
 4. Push those changes to your repo & submit a Pull-Request to this repository.
 
-If any of these steps are unclear, please peruse the helpful [GitHub Guide on Forkin](https://guides.github.com/activities/forking/) or file an issue, and we'll try to help out!
+If any of these steps are unclear, please peruse the helpful [GitHub Guide on Forking](https://guides.github.com/activities/forking/) or file an issue, and we'll try to help out!
+
+## Using `poetry`
+
+This package uses [`poetry`](https://python-poetry.org/docs/master/#installation) for dependency management and publishing. It is required in order to do local development with `PyCap`.
+
+1. Install `poetry`
+
+```sh
+$ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+```
+
+2. Install all project dependencies (including development/optional dependencies).
+
+```sh
+$ poetry install -E data_science
+```
+
+3. Add your changes and make sure your changes pass all tests.
+
+```
+$ poetry run pytest
+```
+
+If you make changes to the dependencies you'll need to handle
+them with the [`poetry add/remove`](https://python-poetry.org/docs/master/basic-usage/#installing-dependencies) commands.
