@@ -6,7 +6,7 @@ authors = ["Scott Burns <scott.s.burns@gmail.com>"]
 maintainers = ["Paul Wildenhain <pwildenhain@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-documentation = "https://pycap.readthedocs.io"
+documentation = "http://redcap-tools.github.io/PyCap/"
 repository = "https://github.com/redcap-tools/PyCap"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
