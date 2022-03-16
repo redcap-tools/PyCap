@@ -324,7 +324,7 @@ class Records(Base):
             to_import:
                 Note:
                     If you pass a df, csv, or xml string, you should use the
-                    `format` parameter appropriately.
+                    `import_format` parameter appropriately.
                 Note:
                     Keys of the dictionaries should be subset of project's,
                     fields, but this isn't a requirement. If you provide keys
