@@ -25,6 +25,7 @@ class Project(
     methods.metadata.Metadata,
     methods.project_info.ProjectInfo,
     methods.records.Records,
+    methods.repeating.Repeating,
     methods.reports.Reports,
     methods.surveys.Surveys,
     methods.users.Users,
