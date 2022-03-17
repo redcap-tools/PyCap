@@ -39,7 +39,7 @@ jobs:
       # Forks can't run doctests, requires super user token
       if: github.actor == 'pwildenhain'
       run: |
-        poetry run pytest --doctest-only
+        poetry run pytest --doctest-only --doctest-plus
     - name: Run tests
       run: |
         poetry run pytest
