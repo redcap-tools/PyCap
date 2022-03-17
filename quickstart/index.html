@@ -11,7 +11,7 @@
         <link rel="canonical" href="http://redcap-tools.github.io/PyCap/quickstart/">
       
       <link rel="icon" href="../img/logo.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.8">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.edf004c2.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6e60f8b8.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -479,38 +479,38 @@
 
 <h1 id="quickstart">Quickstart</h1>
 <p>PyCap makes it very simple to interact with the data stored in your REDCap projects</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">redcap</span> <span class="kn">import</span> <span class="n">Project</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="n">api_url</span> <span class="o">=</span> <span class="s1">&#39;https://redcap.example.edu/api/&#39;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="n">api_key</span> <span class="o">=</span> <span class="s1">&#39;SomeSuperSecretAPIKeyThatNobodyElseShouldHave&#39;</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">redcap</span> <span class="kn">import</span> <span class="n">Project</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">api_url</span> <span class="o">=</span> <span class="s1">&#39;https://redcap.example.edu/api/&#39;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">api_key</span> <span class="o">=</span> <span class="s1">&#39;SomeSuperSecretAPIKeyThatNobodyElseShouldHave&#39;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
 </code></pre></div>
 <p>Export all the data</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="n">data</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">export_records</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">data</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">export_records</span><span class="p">()</span>
 </code></pre></div>
 <p>Import all the data</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="n">to_import</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;record&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;test_score&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">}]</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="n">response</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">import_records</span><span class="p">(</span><span class="n">to_import</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">to_import</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;record&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;test_score&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">}]</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">response</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">import_records</span><span class="p">(</span><span class="n">to_import</span><span class="p">)</span>
 </code></pre></div>
 <p>Import a file</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;something_to_upload.txt&#39;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a>    <span class="n">project</span><span class="o">.</span><span class="n">import_file</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fobj</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;something_to_upload.txt&#39;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">project</span><span class="o">.</span><span class="n">import_file</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fobj</span><span class="p">)</span>
 </code></pre></div>
 <p>Export a file</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="n">content</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">export_file</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3"></a>    <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">content</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">export_file</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 </code></pre></div>
 <p>Delete a file
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2"></a>    <span class="n">project</span><span class="o">.</span><span class="n">delete_file</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="k">except</span> <span class="n">redcap</span><span class="o">.</span><span class="n">RedcapError</span><span class="p">:</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4"></a>    <span class="c1"># Throws this if file wasn&#39;t successfully deleted</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5"></a>    <span class="k">pass</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7"></a>    <span class="c1"># You screwed up and gave it a bad field name, etc</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8"></a>    <span class="k">pass</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">project</span><span class="o">.</span><span class="n">delete_file</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">except</span> <span class="n">redcap</span><span class="o">.</span><span class="n">RedcapError</span><span class="p">:</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="c1"># Throws this if file wasn&#39;t successfully deleted</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="k">pass</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="c1"># You screwed up and gave it a bad field name, etc</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="k">pass</span>
 </code></pre></div></p>
 
               
@@ -577,10 +577,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.0bbba5b5.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.22074ed6.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.e1a181d9.min.js"></script>
+      <script src="../assets/javascripts/bundle.960e086b.min.js"></script>
       
     
   </body>
