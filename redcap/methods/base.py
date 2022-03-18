@@ -7,6 +7,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Literal,
     Optional,
     overload,
     Tuple,
@@ -15,8 +16,6 @@ from typing import (
 )
 
 from io import StringIO
-
-from typing_extensions import Literal
 
 from redcap.request import (
     _ContentConfig,

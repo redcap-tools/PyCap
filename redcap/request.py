@@ -3,9 +3,18 @@
 """Low-level HTTP functionality"""
 
 from collections import namedtuple
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, overload
-
-from typing_extensions import Literal, TypedDict
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    TypedDict,
+    Union,
+    overload,
+)
 
 from requests import RequestException, Response, Session
 

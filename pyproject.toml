@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "PyCap"
-version = "2.0.0a0"
+version = "2.0.0-alpha.1"
 description = "PyCap: Python interface to REDCap"
 authors = ["Scott Burns <scott.s.burns@gmail.com>"]
 maintainers = ["Paul Wildenhain <pwildenhain@gmail.com>"]
@@ -27,7 +27,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
+python = "^3.8"
 requests = "^2.20"
 semantic-version = "^2.8.5"
 pandas = {version = "^1.3.4", optional = true}

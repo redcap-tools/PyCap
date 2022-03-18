@@ -59,7 +59,7 @@ class Project(
         >>> proj.url = "whoops"
         Traceback (most recent call last):
         ...
-        AttributeError: can't set attribute
+        AttributeError: ...
     """
 
     @property
