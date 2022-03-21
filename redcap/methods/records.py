@@ -1,9 +1,7 @@
 """REDCap API methods for Project records"""
 from datetime import datetime
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, overload
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, overload
 
 from redcap.methods.base import Base, EmptyJson, Json
 

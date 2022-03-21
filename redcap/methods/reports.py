@@ -1,7 +1,5 @@
 """REDCap API methods for Project reports"""
-from typing import TYPE_CHECKING, Any, Dict, Optional, overload
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, overload
 
 from redcap.methods.base import Base, Json
 
