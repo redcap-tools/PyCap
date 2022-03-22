@@ -106,6 +106,23 @@ def test_fem_export_stricly_enforces_format(long_project):
         long_project.export_instrument_event_mappings(format_type="unsupported")
 
 
+def test_repeating_export(long_project):
+    rep = long_project.export_repeating_instruments_events(format_type="json")
+
+    assert isinstance(rep, list)
+
+
+def test_repeating_export_strictly_enfores_format(long_project):
+    with pytest.raises(ValueError):
+        long_project.export_repeating_instruments_events(format_type="unsupported")
+
+
+def test_import_export_repeating_forms(long_project):
+    for format_type in ['xml', 'json', 'csv', 'df']:
+        rep = long_project.export_repeating_instruments_events(format_type=format_type)
+        long_project.import_repeating_instruments_events(to_import=rep, format_type=format_type)
+
+
 def test_export_to_df_gives_multi_index(long_project):
     long_dataframe = long_project.export_records(format_type="df", event_name="raw")
 
