@@ -29,6 +29,7 @@ class Files(Base):
         field: str,
         event: Optional[str] = None,
         repeat_instance: Optional[int] = None,
+        return_coroutine: bool = False,
     ) -> FileMap:
         """
         Export the contents of a file stored for a particular record
@@ -61,19 +62,26 @@ class Files(Base):
         """
         self._check_file_field(field)
         # load up payload
-        payload = self._initialize_payload(content="file")
-        # there's no format field in this call
-        payload["action"] = "export"
-        payload["field"] = field
-        payload["record"] = record
-        if event:
-            payload["event"] = event
-        if repeat_instance:
-            payload["repeat_instance"] = str(repeat_instance)
+        def _build_payload(**kwargs):
+            payload = self._initialize_payload(content="file")
+            # there's no format field in this call
+            payload["action"] = "export"
+            payload["field"] = field
+            payload["record"] = record
+            if event:
+                payload["event"] = event
+            if repeat_instance:
+                payload["repeat_instance"] = str(repeat_instance)
+            return payload
         # This might just be due to some typing issues, maybe we can come back and
         # remove this disable eventually.
         # pylint: disable=unpacking-non-sequence
-        content, headers = self._call_api(payload=payload, return_type="file_map")
+        content, headers = self._call_api(
+            payload=_build_payload,
+            return_type="file_map",
+            return_coroutine=return_coroutine,
+            kwargs=locals(),
+        )
         # pylint: enable=unpacking-non-sequence
         # REDCap adds some useful things in content-type
         content_map = {}
@@ -98,6 +106,7 @@ class Files(Base):
         file_object: "TextIOWrapper",
         event: Optional[str] = None,
         repeat_instance: Optional[Union[int, str]] = None,
+        return_coroutine: bool = False,
     ) -> EmptyJson:
         """
         Import the contents of a file represented by file_object to a
@@ -138,18 +147,25 @@ class Files(Base):
         """
         self._check_file_field(field)
         # load up payload
-        payload = self._initialize_payload(content="file")
-        payload["action"] = "import"
-        payload["field"] = field
-        payload["record"] = record
-        if event:
-            payload["event"] = event
-        if repeat_instance:
-            payload["repeat_instance"] = repeat_instance
+        def _build_payload(**kwargs):
+            payload = self._initialize_payload(content="file")
+            payload["action"] = "import"
+            payload["field"] = kwargs["field"]
+            payload["record"] = kwargs["record"]
+            if event:
+                payload["event"] = kwargs["event"]
+            if repeat_instance:
+                payload["repeat_instance"] = kwargs["repeat_instance"]
+            return payload
+
         file_upload_dict = {"file": (file_name, file_object)}
 
         return self._call_api(
-            payload=payload, return_type="empty_json", file=file_upload_dict
+            payload=_build_payload,
+            return_type="empty_json",
+            file=file_upload_dict,
+            return_coroutine=return_coroutine,
+            kwargs=locals()
         )
 
     def delete_file(
@@ -157,6 +173,7 @@ class Files(Base):
         record: str,
         field: str,
         event: Optional[str] = None,
+        return_coroutine: bool = False,
     ) -> EmptyJson:
         """
         Delete a file from REDCap
@@ -194,11 +211,18 @@ class Files(Base):
         """
         self._check_file_field(field)
         # Load up payload
-        payload = self._initialize_payload(content="file")
-        payload["action"] = "delete"
-        payload["record"] = record
-        payload["field"] = field
-        if event:
-            payload["event"] = event
+        def _build_payload(**kwargs):
+            payload = self._initialize_payload(content="file")
+            payload["action"] = "delete"
+            payload["record"] = record
+            payload["field"] = field
+            if event:
+                payload["event"] = event
+            return payload
 
-        return self._call_api(payload=payload, return_type="empty_json")
+        return self._call_api(
+            payload=_build_payload,
+            return_type="empty_json",
+            return_coroutine=return_coroutine,
+            kwargs=locals()
+        )

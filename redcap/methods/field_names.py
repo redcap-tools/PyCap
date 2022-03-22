@@ -1,5 +1,5 @@
 """REDCap API methods for Project field names"""
-from typing import TYPE_CHECKING, Any, Dict, Optional, overload
+from typing import TYPE_CHECKING, Any, Coroutine, Dict, Optional, overload
 
 from typing_extensions import Literal
 
@@ -18,6 +18,7 @@ class FieldNames(Base):
         format_type: Literal["json"],
         field: Optional[str],
         df_kwargs: Optional[Dict[str, Any]] = None,
+        return_coroutine: bool = False,
     ) -> Json:
         ...
 
@@ -27,6 +28,7 @@ class FieldNames(Base):
         format_type: Literal["csv", "xml"],
         field: Optional[str],
         df_kwargs: Optional[Dict[str, Any]] = None,
+        return_coroutine: bool = False,
     ) -> str:
         ...
 
@@ -36,7 +38,18 @@ class FieldNames(Base):
         format_type: Literal["df"],
         field: Optional[str],
         df_kwargs: Optional[Dict[str, Any]] = None,
+        return_coroutine: bool = False,
     ) -> "pd.DataFrame":
+        ...
+
+    @overload
+    def export_field_names(
+        self,
+        format_type: Literal["json", "csv", "xml", "df"] = "json",
+        field: Optional[str] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
+        return_coroutine: bool = False,
+    ) -> Coroutine:
         ...
 
     def export_field_names(
@@ -44,6 +57,7 @@ class FieldNames(Base):
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         field: Optional[str] = None,
         df_kwargs: Optional[Dict[str, Any]] = None,
+        return_coroutine: bool = False,
     ):
         # pylint: disable=line-too-long
         """
@@ -73,15 +87,20 @@ class FieldNames(Base):
             {'original_field_name': 'form_1_complete', 'choice_value': '', 'export_field_name': 'form_1_complete'}]
         """
         # pylint: enable=line-too-long
-        payload = self._initialize_payload(
-            content="exportFieldNames", format_type=format_type
-        )
-
-        if field:
-            payload["field"] = field
+        def _build_payload(**kwargs):
+            payload = self._initialize_payload(
+                content="exportFieldNames", format_type=kwargs["format_type"]
+            )
+            if kwargs["field"]:
+                payload["field"] = kwargs["field"]
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(
+            payload=_build_payload,
+            return_type=return_type,
+            return_coroutine=return_coroutine,
+            kwargs=locals(),
+        )
 
         return self._return_data(
             response=response,

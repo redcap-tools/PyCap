@@ -5,6 +5,7 @@ import json
 
 from typing import (
     Any,
+    Callable,
     Dict,
     List,
     Optional,
@@ -126,20 +127,6 @@ class Base:
             f"Incorrect token format '{ token }', token must must be",
             f"{ expected_token_len } characters long",
         )
-
-    # pylint: disable=import-outside-toplevel
-    @staticmethod
-    def _read_csv(buf: StringIO, **df_kwargs) -> "pd.DataFrame":
-        """Wrapper around pandas read_csv that handles EmptyDataError"""
-        import pandas as pd
-        from pandas.errors import EmptyDataError
-
-        try:
-            dataframe = pd.read_csv(buf, **df_kwargs)
-        except EmptyDataError:
-            dataframe = pd.DataFrame()
-
-        return dataframe
 
     # pylint: enable=import-outside-toplevel
     @staticmethod
@@ -324,199 +311,107 @@ class Base:
         return payload
 
     @overload
-    def _return_data(
-        self,
-        response: Json,
-        content: Literal[
-            "exportFieldNames",
-            "formEventMapping",
-            "metadata",
-            "participantList",
-            "project",
-            "record",
-            "report",
-            "user",
-        ],
-        format_type: Literal["json"],
-        df_kwargs: None,
-        record_type: Literal["flat", "eav"] = "flat",
-    ) -> Json:
-        ...
-
-    @overload
-    def _return_data(
-        self,
-        response: str,
-        content: Literal[
-            "exportFieldNames",
-            "formEventMapping",
-            "metadata",
-            "participantList",
-            "project",
-            "record",
-            "report",
-            "user",
-        ],
-        format_type: Literal["csv", "xml"],
-        df_kwargs: None,
-        record_type: Literal["flat", "eav"] = "flat",
-    ) -> str:
-        ...
-
-    @overload
-    def _return_data(
-        self,
-        response: str,
-        content: Literal[
-            "exportFieldNames",
-            "formEventMapping",
-            "metadata",
-            "participantList",
-            "project",
-            "record",
-            "report",
-            "user",
-        ],
-        format_type: Literal["df"],
-        df_kwargs: Optional[Dict[str, Any]],
-        record_type: Literal["flat", "eav"] = "flat",
-    ) -> "pd.DataFrame":
-        ...
-
-    def _return_data(
-        self,
-        response: Union[Json, str],
-        content: Literal[
-            "exportFieldNames",
-            "formEventMapping",
-            "metadata",
-            "participantList",
-            "project",
-            "record",
-            "report",
-            "user",
-        ],
-        format_type: Literal["json", "csv", "xml", "df"],
-        df_kwargs: Optional[Dict[str, Any]] = None,
-        record_type: Literal["flat", "eav"] = "flat",
-    ):
-        """Handle returning data for export methods
-
-        This mostly just stores the logic for the default
-        `df_kwargs` value for export methods, when returning
-        a dataframe.
-
-        Args:
-            response: Output from _call_api
-            content:
-                The 'content' parameter for the API call.
-                Same one used in _initialize_payload
-            format_type:
-                The format of the response.
-                Same one used in _initialize_payload
-            df_kwargs:
-                Passed to `pandas.read_csv` to control construction of
-                returned DataFrame. Different defaults exist for
-                different content
-            record_type:
-                Database output structure type.
-                Used only for records content
-        """
-        if format_type != "df":
-            return response
-
-        if not df_kwargs:
-            if (
-                content in ["formEventMapping", "participantList", "project", "user"]
-                or record_type == "eav"
-            ):
-                df_kwargs = {}
-            elif content == "exportFieldNames":
-                df_kwargs = {"index_col": "original_field_name"}
-            elif content == "metadata":
-                df_kwargs = {"index_col": "field_name"}
-            elif content in ["report", "record"]:
-                if self.is_longitudinal:
-                    df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
-                else:
-                    df_kwargs = {"index_col": self.def_field}
-
-        buf = StringIO(response)
-        dataframe = self._read_csv(buf, **df_kwargs)
-        buf.close()
-
-        return dataframe
-
-    @overload
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal["file_map"],
         file: None,
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
+        **kwargs: Dict,
     ) -> FileMap:
         ...
 
     @overload
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal["json"],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
         file: None = None,
+        **kwargs: Dict,
     ) -> Json:
         ...
 
     @overload
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal["empty_json"],
         file: FileUpload,
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
+        **kwargs: Dict,
     ) -> EmptyJson:
         ...
 
     @overload
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal["count_dict"],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
         file: None = None,
+        **kwargs: Dict,
     ) -> Dict[str, int]:
         ...
 
     @overload
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal["ids_list"],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
         file: None = None,
+        **kwargs: Dict,
     ) -> List[str]:
         ...
 
     @overload
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal["int"],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
         file: None = None,
+        **kwargs: Dict,
     ) -> int:
         ...
 
     @overload
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal["str"],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
         file: None = None,
+        **kwargs: Dict,
     ) -> str:
         ...
 
     def _call_api(
         self,
-        payload: Dict[str, Any],
+        payload: Callable,
         return_type: Literal[
             "file_map", "json", "empty_json", "count_dict", "ids_list", "str", "int"
         ],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
         file: Optional[FileUpload] = None,
+        **kwargs: Dict,
     ) -> Union[FileMap, Json, Dict[str, int], List[dict], List[str], int, str]:
         """Make a POST Requst to the REDCap API
 
@@ -538,5 +433,10 @@ class Base:
 
         rcr = _RCRequest(url=self.url, payload=payload, config=config)
         return rcr.execute(
-            verify_ssl=self.verify_ssl, return_headers=return_headers, file=file
+            verify_ssl=self.verify_ssl,
+            return_headers=return_headers,
+            file=file,
+            coroutine=coroutine,
+            sleep_time=sleep_time,
+            chunks=chunks,
         )

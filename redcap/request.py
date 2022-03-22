@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 """Low-level HTTP functionality"""
 
+import asyncio
 from collections import namedtuple
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, overload
+from typing import TYPE_CHECKING, Any, Coroutine, Dict, List, Optional, Tuple, Union, overload
 
 from typing_extensions import Literal, TypedDict
 
-from requests import RequestException, Response, Session
+from coroutine import _RCCorutine
 
 if TYPE_CHECKING:
     from io import TextIOWrapper
@@ -19,11 +20,6 @@ __author__ = "Scott Burns <scott.s.burns@gmail.com>"
 __license__ = "MIT"
 __copyright__ = "2014, Vanderbilt University"
 
-RedcapError = RequestException
-
-_session = Session()
-
-
 class FileUpload(TypedDict):
     """Typing for the file upload API"""
 
@@ -31,7 +27,6 @@ class FileUpload(TypedDict):
 
 
 _ContentConfig = namedtuple("_ContentConfig", ["return_empty_json", "return_bytes"])
-
 
 class _RCRequest:
     """
@@ -44,7 +39,7 @@ class _RCRequest:
         url: str,
         payload: Dict[str, Any],
         config: _ContentConfig,
-        session=_session,
+        def_field: str,
     ):
         """Constructor
 
@@ -56,8 +51,8 @@ class _RCRequest:
         self.url = url
         self.payload = payload
         self.config = config
-        self.session = session
         self.fmt = self._get_format_key(payload)
+        self.def_field = def_field
 
     @staticmethod
     def _get_format_key(
@@ -86,72 +81,14 @@ class _RCRequest:
         return payload[fmt_key]
 
     @overload
-    @staticmethod
-    def get_content(
-        response: Response,
-        format_type: None,
-        return_empty_json: Literal[True],
-        return_bytes: Literal[False],
-    ) -> EmptyJson:
-        ...
-
-    @overload
-    @staticmethod
-    def get_content(
-        response: Response,
-        format_type: None,
-        return_empty_json: Literal[False],
-        return_bytes: Literal[True],
-    ) -> bytes:
-        ...
-
-    @overload
-    @staticmethod
-    def get_content(
-        response: Response,
-        format_type: Literal["json"],
-        return_empty_json: Literal[False],
-        return_bytes: Literal[False],
-    ) -> Union[Json, Dict[str, str]]:
-        """This should return json, but might also return an error dict"""
-        ...
-
-    @overload
-    @staticmethod
-    def get_content(
-        response: Response,
-        format_type: Literal["csv", "xml"],
-        return_empty_json: Literal[False],
-        return_bytes: Literal[False],
-    ) -> str:
-        ...
-
-    @staticmethod
-    def get_content(
-        response: Response,
-        format_type: Optional[Literal["json", "csv", "xml"]],
-        return_empty_json: bool,
-        return_bytes: bool,
-    ):
-        """Abstraction for grabbing content from a returned response"""
-        if return_bytes:
-            return response.content
-
-        if return_empty_json:
-            return [{}]
-
-        if format_type == "json":
-            return response.json()
-
-        # don't do anything to csv/xml strings
-        return response.text
-
-    @overload
     def execute(
         self,
         verify_ssl: Union[bool, str],
         return_headers: Literal[True],
         file: Optional[FileUpload],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
     ) -> Tuple[Union[Json, str, bytes], dict]:
         ...
 
@@ -161,7 +98,22 @@ class _RCRequest:
         verify_ssl: Union[bool, str],
         return_headers: Literal[False],
         file: Optional[FileUpload],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
     ) -> Union[List[Dict[str, Any]], str, bytes]:
+        ...
+
+    @overload
+    def execute(
+        self,
+        verify_ssl: Union[bool, str],
+        return_headers: Literal[False],
+        file: Optional[FileUpload],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
+    ) -> Coroutine:
         ...
 
     def execute(
@@ -169,6 +121,9 @@ class _RCRequest:
         verify_ssl: Union[bool, str],
         return_headers: bool,
         file: Optional[FileUpload],
+        coroutine: bool,
+        sleep_time: int,
+        chunks: int,
     ):
         """Execute the API request and return data
 
@@ -188,33 +143,18 @@ class _RCRequest:
                 Badly formed request i.e record doesn't
                 exist, field doesn't exist, etc.
         """
-        response = self.session.post(
-            self.url, data=self.payload, verify=verify_ssl, files=file
+
+        request_coroutine = _RCCorutine(self.url,
+            self.payload,
+            self.fmt, verify_ssl,
+            self.def_field,
+            return_headers,
+            file,
+            sleep_time, 
+            chunks
         )
 
-        content = self.get_content(
-            response,
-            format_type=self.fmt,
-            return_empty_json=self.config.return_empty_json,
-            return_bytes=self.config.return_bytes,
-        )
-
-        if self.fmt == "json":
-            try:
-                bad_request = "error" in content.keys()
-            except AttributeError:
-                # we're not dealing with an error dict
-                bad_request = False
-        elif self.fmt == "csv":
-            bad_request = content.lower().startswith("error:")
-        # xml is the default returnFormat for error messages
-        elif self.fmt == "xml" or self.fmt is None:
-            bad_request = "<error>" in str(content).lower()
-
-        if bad_request:
-            raise RedcapError(content)
-
-        if return_headers:
-            return content, response.headers
-
-        return content
+        if coroutine:
+            return request_coroutine.run()
+        else:
+            return asyncio.run(request_coroutine.run())
