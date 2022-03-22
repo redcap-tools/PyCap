@@ -34,7 +34,7 @@ class Repeating(Base):
 
         Examples:
             >>> proj.export_repeating_instruments_events()
-            [{"form_name":"testform","custom_form_label":""}]
+            [{'event_name': 'event_1_arm_1', 'form_name': '', 'custom_form_label': ''}]
         """
         payload = self._initialize_payload(
             content="repeatingFormsEvents", format_type=format_type
@@ -74,7 +74,7 @@ class Repeating(Base):
 
         Examples:
             >>> rep_instruments = proj.export_repeating_instruments_events(format_type="csv")
-            >>> proj.import_metadata(rep_instruments, import_format="csv")
+            >>> proj.import_repeating_instruments_events(rep_instruments, import_format="csv")
             1
         """
         payload = self._initialize_import_payload(

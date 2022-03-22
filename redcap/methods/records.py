@@ -165,15 +165,18 @@ class Records(Base):
 
         Examples:
             >>> proj.export_records()
-            [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1', 'field_1': '1',
+            [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1', 'redcap_repeat_instrument': '',
+            'redcap_repeat_instance': 1, 'field_1': '1',
             'checkbox_field___1': '0', 'checkbox_field___2': '1', 'upload_field': 'test_upload.txt',
             'form_1_complete': '2'},
-            {'record_id': '2', 'redcap_event_name': 'event_1_arm_1', 'field_1': '0',
+            {'record_id': '2', 'redcap_event_name': 'event_1_arm_1', 'redcap_repeat_instrument': '',
+            'redcap_repeat_instance': 1, 'field_1': '0',
             'checkbox_field___1': '0', 'checkbox_field___2': '0', 'upload_field': 'myupload.txt',
             'form_1_complete': '0'}]
 
             >>> proj.export_records(filter_logic="[field_1] = 1")
-            [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1', 'field_1': '1',
+            [{'record_id': '1', 'redcap_event_name': 'event_1_arm_1', 'redcap_repeat_instrument': '',
+            'redcap_repeat_instance': 1, 'field_1': '1',
             'checkbox_field___1': '0', 'checkbox_field___2': '1', 'upload_field': 'test_upload.txt',
             'form_1_complete': '2'}]
 
@@ -187,10 +190,10 @@ class Records(Base):
             >>> import pandas as pd
             >>> pd.set_option("display.max_columns", 3)
             >>> proj.export_records(format_type="df")
-                                         field_1  ...  form_1_complete
-            record_id redcap_event_name           ...
-            1         event_1_arm_1            1  ...                2
-            2         event_1_arm_1            0  ...                0
+                                         redcap_repeat_instrument  ...  form_1_complete
+            record_id redcap_event_name                            ...
+            1         event_1_arm_1                           NaN  ...                2
+            2         event_1_arm_1                           NaN  ...                0
             ...
         """
         # pylint: enable=line-too-long
@@ -359,7 +362,7 @@ class Records(Base):
             Union[Dict, str]: response from REDCap API, json-decoded if `return_format` == `'json'`
 
         Examples:
-            >>> new_record = [{"record_id": 3, "field_1": 1}]
+            >>> new_record = [{"record_id": 3, "redcap_repeat_instance": 1, "field_1": 1}]
             >>> proj.import_records(new_record)
             {'count': 1}
         """
@@ -413,8 +416,11 @@ class Records(Base):
             Union[int, str]: Number of records deleted
 
         Examples:
-            >>> new_record = [{"record_id": 3, "field_1": 1}, {"record_id": 4}]
-            >>> proj.import_records(new_record)
+            >>> new_records = [
+            ...     {"record_id": 3, "redcap_repeat_instance": 1, "field_1": 1},
+            ...     {"record_id": 4, "redcap_repeat_instance": 1}
+            ... ]
+            >>> proj.import_records(new_records)
             {'count': 2}
             >>> proj.delete_records(["3", "4"])
             2
