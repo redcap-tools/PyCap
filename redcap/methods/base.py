@@ -255,7 +255,7 @@ class Base:
         to_import: List[dict],
         import_format: Literal["json"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: str,
+        content: str,
     ) -> Dict[str, Any]:
         ...
 
@@ -265,7 +265,7 @@ class Base:
         to_import: str,
         import_format: Literal["csv", "xml"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: str,
+        content: str,
     ) -> Dict[str, Any]:
         ...
 
@@ -275,7 +275,7 @@ class Base:
         to_import: "pd.DataFrame",
         import_format: Literal["df"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: str,
+        content: str,
     ) -> Dict[str, Any]:
         ...
 
@@ -284,7 +284,7 @@ class Base:
         to_import: Union[List[dict], str, "pd.DataFrame"],
         import_format: Literal["json", "csv", "xml", "df"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: str,
+        content: str,
     ):
         """Standardize the data to be imported and add it to the payload
 
@@ -292,14 +292,14 @@ class Base:
             to_import: array of dicts, csv/xml string, ``pandas.DataFrame``
             import_format: Format of incoming data
             return_format_type: Format of outgoing (returned) data
-            data_type: The kind of data that are imported
+            content: The kind of data that are imported
 
         Returns:
             payload: The initialized payload dictionary and updated format
         """
 
         payload = self._initialize_payload(
-            content=data_type, return_format_type=return_format_type
+            content=content, return_format_type=return_format_type
         )
         if import_format == "df":
             buf = StringIO()

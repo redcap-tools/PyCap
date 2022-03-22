@@ -150,7 +150,7 @@ class Metadata(Base):
             to_import=to_import,
             import_format=import_format,
             return_format_type=return_format_type,
-            data_type="metadata",
+            content="metadata",
         )
 
         # pylint: disable=unsupported-assignment-operation

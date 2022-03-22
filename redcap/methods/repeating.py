@@ -81,7 +81,7 @@ class Repeating(Base):
             to_import=to_import,
             import_format=import_format,
             return_format_type=return_format_type,
-            data_type="repeatingFormsEvents",
+            content="repeatingFormsEvents",
         )
 
         return_type = self._lookup_return_type(
