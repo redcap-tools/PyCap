@@ -255,7 +255,7 @@ class Base:
         to_import: List[dict],
         import_format: Literal["json"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: Literal["record", "metadata"],
+        data_type: str,
     ) -> Dict[str, Any]:
         ...
 
@@ -265,7 +265,7 @@ class Base:
         to_import: str,
         import_format: Literal["csv", "xml"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: Literal["record", "metadata"],
+        data_type: str,
     ) -> Dict[str, Any]:
         ...
 
@@ -275,7 +275,7 @@ class Base:
         to_import: "pd.DataFrame",
         import_format: Literal["df"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: Literal["record", "metadata"],
+        data_type: str,
     ) -> Dict[str, Any]:
         ...
 
@@ -284,13 +284,14 @@ class Base:
         to_import: Union[List[dict], str, "pd.DataFrame"],
         import_format: Literal["json", "csv", "xml", "df"],
         return_format_type: Literal["json", "csv", "xml"],
-        data_type: Literal["record", "metadata"],
+        data_type: str,
     ):
         """Standardize the data to be imported and add it to the payload
 
         Args:
             to_import: array of dicts, csv/xml string, ``pandas.DataFrame``
-            import_format: Format of incoming data.
+            import_format: Format of incoming data
+            return_format_type: Format of outgoing (returned) data
             data_type: The kind of data that are imported
 
         Returns:
@@ -302,14 +303,8 @@ class Base:
         )
         if import_format == "df":
             buf = StringIO()
-            if data_type == "record":
-                if self.is_longitudinal:
-                    csv_kwargs = {"index_label": [self.def_field, "redcap_event_name"]}
-                else:
-                    csv_kwargs = {"index_label": self.def_field}
-            elif data_type == "metadata":
-                csv_kwargs = {"index_label": "field_name"}
-            to_import.to_csv(buf, **csv_kwargs)
+            has_named_index = to_import.index.name is not None
+            to_import.to_csv(buf, index=has_named_index)
             payload["data"] = buf.getvalue()
             buf.close()
             import_format = "csv"
