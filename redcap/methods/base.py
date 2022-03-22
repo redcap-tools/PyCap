@@ -425,10 +425,7 @@ class Base:
             return response
 
         if not df_kwargs:
-            if (
-                content in ["formEventMapping", "participantList", "project", "user"]
-                or record_type == "eav"
-            ):
+            if record_type == "eav":
                 df_kwargs = {}
             elif content == "exportFieldNames":
                 df_kwargs = {"index_col": "original_field_name"}
@@ -439,6 +436,9 @@ class Base:
                     df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
                 else:
                     df_kwargs = {"index_col": self.def_field}
+            # catchall for other endpoints
+            else:
+                df_kwargs = {}
 
         buf = StringIO(response)
         dataframe = self._read_csv(buf, **df_kwargs)
