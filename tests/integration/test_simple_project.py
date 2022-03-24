@@ -58,6 +58,18 @@ def test_import_and_delete_records(simple_project):
 
 
 @pytest.mark.integration
+def test_import_df_no_index(simple_project):
+    # declare df_kwargs without specifying index, which returns a df with no index
+    proj_records_export = simple_project.export_records(
+        format_type="df", df_kwargs={"sep": ","}
+    ).convert_dtypes()
+
+    res = simple_project.import_records(proj_records_export, import_format="df")
+
+    assert res["count"] == 3
+
+
+@pytest.mark.integration
 def test_export_version(simple_project):
     version = simple_project.export_version()
     assert version >= semantic_version.Version("12.0.1")
