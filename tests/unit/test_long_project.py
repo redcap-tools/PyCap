@@ -124,3 +124,17 @@ def test_reports_df_export(long_project):
     report = long_project.export_report(report_id="1", format_type="df")
 
     assert isinstance(report, pd.DataFrame)
+
+
+def test_repeating_export(long_project):
+    rep = long_project.export_repeating_instruments_events(format_type="json")
+
+    assert isinstance(rep, list)
+
+
+def test_import_export_repeating_forms(long_project):
+    rep = long_project.export_repeating_instruments_events(format_type="json")
+    res = long_project.import_repeating_instruments_events(
+        to_import=rep, import_format="json"
+    )
+    assert res == 1
