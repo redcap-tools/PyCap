@@ -56,9 +56,8 @@ def test_repeating_export_strictly_enfores_format(long_project):
 
 
 def test_import_export_repeating_forms(long_project):
-    for format_type in ["xml", "json", "csv", "df"]:
-        rep = long_project.export_repeating_instruments_events(format_type=format_type)
-        res = long_project.import_repeating_instruments_events(
-            to_import=rep, import_format=format_type
-        )
-        assert res == 1
+    rep = long_project.export_repeating_instruments_events(format_type="json")
+    res = long_project.import_repeating_instruments_events(
+        to_import=rep, import_format="json"
+    )
+    assert res == 1
