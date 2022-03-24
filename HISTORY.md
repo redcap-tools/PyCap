@@ -1,5 +1,33 @@
 # HISTORY
 
+## 2.0.0 (Unreleased)
+
+### API Support :robot:
+
+- Add support for `export_repeating_instruments_events` and `import_repeating_instruments_events` (#210 @JuliaSprenger)
+
+### Package Improvements :muscle:
+
+- `Project` class loads lazily by default
+- All `Project.export_*` methods that return JSON now can return `DataFrame`'s as well
+- `Project` class was broken up into smaller utility classes, see the `redcap.methods` module or the API reference on the new docs site
+- Robust testing infrastructure (`pytest`, `doctest-plus`) with both unit and integration tests, maintained at 100% test coverage, with automated styling and linting checks in CI (`black`, `pylint`)
+- Gradual typing added, but not yet enforced in CI
+
+### Breaking changes :boom:
+
+- Dropped support for Python 2, requires python 3.8 or above
+- Many extraneous `Project` attributes were removed. See the API reference for remaining attributes
+- `RedcapError` is raised for all endpoints when API errors are encountered. Errors are never returned in the response
+- `generate_next_record_name` now returns a `str` instead of an `int`. This fixes a bug that occurs when a project uses DAGs
+- `export_fem` renamed to `export_instrument_event_mapping` to be more consistent with other endpoints
+- Common parameter name changes including: `format` --> `format_type`, `return_format` --> `return_format_type`, `type` --> `record_type`. Most of the reason for this change was to avoid the use of reserved keywords such as `format` and `type`
+
+### Documentation :memo:
+
+- Revamp documentation to `mkdocs-material` style on GitHub pages
+- Add comprehensive docstrings and doctests to all methods
+
 ## 1.1.3 (2021-03-30)
 
 ### API Support :robot:
