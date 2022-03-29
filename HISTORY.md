@@ -1,6 +1,6 @@
 # HISTORY
 
-## 2.0.0 (Unreleased)
+## 2.0.0 (2022-03-29)
 
 ### API Support :robot:
 
@@ -13,6 +13,7 @@
 - `Project` class was broken up into smaller utility classes, see the `redcap.methods` module or the API reference on the new docs site
 - Robust testing infrastructure (`pytest`, `doctest-plus`) with both unit and integration tests, maintained at 100% test coverage, with automated styling and linting checks in CI (`black`, `pylint`)
 - Gradual typing added, but not yet enforced in CI
+- Add _complete fields to payload when requesting survey fields (#149 @forsakendaemon)
 
 ### Breaking changes :boom:
 
@@ -27,6 +28,7 @@
 
 - Revamp documentation to `mkdocs-material` style on GitHub pages
 - Add comprehensive docstrings and doctests to all methods
+- Update `delete_records` documentation (#173 @andyjessen)
 
 ## 1.1.3 (2021-03-30)
 
