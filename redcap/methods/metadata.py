@@ -126,7 +126,7 @@ class Metadata(Base):
             to_import: array of dicts, csv/xml string, `pandas.DataFrame`
                 Note:
                     If you pass a csv or xml string, you should use the
-                    `format` parameter appropriately.
+                    `import_format` parameter appropriately.
             return_format_type:
                 Response format. By default, response will be json-decoded.
             import_format:
@@ -150,7 +150,7 @@ class Metadata(Base):
             to_import=to_import,
             import_format=import_format,
             return_format_type=return_format_type,
-            data_type="metadata",
+            content="metadata",
         )
 
         # pylint: disable=unsupported-assignment-operation

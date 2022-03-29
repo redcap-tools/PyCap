@@ -43,6 +43,7 @@ Currently, these API calls are available:
 
 * Field names
 * Instrument-event mapping
+* Repeating instruments and events
 * File
 * Metadata
 * Project Info
@@ -57,6 +58,7 @@ Currently, these API calls are available:
 * File
 * Metadata
 * Records
+* Repeating instruments and events
 
 ### Delete
 

@@ -413,6 +413,9 @@ def test_export_methods_handle_empty_data_error(simple_project, mocker):
     dataframe = simple_project.export_instrument_event_mappings(format_type="df")
     assert dataframe.empty
 
+    dataframe = simple_project.export_repeating_instruments_events(format_type="df")
+    assert dataframe.empty
+
     dataframe = simple_project.export_metadata(format_type="df")
     assert dataframe.empty
 

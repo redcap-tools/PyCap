@@ -37,9 +37,9 @@ jobs:
         poetry install -E data_science
     - name: Run doctests
       # Forks can't run doctests, requires super user token
-      if: github.repository == 'redcap-tools/PyCap'
+      if: github.actor == 'pwildenhain'
       run: |
-        poetry run pytest --doctest-only
+        poetry run pytest --doctest-only --doctest-plus
     - name: Run tests
       run: |
         poetry run pytest

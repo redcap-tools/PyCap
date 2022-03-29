@@ -6,6 +6,7 @@ import redcap.methods.instruments
 import redcap.methods.metadata
 import redcap.methods.project_info
 import redcap.methods.records
+import redcap.methods.repeating
 import redcap.methods.reports
 import redcap.methods.surveys
 import redcap.methods.users

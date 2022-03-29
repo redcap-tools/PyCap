@@ -97,6 +97,22 @@ def handle_long_project_form_event_mapping_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_long_project_repeating_form_request(**kwargs) -> MockResponse:
+    """Give back list of repeating instruments for long project"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    resp = None
+    # import (JSON only)
+    if "data" in data:
+        repeat_forms = json.loads(data["data"][0])
+        resp = len(repeat_forms)
+    # export (JSON only)
+    else:
+        resp = [{"form_name": "testform", "custom_form_label": ""}]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_simple_project_file_request(**kwargs) -> MockResponse:
     """Handle file import/export requests"""
     data = kwargs["data"]
@@ -484,6 +500,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "arm": handle_long_project_arms_request,
         "file": handle_long_project_file_request,
         "formEventMapping": handle_long_project_form_event_mapping_request,
+        "repeatingFormsEvents": handle_long_project_repeating_form_request,
         "metadata": handle_long_project_metadata_request,
         "participantList": handle_long_project_survey_participants_request,
         "record": handle_long_project_records_request,
