@@ -1,6 +1,6 @@
 # HISTORY
 
-## 2.0.0 (Unreleased)
+## 2.0.0 (2022-03-29)
 
 ### API Support :robot:
 
