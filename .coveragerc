@@ -1,4 +1,8 @@
 [report]
+# the doctests aren't run in forks
+omit =
+    redcap/conftest.py
+
 exclude_lines =
     pragma: no cover
     if TYPE_CHECKING:
