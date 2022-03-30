@@ -148,6 +148,51 @@ def handle_generate_next_record_name_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_logging_request(**kwargs) -> MockResponse:
+    """Handle logging request"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # export (JSON only)
+    if "beginTime" in data:
+        resp = [
+            {
+                "timestamp": "2022-03-30 10:50",
+                "username": "myuser",
+                "action": "Manage/Design",
+                "details": "Add/edit branching logic",
+            },
+            {
+                "timestamp": "2022-03-29 10:49",
+                "username": "myuser",
+                "action": "Manage/Design ",
+                "details": "Delete project field",
+            },
+        ]
+    else:
+        resp = [
+            {
+                "timestamp": "2022-03-30 10:50",
+                "username": "myuser",
+                "action": "Manage/Design",
+                "details": "Add/edit branching logic",
+            },
+            {
+                "timestamp": "2022-03-29 10:49",
+                "username": "myuser",
+                "action": "Manage/Design ",
+                "details": "Delete project field",
+            },
+            {
+                "timestamp": "2022-03-28 10:49",
+                "username": "myuser",
+                "action": "Manage/Design ",
+                "details": "Delete project field",
+            },
+        ]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
     """Handle metadata import/export request"""
     data = kwargs["data"]
@@ -483,6 +528,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "file": handle_simple_project_file_request,
         "formEventMapping": handle_simple_project_form_event_mapping_request,
         "generateNextRecordName": handle_generate_next_record_name_request,
+        "log": handle_logging_request,
         "metadata": handle_simple_project_metadata_request,
         "project": handle_project_info_request,
         "record": handle_simple_project_records_request,
