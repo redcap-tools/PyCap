@@ -22,6 +22,7 @@ class Project(
     methods.field_names.FieldNames,
     methods.files.Files,
     methods.instruments.Instruments,
+    methods.logging.Logging,
     methods.metadata.Metadata,
     methods.project_info.ProjectInfo,
     methods.records.Records,
