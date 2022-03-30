@@ -3,6 +3,7 @@
 import redcap.methods.field_names
 import redcap.methods.files
 import redcap.methods.instruments
+import redcap.methods.logging
 import redcap.methods.metadata
 import redcap.methods.project_info
 import redcap.methods.records
