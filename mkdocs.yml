@@ -13,6 +13,7 @@ nav:
         - Field Names: api_reference/field_names.md
         - Files: api_reference/files.md
         - Instruments: api_reference/instruments.md
+        - Logging: api_reference/logging.md
         - Metadata: api_reference/metadata.md
         - Project Info: api_reference/project_info.md
         - Repeating: api_reference/repeating.md

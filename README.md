@@ -44,6 +44,7 @@ Currently, these API calls are available:
 * Field names
 * Instrument-event mapping
 * File
+* Logging
 * Metadata
 * Project Info
 * Records
