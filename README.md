@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/redcap-tools/PyCap/actions/workflows/ci.yml/badge.svg)](https://github.com/redcap-tools/PyCap/actions/workflows/ci.yml)
 [![Codecov](https://codecov.io/gh/redcap-tools/PyCap/branch/master/graph/badge.svg?token=IRgcPzANxU)](https://codecov.io/gh/redcap-tools/PyCap)
-[![PyPI](https://badge.fury.io/py/PyCap.svg)](https://badge.fury.io/py/PyCap)
+[![PyPI version](https://badge.fury.io/py/pycap.svg)](https://badge.fury.io/py/pycap)
 [![black](https://img.shields.io/badge/code%20style-black-black)](https://pypi.org/project/black/)
 
 ## Intro
