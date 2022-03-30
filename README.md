@@ -43,11 +43,11 @@ Currently, these API calls are available:
 
 * Field names
 * Instrument-event mapping
-* Repeating instruments and events
 * File
 * Metadata
 * Project Info
 * Records
+* Repeating instruments and events
 * Report
 * Survey participant list
 * Users
