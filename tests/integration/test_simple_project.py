@@ -146,3 +146,11 @@ def test_export_and_import_metadata_df(simple_project):
 def test_export_project_info(simple_project):
     project_info = simple_project.export_project_info()
     assert project_info["is_longitudinal"] == 0
+
+
+@pytest.mark.integration
+def test_export_logging(simple_project):
+    logs = simple_project.export_logging(log_type="manage")
+    first_log = logs.pop()
+    assert "manage/design" in first_log["action"].lower()
+    assert "create project" in first_log["details"].lower()

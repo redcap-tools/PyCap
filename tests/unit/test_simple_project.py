@@ -211,6 +211,16 @@ def test_export_field_names_strictly_enforces_format(simple_project):
         simple_project.export_field_names(format_type="unsupported")
 
 
+def test_export_logging(simple_project):
+    all_logs = simple_project.export_logging()
+
+    assert is_json(all_logs)
+
+    filtered_logs = simple_project.export_logging(begin_time=datetime(2022, 3, 29))
+
+    assert len(filtered_logs) < len(all_logs)
+
+
 def test_export_project_info(simple_project):
     info = simple_project.export_project_info()
 
