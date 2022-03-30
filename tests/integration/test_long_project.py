@@ -17,6 +17,7 @@ def test_is_longitudinal(long_project):
     assert long_project.is_longitudinal
 
 
+@pytest.mark.integration
 def test_survey_participant_export(long_project):
     data = long_project.export_survey_participant_list(
         instrument="contact_info", event="enrollment_arm_1"
@@ -29,32 +30,38 @@ def test_survey_participant_export(long_project):
     assert "email" in data.columns
 
 
+@pytest.mark.integration
 def test_project_info_export(long_project):
     data = long_project.export_project_info()
     assert data["purpose"] == 0
 
 
+@pytest.mark.integration
 def test_users_export(long_project):
     data = long_project.export_users(format_type="df", df_kwargs={"index_col": "email"})
     assert data.index.name == "email"
 
 
+@pytest.mark.integration
 def test_records_export_labeled_headers(long_project):
     data = long_project.export_records(format_type="csv", raw_or_label_headers="label")
     assert "Study ID" in data
 
 
+@pytest.mark.integration
 def test_repeating_export(long_project):
     rep = long_project.export_repeating_instruments_events(format_type="json")
 
     assert isinstance(rep, list)
 
 
+@pytest.mark.integration
 def test_repeating_export_strictly_enfores_format(long_project):
     with pytest.raises(ValueError):
         long_project.export_repeating_instruments_events(format_type="unsupported")
 
 
+@pytest.mark.integration
 def test_import_export_repeating_forms(long_project):
     for format_type in ["xml", "json", "csv", "df"]:
         rep = long_project.export_repeating_instruments_events(format_type=format_type)
