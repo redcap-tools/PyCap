@@ -2,6 +2,8 @@
 # pylint: disable=missing-function-docstring
 import os
 
+from io import StringIO
+
 import pandas as pd
 import pytest
 import semantic_version
@@ -55,6 +57,32 @@ def test_import_and_delete_records(simple_project):
 
     res = simple_project.delete_records(new_record_ids)
     assert res == 3
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    ["return_format_type", "import_output", "delete_output"],
+    [
+        ("csv", "3", "3"),
+        ("xml", '<?xml version="1.0" encoding="UTF-8" ?><count>3</count>', "3"),
+    ],
+)
+def test_import_and_delete_records_non_json(
+    simple_project, return_format_type, import_output, delete_output
+):
+    new_record_ids = ["4", "5", "6"]
+    test_records_csv = "record_id\n" + "\n".join(new_record_ids)
+    test_records_df = pd.read_csv(StringIO(test_records_csv))
+
+    res = simple_project.import_records(
+        test_records_df, import_format="df", return_format_type=return_format_type
+    )
+    assert res == import_output
+
+    res = simple_project.delete_records(
+        new_record_ids, return_format_type=return_format_type
+    )
+    assert res == delete_output
 
 
 @pytest.mark.integration
