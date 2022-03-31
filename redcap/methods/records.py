@@ -33,6 +33,7 @@ class Records(Base):
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
+        export_blank_for_gray_form_status: Optional[bool] = None,
     ) -> Json:
         ...
 
@@ -56,6 +57,7 @@ class Records(Base):
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
+        export_blank_for_gray_form_status: Optional[bool] = None,
     ) -> str:
         ...
 
@@ -79,6 +81,7 @@ class Records(Base):
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
+        export_blank_for_gray_form_status: Optional[bool] = None,
     ) -> "pd.DataFrame":
         ...
 
@@ -101,6 +104,7 @@ class Records(Base):
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
+        export_blank_for_gray_form_status: Optional[bool] = None,
     ):
         # pylint: disable=line-too-long
         """
@@ -165,6 +169,9 @@ class Records(Base):
                 Filter on records created before a date
             decimal_character:
                 Force all numbers into same decimal format
+            export_blank_for_gray_form_status:
+                Whether or not to export blank values for instrument complete status fields
+                that have a gray status icon
         Returns:
             Union[List[Dict[str, Any]], str, pd.DataFrame]: Exported data
 
@@ -218,6 +225,7 @@ class Records(Base):
             export_checkbox_labels,
             filter_logic,
             decimal_character,
+            export_blank_for_gray_form_status,
         )
 
         str_keys = (
@@ -233,6 +241,7 @@ class Records(Base):
             "exportCheckboxLabel",
             "filterLogic",
             "decimalCharacter",
+            "exportBlankForGrayFormStatus",
         )
 
         for key, data in zip(str_keys, keys_to_add):
