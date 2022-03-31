@@ -426,6 +426,8 @@ class Records(Base):
 
         Args:
             records: List of record IDs to delete from the project
+            return_format_type:
+                Response format. By default, response will be json-decoded.
 
         Returns:
             Union[int, str]: Number of records deleted
