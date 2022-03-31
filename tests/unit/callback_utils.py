@@ -455,7 +455,10 @@ def handle_user_request(**kwargs) -> MockResponse:
     data = kwargs["data"]
     # user import (JSON only)
     if "data" in str(data):
-        resp = 1
+        resp = json.dumps(1)
+    # user delete (csv only)
+    elif "delete" in str(data):
+        resp = "1"
     # user export (JSON only)
     else:
         resp = [
@@ -470,8 +473,9 @@ def handle_user_request(**kwargs) -> MockResponse:
                 "forms": "test",
             }
         ]
+        resp = json.dumps(resp)
 
-    return (201, headers, json.dumps(resp))
+    return (201, headers, resp)
 
 
 # pylint: disable=unused-argument
