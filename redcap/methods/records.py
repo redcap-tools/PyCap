@@ -27,13 +27,13 @@ class Records(Base):
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
         export_data_access_groups: bool = False,
-        df_kwargs: Optional[Dict[str, Any]] = None,
         export_checkbox_labels: bool = False,
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
         export_blank_for_gray_form_status: Optional[bool] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> Json:
         ...
 
@@ -51,13 +51,13 @@ class Records(Base):
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
         export_data_access_groups: bool = False,
-        df_kwargs: Optional[Dict[str, Any]] = None,
         export_checkbox_labels: bool = False,
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
         export_blank_for_gray_form_status: Optional[bool] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> str:
         ...
 
@@ -75,13 +75,13 @@ class Records(Base):
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
         export_data_access_groups: bool = False,
-        df_kwargs: Optional[Dict[str, Any]] = None,
         export_checkbox_labels: bool = False,
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
         export_blank_for_gray_form_status: Optional[bool] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ) -> "pd.DataFrame":
         ...
 
@@ -98,13 +98,13 @@ class Records(Base):
         record_type: Literal["flat", "eav"] = "flat",
         export_survey_fields: bool = False,
         export_data_access_groups: bool = False,
-        df_kwargs: Optional[Dict[str, Any]] = None,
         export_checkbox_labels: bool = False,
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
         decimal_character: Optional[Literal[",", "."]] = None,
         export_blank_for_gray_form_status: Optional[bool] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
     ):
         # pylint: disable=line-too-long
         """
@@ -154,10 +154,6 @@ class Records(Base):
                     being used to make the API request is *not* in a data
                     access group. If the user is in a group, then this flag
                     will revert to its default value.
-            df_kwargs:
-                Passed to `pandas.read_csv` to control construction of
-                returned DataFrame.
-                By default, `{'index_col': self.def_field}`
             export_checkbox_labels:
                 Specify whether to export checkbox values as their label on
                 export.
@@ -172,6 +168,10 @@ class Records(Base):
             export_blank_for_gray_form_status:
                 Whether or not to export blank values for instrument complete status fields
                 that have a gray status icon
+            df_kwargs:
+                Passed to `pandas.read_csv` to control construction of
+                returned DataFrame.
+                By default, `{'index_col': self.def_field}`
         Returns:
             Union[List[Dict[str, Any]], str, pd.DataFrame]: Exported data
 
