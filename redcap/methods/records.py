@@ -211,6 +211,7 @@ class Records(Base):
             export_survey_fields,
             export_data_access_groups,
             export_checkbox_labels,
+            filter_logic,
         )
 
         str_keys = (
@@ -224,6 +225,7 @@ class Records(Base):
             "exportSurveyFields",
             "exportDataAccessGroups",
             "exportCheckboxLabel",
+            "filterLogic",
         )
 
         for key, data in zip(str_keys, keys_to_add):
@@ -239,9 +241,6 @@ class Records(Base):
 
         if date_end:
             payload["dateRangeEnd"] = date_end.strftime("%Y-%m-%d %H:%M:%S")
-
-        if filter_logic:
-            payload["filterLogic"] = filter_logic
 
         return_type = self._lookup_return_type(format_type, request_type="export")
         response = self._call_api(payload, return_type)
