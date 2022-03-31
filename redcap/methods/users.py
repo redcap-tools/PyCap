@@ -151,3 +151,52 @@ class Users(Base):
         response = self._call_api(payload, return_type)
 
         return response
+
+    @overload
+    def delete_users(
+        self, users: List[str], return_format_type: Literal["json"]
+    ) -> int:
+        ...
+
+    @overload
+    def delete_users(
+        self, users: List[str], return_format_type: Literal["csv", "xml"]
+    ) -> str:
+        ...
+
+    def delete_users(
+        self,
+        users: List[str],
+        return_format_type: Literal["json", "csv", "xml"] = "json",
+    ):
+        """
+        Delete users from the project.
+
+        Args:
+            users: List of usernames to delete from the project
+            return_format_type:
+                Response format. By default, response will be json-decoded.
+
+        Returns:
+            Union[int, str]: Number of users deleted
+
+        Examples:
+            >>> new_user = [{"username": "pandeharris@gmail.com"}]
+            >>> proj.import_users(new_user)
+            1
+            >>> proj.delete_users(["pandeharris@gmail.com"], return_format_type="xml")
+            '1'
+        """
+        payload = self._initialize_payload(
+            content="user", return_format_type=return_format_type
+        )
+        payload["action"] = "delete"
+        # Turn list of users into dict, and append to payload
+        users_dict = {f"users[{ idx }]": user for idx, user in enumerate(users)}
+        payload.update(users_dict)
+
+        return_type = self._lookup_return_type(
+            format_type=return_format_type, request_type="delete"
+        )
+        response = self._call_api(payload, return_type)
+        return response
