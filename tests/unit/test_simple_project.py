@@ -160,6 +160,13 @@ def test_user_export(simple_project):
             assert key in user
 
 
+def test_user_import(simple_project):
+    test_user = [{"username": "test@gmail.com"}]
+    res = simple_project.import_users(test_user)
+
+    assert res == 1
+
+
 def test_generate_next_record_name(simple_project):
     next_name = simple_project.generate_next_record_name()
 

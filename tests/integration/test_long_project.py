@@ -43,6 +43,14 @@ def test_users_export(long_project):
 
 
 @pytest.mark.integration
+def test_users_import(long_project):
+    test_user = [{"username": "pandeharris@gmail.com"}]
+    res = long_project.import_users(test_user, return_format_type="csv")
+
+    assert res == "1"
+
+
+@pytest.mark.integration
 def test_records_export_labeled_headers(long_project):
     data = long_project.export_records(format_type="csv", raw_or_label_headers="label")
     assert "Study ID" in data

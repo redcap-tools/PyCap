@@ -452,18 +452,24 @@ def handle_long_project_reports_request(**kwargs) -> MockResponse:
 def handle_user_request(**kwargs) -> MockResponse:
     """Handle user export"""
     headers = kwargs["headers"]
-    resp = [
-        {
-            "firstname": "test",
-            "lastname": "test",
-            "email": "test",
-            "username": "test",
-            "expiration": "test",
-            "data_access_group": "test",
-            "data_export": "test",
-            "forms": "test",
-        }
-    ]
+    data = kwargs["data"]
+    # user import (JSON only)
+    if "data" in str(data):
+        resp = 1
+    # user export (JSON only)
+    else:
+        resp = [
+            {
+                "firstname": "test",
+                "lastname": "test",
+                "email": "test",
+                "username": "test",
+                "expiration": "test",
+                "data_access_group": "test",
+                "data_export": "test",
+                "forms": "test",
+            }
+        ]
 
     return (201, headers, json.dumps(resp))
 
