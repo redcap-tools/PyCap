@@ -167,6 +167,14 @@ def test_user_import(simple_project):
     assert res == 1
 
 
+def test_user_delete(simple_project):
+    res = simple_project.delete_users(
+        [{"username": "test@gmail.com"}], return_format_type="csv"
+    )
+
+    assert res == "1"
+
+
 def test_generate_next_record_name(simple_project):
     next_name = simple_project.generate_next_record_name()
 

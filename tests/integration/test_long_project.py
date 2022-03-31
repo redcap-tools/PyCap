@@ -43,11 +43,16 @@ def test_users_export(long_project):
 
 
 @pytest.mark.integration
-def test_users_import(long_project):
-    test_user = [{"username": "pandeharris@gmail.com"}]
-    res = long_project.import_users(test_user, return_format_type="csv")
+def test_users_import_and_delete(long_project):
+    test_user = "pandeharris@gmail.com"
+    test_user_json = [{"username": test_user}]
+    res = long_project.import_users(test_user_json, return_format_type="csv")
 
     assert res == "1"
+
+    res = long_project.delete_users([test_user])
+
+    assert res == 1
 
 
 @pytest.mark.integration
