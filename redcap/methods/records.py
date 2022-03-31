@@ -32,6 +32,7 @@ class Records(Base):
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
+        decimal_character: Optional[Literal[",", "."]] = None,
     ) -> Json:
         ...
 
@@ -54,6 +55,7 @@ class Records(Base):
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
+        decimal_character: Optional[Literal[",", "."]] = None,
     ) -> str:
         ...
 
@@ -76,6 +78,7 @@ class Records(Base):
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
+        decimal_character: Optional[Literal[",", "."]] = None,
     ) -> "pd.DataFrame":
         ...
 
@@ -97,6 +100,7 @@ class Records(Base):
         filter_logic: Optional[str] = None,
         date_begin: Optional[datetime] = None,
         date_end: Optional[datetime] = None,
+        decimal_character: Optional[Literal[",", "."]] = None,
     ):
         # pylint: disable=line-too-long
         """
@@ -159,7 +163,8 @@ class Records(Base):
                 Filter on records created after a date
             date_end:
                 Filter on records created before a date
-
+            decimal_character:
+                Force all numbers into same decimal format
         Returns:
             Union[List[Dict[str, Any]], str, pd.DataFrame]: Exported data
 
@@ -212,6 +217,7 @@ class Records(Base):
             export_data_access_groups,
             export_checkbox_labels,
             filter_logic,
+            decimal_character,
         )
 
         str_keys = (
@@ -226,6 +232,7 @@ class Records(Base):
             "exportDataAccessGroups",
             "exportCheckboxLabel",
             "filterLogic",
+            "decimalCharacter",
         )
 
         for key, data in zip(str_keys, keys_to_add):
