@@ -10,6 +10,7 @@ nav:
     - Using PyCap in an app/package: using-in-app-or-package.md
     - API Reference:
         - Project: api_reference/project.md
+        - Data Access Groups: api_reference/data_access_groups.md
         - Field Names: api_reference/field_names.md
         - Files: api_reference/files.md
         - Instruments: api_reference/instruments.md

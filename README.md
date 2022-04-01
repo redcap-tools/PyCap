@@ -41,6 +41,7 @@ Currently, these API calls are available:
 
 ### Export
 
+* Data Access Groups
 * Field names
 * Instrument-event mapping
 * File
@@ -52,18 +53,22 @@ Currently, these API calls are available:
 * Report
 * Survey participant list
 * Users
+* User-DAG assignment
 * Version
 
 ### Import
 
+* Data Access Groups
 * File
 * Metadata
 * Records
 * Repeating instruments and events
 * Users
+* User-DAG assignment
 
 ### Delete
 
+* Data Access Groups
 * File
 * Records
 * Users
@@ -71,6 +76,7 @@ Currently, these API calls are available:
 ### Other
 
 * Generate next record name
+* Switch data access group
 
 ## Citing
 
