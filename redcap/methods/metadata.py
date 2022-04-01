@@ -152,10 +152,8 @@ class Metadata(Base):
             return_format_type=return_format_type,
             content="metadata",
         )
-
-        # pylint: disable=unsupported-assignment-operation
         payload["dateFormat"] = date_format
-        # pylint: enable=unsupported-assignment-operation
+
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )

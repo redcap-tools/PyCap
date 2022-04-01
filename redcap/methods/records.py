@@ -387,13 +387,10 @@ class Records(Base):
             return_format_type=return_format_type,
             content="record",
         )
-
-        # pylint: disable=unsupported-assignment-operation
         payload["overwriteBehavior"] = overwrite
         payload["returnContent"] = return_content
         payload["dateFormat"] = date_format
         payload["forceAutoNumber"] = force_auto_number
-        # pylint: enable=unsupported-assignment-operation
 
         return_type = self._lookup_return_type(
             format_type=return_format_type,
