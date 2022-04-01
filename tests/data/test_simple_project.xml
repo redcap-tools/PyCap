@@ -15,11 +15,24 @@
 	<redcap:PurposeOther></redcap:PurposeOther>
 	<redcap:ProjectNotes></redcap:ProjectNotes>
 	<redcap:SurveyQueueCustomText></redcap:SurveyQueueCustomText>
+	<redcap:SurveyQueueHide>0</redcap:SurveyQueueHide>
 	<redcap:DataMartProjectEnabled>0</redcap:DataMartProjectEnabled>
 	<redcap:DatamartAllowRepeatRevision>0</redcap:DatamartAllowRepeatRevision>
 	<redcap:DatamartAllowCreateRevision>0</redcap:DatamartAllowCreateRevision>
 	<redcap:DatamartCronEnabled>0</redcap:DatamartCronEnabled>
+	<redcap:HideFilledForms>1</redcap:HideFilledForms>
+	<redcap:FormActivationSurveyAutocontinue>0</redcap:FormActivationSurveyAutocontinue>
 	<redcap:MissingDataCodes></redcap:MissingDataCodes>
+	<redcap:ProtectedEmailMode>0</redcap:ProtectedEmailMode>
+	<redcap:ProtectedEmailModeCustomText></redcap:ProtectedEmailModeCustomText>
+	<redcap:ProtectedEmailModeTrigger>ALL</redcap:ProtectedEmailModeTrigger>
+	<redcap:ProtectedEmailModeLogo></redcap:ProtectedEmailModeLogo>
+	<redcap:DataAccessGroupsGroup>
+		<redcap:DataAccessGroups group_name="Test DAG"/>
+	</redcap:DataAccessGroupsGroup>
+	<redcap:MultilanguageSettingsGroup>
+		<redcap:MultilanguageSettings settings="YToxNDp7czo3OiJ2ZXJzaW9uIjtzOjY6IjEyLjEuMCI7czo1OiJsYW5ncyI7YTowOnt9czo5OiJwcm9qZWN0SWQiO3M6NToiMzk1NTAiO3M6MTU6ImRlc2lnbmF0ZWRGaWVsZCI7czowOiIiO3M6NToiZGVidWciO2I6MDtzOjc6InJlZkxhbmciO3M6MDoiIjtzOjEyOiJmYWxsYmFja0xhbmciO3M6MDoiIjtzOjg6ImRpc2FibGVkIjtiOjA7czoyNToiaGlnaGxpZ2h0TWlzc2luZ0RhdGFlbnRyeSI7YjowO3M6MjI6ImhpZ2hsaWdodE1pc3NpbmdTdXJ2ZXkiO2I6MDtzOjEyOiJhbGVydFNvdXJjZXMiO2E6MDp7fXM6MTQ6ImV4Y2x1ZGVkQWxlcnRzIjthOjA6e31zOjE0OiJleGNsdWRlZEZpZWxkcyI7YTowOnt9czoxNjoiZXhjbHVkZWRTZXR0aW5ncyI7YTowOnt9fQ=="/>
+	</redcap:MultilanguageSettingsGroup>
 </GlobalVariables>
 <MetaDataVersion OID="Metadata.PyCapTestSimpleProject_2021-10-13_1031" Name="PyCap Test Simple Project" redcap:RecordIdField="record_id">
 	<FormDef OID="Form.demographics" Name="Basic Demography Form" Repeating="No" redcap:FormName="demographics">
@@ -31,6 +44,7 @@
 	</FormDef>
 	<ItemGroupDef OID="demographics.record_id" Name="Basic Demography Form" Repeating="No">
 		<ItemRef ItemOID="record_id" Mandatory="No" redcap:Variable="record_id"/>
+		<ItemRef ItemOID="redcap_data_access_group" Mandatory="No" redcap:Variable="redcap_data_access_group"/>
 	</ItemGroupDef>
 	<ItemGroupDef OID="demographics.first_name" Name="Contact Information" Repeating="No">
 		<ItemRef ItemOID="first_name" Mandatory="No" redcap:Variable="first_name"/>
@@ -57,6 +71,9 @@
 	</ItemGroupDef>
 	<ItemDef OID="record_id" Name="record_id" DataType="text" Length="999" redcap:Variable="record_id" redcap:FieldType="text">
 		<Question><TranslatedText>Study ID</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="redcap_data_access_group" Name="redcap_data_access_group" DataType="text" Length="999" redcap:Variable="redcap_data_access_group">
+		<Question><TranslatedText>Data Access Group</TranslatedText></Question>
 	</ItemDef>
 	<ItemDef OID="first_name" Name="first_name" DataType="text" Length="999" redcap:Variable="first_name" redcap:FieldType="text" redcap:SectionHeader="Contact Information" redcap:Identifier="y">
 		<Question><TranslatedText>First Name</TranslatedText></Question>
@@ -207,6 +224,7 @@
 			<FormData FormOID="Form.demographics" FormRepeatKey="1">
 				<ItemGroupData ItemGroupOID="demographics.record_id" ItemGroupRepeatKey="1">
 					<ItemData ItemOID="record_id" Value="3"/>
+					<ItemData ItemOID="redcap_data_access_group" Value="test_dag"/>
 				</ItemGroupData>
 				<ItemGroupData ItemGroupOID="demographics.first_name" ItemGroupRepeatKey="1">
 					<ItemData ItemOID="first_name" Value="PyCap"/>

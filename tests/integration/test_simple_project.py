@@ -38,7 +38,7 @@ def test_export_records_df_eav(simple_project):
     proj_records_export = simple_project.export_records(
         format_type="df", record_type="eav"
     )
-    assert len(proj_records_export) == 34
+    assert len(proj_records_export) == 30
 
 
 @pytest.mark.integration
@@ -110,6 +110,41 @@ def test_export_users(simple_project):
     assert len(users) == 1
     # any user in this test project would by necessity have API access
     assert users[0]["api_export"] == 1
+
+
+@pytest.mark.integration
+def test_export_dags(simple_project):
+    dags = simple_project.export_dags(format_type="df")
+
+    assert len(dags) == 1
+
+
+@pytest.mark.integration
+def test_import_delete_dags(simple_project):
+    new_dag = [{"data_access_group_name": "New DAG", "unique_group_name": ""}]
+
+    res = simple_project.import_dags(new_dag, return_format_type="csv")
+    assert res == "1"
+
+    res = simple_project.delete_dags(["new_dag"])
+    assert res == 1
+
+
+@pytest.mark.integration
+def test_export_user_dag_assignment(simple_project):
+    res = simple_project.export_user_dag_assignment()
+
+    assert len(res) == 1
+
+
+@pytest.mark.integration
+def test_import_user_dag_assignment(simple_project):
+    dag_mapping = simple_project.export_user_dag_assignment()
+    res = simple_project.import_user_dag_assignment(
+        dag_mapping, return_format_type="csv"
+    )
+
+    assert res == "1"
 
 
 @pytest.mark.integration

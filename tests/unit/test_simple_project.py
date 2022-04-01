@@ -122,6 +122,46 @@ def test_import_date_formatting(simple_project, record, date_format):
     assert response["count"] == 2
 
 
+def test_dag_export(simple_project):
+    response = simple_project.export_dags()
+
+    assert len(response) == 2
+
+
+def test_dag_import(simple_project):
+    new_dag = [{"data_access_group_name": "New DAG", "unique_group_name": ""}]
+    response = simple_project.import_dags(new_dag)
+
+    assert response == 1
+
+
+def test_dag_delete(simple_project):
+    dag = ["new_dag"]
+    response = simple_project.delete_dags(dag)
+
+    assert response == 1
+
+
+def test_dag_switch(simple_project):
+    response = simple_project.switch_dag("test_dag")
+
+    assert response == "1"
+
+
+def test_user_dag_export(simple_project):
+    response = simple_project.export_user_dag_assignment()
+
+    assert len(response) == 2
+
+
+def test_user_dag_import(simple_project):
+    dag_mapping = [{"username": "new_user", "redcap_data_access_group": "test_dag"}]
+
+    response = simple_project.import_user_dag_assignment(dag_mapping)
+
+    assert response == 1
+
+
 def test_file_import(simple_project):
     this_dir, _ = os.path.split(__file__)
     upload_fname = os.path.join(this_dir, "data.txt")
