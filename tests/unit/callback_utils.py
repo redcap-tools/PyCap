@@ -49,6 +49,47 @@ def handle_long_project_arms_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
+def handle_dag_request(**kwargs) -> MockResponse:
+    """Handle DAG requests"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # DAG import (JSON only)
+    if "data" in str(data):
+        resp = json.dumps(1)
+    # DAG delete (JSON only)
+    elif "delete" in str(data):
+        resp = json.dumps(1)
+    # DAG delete (csv only)
+    elif "switch" in str(data):
+        resp = "1"
+    # DAG export (JSON only)
+    else:
+        resp = [
+            {"data_access_group_name": "New DAG", "unique_group_name": "new_dag"},
+            {"data_access_group_name": "Test DAG", "unique_group_name": "test_dag"},
+        ]
+        resp = json.dumps(resp)
+
+    return (201, headers, resp)
+
+
+def handle_user_dag_assignment_request(**kwargs):
+    """Handle User-DAG assignment requests"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # User-DAG import (JSON only)
+    if "data" in str(data):
+        resp = 1
+    # User-DAG export (JSON only)
+    else:
+        resp = [
+            {"username": "user1@gmail.com", "redcap_data_access_group": "test_dag"},
+            {"username": "user2@gmail.com", "redcap_data_access_group": ""},
+        ]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_export_field_names_request(**kwargs) -> MockResponse:
     """Give back list of project export field names"""
     data = kwargs["data"]
@@ -450,7 +491,7 @@ def handle_long_project_reports_request(**kwargs) -> MockResponse:
 
 
 def handle_user_request(**kwargs) -> MockResponse:
-    """Handle user export"""
+    """Handle user requests"""
     headers = kwargs["headers"]
     data = kwargs["data"]
     # user import (JSON only)
@@ -534,6 +575,7 @@ def handle_long_project_survey_participants_request(**kwargs) -> MockResponse:
 def get_simple_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
+        "dag": handle_dag_request,
         "exportFieldNames": handle_export_field_names_request,
         "file": handle_simple_project_file_request,
         "formEventMapping": handle_simple_project_form_event_mapping_request,
@@ -544,6 +586,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "record": handle_simple_project_records_request,
         "report": handle_simple_project_reports_request,
         "user": handle_user_request,
+        "userDagMapping": handle_user_dag_assignment_request,
         "version": handle_simple_project_version_request,
     }
 
