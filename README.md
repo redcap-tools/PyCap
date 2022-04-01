@@ -60,11 +60,13 @@ Currently, these API calls are available:
 * Metadata
 * Records
 * Repeating instruments and events
+* Users
 
 ### Delete
 
 * File
 * Records
+* Users
 
 ### Other
 
