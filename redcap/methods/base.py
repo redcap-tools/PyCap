@@ -249,43 +249,13 @@ class Base:
 
         return payload
 
-    @overload
-    def _initialize_import_payload(
-        self,
-        to_import: List[dict],
-        import_format: Literal["json"],
-        return_format_type: Literal["json", "csv", "xml"],
-        content: str,
-    ) -> Dict[str, Any]:
-        ...
-
-    @overload
-    def _initialize_import_payload(
-        self,
-        to_import: str,
-        import_format: Literal["csv", "xml"],
-        return_format_type: Literal["json", "csv", "xml"],
-        content: str,
-    ) -> Dict[str, Any]:
-        ...
-
-    @overload
-    def _initialize_import_payload(
-        self,
-        to_import: "pd.DataFrame",
-        import_format: Literal["df"],
-        return_format_type: Literal["json", "csv", "xml"],
-        content: str,
-    ) -> Dict[str, Any]:
-        ...
-
     def _initialize_import_payload(
         self,
         to_import: Union[List[dict], str, "pd.DataFrame"],
         import_format: Literal["json", "csv", "xml", "df"],
         return_format_type: Literal["json", "csv", "xml"],
         content: str,
-    ):
+    ) -> Dict[str, Any]:
         """Standardize the data to be imported and add it to the payload
 
         Args:
