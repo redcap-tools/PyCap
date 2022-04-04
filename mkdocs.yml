@@ -22,6 +22,7 @@ nav:
         - Reports: api_reference/reports.md
         - Surveys: api_reference/surveys.md
         - Users: api_reference/users.md
+        - User Roles: api_reference/user_roles.md
         - Version: api_reference/version.md
 theme:
   name: material
