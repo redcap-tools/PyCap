@@ -54,6 +54,8 @@ Currently, these API calls are available:
 * Survey participant list
 * Users
 * User-DAG assignment
+* User Roles
+* User-Role assignment
 * Version
 
 ### Import
@@ -65,6 +67,8 @@ Currently, these API calls are available:
 * Repeating instruments and events
 * Users
 * User-DAG assignment
+* User Roles
+* User-Role assignment
 
 ### Delete
 
