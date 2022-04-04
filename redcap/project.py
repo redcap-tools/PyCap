@@ -72,5 +72,10 @@ class Project(
         try:
             return self._redcap_version
         except AttributeError:
+            # weird pylint bug on windows where it can't find Version.export_version()
+            # possible too many parents it's inheriting from? We also need to disable
+            # useless-supression since this is a windows only issue
+            # pylint: disable=no-member,useless-suppression
             self._redcap_version = self.export_version()
+            # pylint: enable=no-member,useless-suppression
             return self._redcap_version
