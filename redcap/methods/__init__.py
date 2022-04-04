@@ -12,4 +12,5 @@ import redcap.methods.repeating
 import redcap.methods.reports
 import redcap.methods.surveys
 import redcap.methods.users
+import redcap.methods.user_roles
 import redcap.methods.version

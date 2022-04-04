@@ -31,6 +31,7 @@ class Project(
     methods.reports.Reports,
     methods.surveys.Surveys,
     methods.users.Users,
+    methods.user_roles.UserRoles,
     methods.version.Version,
 ):
     """Main class for interacting with REDCap projects
