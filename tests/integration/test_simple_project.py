@@ -113,6 +113,37 @@ def test_export_users(simple_project):
 
 
 @pytest.mark.integration
+def test_export_user_roles(simple_project):
+    user_roles = simple_project.export_user_roles()
+    assert len(user_roles) == 1
+    assert user_roles[0]["role_label"] == "Example Role"
+
+
+@pytest.mark.integration
+def test_export_import_user_role_assignments(simple_project):
+    new_user = "pandeharris@gmail.com"
+    simple_project.import_users([{"username": new_user}])
+
+    example_role_name = simple_project.export_user_roles()[0]["unique_role_name"]
+
+    res = simple_project.import_user_role_assignment(
+        [{"username": new_user, "unique_role_name": example_role_name}]
+    )
+    assert res == 1
+
+    user_role_assignments = simple_project.export_user_role_assignment()
+    test_user_role_name = [
+        user_role["unique_role_name"]
+        for user_role in user_role_assignments
+        if user_role["username"] == new_user
+    ][0]
+    assert test_user_role_name == example_role_name
+    # cleanup
+    res = simple_project.delete_users([new_user])
+    assert res == 1
+
+
+@pytest.mark.integration
 def test_export_dags(simple_project):
     dags = simple_project.export_dags(format_type="df")
 

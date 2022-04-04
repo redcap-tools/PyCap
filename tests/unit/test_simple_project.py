@@ -215,6 +215,30 @@ def test_user_delete(simple_project):
     assert res == "1"
 
 
+def test_user_role_export(simple_project):
+    res = simple_project.export_user_roles()
+    assert len(res) == 1
+
+
+def test_user_role_import(simple_project):
+    new_role = [{"role_label": "New role"}]
+
+    res = simple_project.import_user_roles(new_role)
+    assert res == 1
+
+
+def test_export_user_role_assignment(simple_project):
+    res = simple_project.export_user_role_assignment()
+    assert len(res) == 1
+
+
+def test_import_user_role_assignment(simple_project):
+    new_role_assignment = [{"unique_role_name": "test role", "username": "test user"}]
+
+    res = simple_project.import_user_role_assignment(new_role_assignment)
+    assert res == 1
+
+
 def test_generate_next_record_name(simple_project):
     next_name = simple_project.generate_next_record_name()
 

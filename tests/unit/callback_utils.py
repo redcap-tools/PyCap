@@ -519,6 +519,45 @@ def handle_user_request(**kwargs) -> MockResponse:
     return (201, headers, resp)
 
 
+def handle_user_role_request(**kwargs) -> MockResponse:
+    """Handle user role requests"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # user import (JSON only)
+    if "data" in str(data):
+        resp = 1
+    # user export (JSON only)
+    else:
+        resp = [
+            {
+                "unique_role_name": "Role Name",
+                "role_label": "Test role",
+                "design": "0",
+                "user_rights": "0",
+                "data_access_groups": "0",
+                "data_export": "0",
+                "reports": "0",
+                "stats_and_charts": "0",
+            }
+        ]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_user_role_assignment_request(**kwargs) -> MockResponse:
+    """Handle user role mapping requests"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # user import (JSON only)
+    if "data" in str(data):
+        resp = 1
+    # user export (JSON only)
+    else:
+        resp = [{"username": "test user", "unique_role_name": "Role Name"}]
+
+    return (201, headers, json.dumps(resp))
+
+
 # pylint: disable=unused-argument
 def handle_simple_project_version_request(**kwargs) -> MockResponse:
     """Handle REDCap version request"""
@@ -587,6 +626,8 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "report": handle_simple_project_reports_request,
         "user": handle_user_request,
         "userDagMapping": handle_user_dag_assignment_request,
+        "userRole": handle_user_role_request,
+        "userRoleMapping": handle_user_role_assignment_request,
         "version": handle_simple_project_version_request,
     }
 
