@@ -1,5 +1,19 @@
 # HISTORY
 
+## 2.1.0 (2022-04-05)
+
+### API Support :robot:
+
+- Add logging methods (#222)
+- Add user methods (#225)
+- Add DAG methods (#226)
+- Add user role methods (#228)
+- Add new args for export records (#223)
+
+### Package Improvements :muscle:
+
+- Add docs tests for return format type (#224)
+
 ## 2.0.0 (2022-03-29)
 
 ### API Support :robot:
