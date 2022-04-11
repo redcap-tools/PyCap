@@ -122,7 +122,7 @@ class _RCRequest:
         return_empty_json: Literal[False],
         return_bytes: Literal[False],
     ) -> Union[Json, Dict[str, str]]:
-        """This should return json, but might also return an error dict"""
+        # This should return json, but might also return an error dict
         ...
 
     @overload
