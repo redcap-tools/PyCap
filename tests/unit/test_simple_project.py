@@ -46,8 +46,14 @@ def test_bad_creds(project_urls, project_token):
     bad_url = project_urls["bad_url"]
     bad_token = "1"
 
+    # bad urls
+    with pytest.raises(AssertionError):
+        Project("", project_token)
     with pytest.raises(AssertionError):
         Project(bad_url, project_token)
+    # bad tokens
+    with pytest.raises(AssertionError):
+        Project(project_urls["simple_project"], None)
     with pytest.raises(AssertionError):
         Project(project_urls["simple_project"], bad_token)
 

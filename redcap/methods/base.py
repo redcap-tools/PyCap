@@ -109,7 +109,9 @@ class Base:
 
     @staticmethod
     def _validate_url_and_token(url: str, token: str) -> None:
-        """Run basic valiation on user supplied url and token"""
+        """Run basic validation on user supplied url and token"""
+        assert url, "Error! REDCap URL is missing"
+        assert token, "Error! REDCap token is missing"
         url_actual_last_5 = url[-5:]
         url_expected_last_5 = "/api/"
 
