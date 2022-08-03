@@ -247,4 +247,4 @@ def test_export_logging(simple_project):
     logs = simple_project.export_logging(log_type="manage")
     first_log = logs.pop()
     assert "manage/design" in first_log["action"].lower()
-    assert "create project" in first_log["details"].lower()
+    assert "multi-language" in first_log["details"].lower()
