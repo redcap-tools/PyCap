@@ -22,7 +22,7 @@ $ pip install PyCap
 If you want to load REDCap data into [`pandas`](https://pandas.pydata.org/) dataframes, this will make sure you have `pandas` installed
 
 ```sh
-$ pip install PyCap[pandas]
+$ pip install PyCap[all]
 ```
 
 To install the bleeding edge version from the github repo, use the following
