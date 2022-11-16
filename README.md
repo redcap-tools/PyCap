@@ -76,6 +76,7 @@ Currently, these API calls are available:
 * File
 * Records
 * Users
+* User Roles
 
 ### Other
 

@@ -526,6 +526,9 @@ def handle_user_role_request(**kwargs) -> MockResponse:
     # user import (JSON only)
     if "data" in str(data):
         resp = 1
+    # user delete (csv only)
+    elif "delete" in str(data):
+        resp = 1
     # user export (JSON only)
     else:
         resp = [
