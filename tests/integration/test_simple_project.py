@@ -120,6 +120,19 @@ def test_export_user_roles(simple_project):
 
 
 @pytest.mark.integration
+def test_import_delete_user_roles(simple_project):
+    new_role = [{"role_label": "New Role"}]
+
+    res = simple_project.import_user_roles(new_role)
+    assert res == 1
+
+    new_role_id = simple_project.export_user_roles()[-1]["unique_role_name"]
+
+    res = simple_project.delete_user_roles([new_role_id])
+    assert res == 1
+
+
+@pytest.mark.integration
 def test_export_import_user_role_assignments(simple_project):
     new_user = "pandeharris@gmail.com"
     simple_project.import_users([{"username": new_user}])

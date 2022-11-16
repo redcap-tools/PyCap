@@ -128,6 +128,63 @@ class UserRoles(Base):
         return response
 
     @overload
+    def delete_user_roles(
+        self, user_roles: List[str], return_format_type: Literal["json"]
+    ) -> int:
+        ...
+
+    @overload
+    def delete_user_roles(
+        self, user_roles: List[str], return_format_type: Literal["csv", "xml"]
+    ) -> str:
+        ...
+
+    def delete_user_roles(
+        self,
+        roles: List[str],
+        return_format_type: Literal["json", "csv", "xml"] = "json",
+    ):
+        """
+        Delete user roles from the project.
+
+        Args:
+            roles: List of user roles to delete from the project
+            return_format_type:
+                Response format. By default, response will be json-decoded.
+
+        Returns:
+            Union[int, str]: Number of user roles deleted
+
+        Examples:
+            Create a new user role
+            >>> new_role = [{"role_label": "New Role"}]
+            >>> proj.import_user_roles(new_role)
+            1
+
+            We don't know what the 'unique_role_name' is for the newly created role,
+            so we have to find that out. Since it's the last role created, it should
+            be the last one in the export result
+            >>> new_role_id = proj.export_user_roles()[-1]["unique_role_name"]
+
+            Delete the role
+            >>> proj.delete_user_roles([new_role_id])
+            1
+        """
+        payload = self._initialize_payload(
+            content="userRole", return_format_type=return_format_type
+        )
+        payload["action"] = "delete"
+        # Turn list of user roles into dict, and append to payload
+        roles_dict = {f"roles[{ idx }]": role for idx, role in enumerate(roles)}
+        payload.update(roles_dict)
+
+        return_type = self._lookup_return_type(
+            format_type=return_format_type, request_type="delete"
+        )
+        response = self._call_api(payload, return_type)
+        return response
+
+    @overload
     def export_user_role_assignment(
         self, format_type: Literal["json"], df_kwargs: None
     ) -> Json:

@@ -233,6 +233,11 @@ def test_user_role_import(simple_project):
     assert res == 1
 
 
+def test_user_role_delete(simple_project):
+    res = simple_project.delete_user_roles(["1000"])
+    assert res == 1
+
+
 def test_export_user_role_assignment(simple_project):
     res = simple_project.export_user_role_assignment()
     assert len(res) == 1
