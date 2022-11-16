@@ -39,8 +39,9 @@ def create_project(url: str, super_token: str, project_xml_path: Path) -> str:
             "odm": project_data,
         },
     )
-
-    return res.text
+    # Response includes a bunch of SQL statements before we get to the token
+    # This limits the return value to just the token
+    return res.text[-32:]
 
 
 @pytest.fixture(scope="module")
@@ -58,10 +59,29 @@ def simple_project_token(redcapdemo_url) -> str:
     return project_token
 
 
+def grant_superuser_rights(proj: Project) -> Project:
+    """Given a newly created project, give the superuser
+    the highest level of user rights
+    """
+    superuser = proj.export_users()[0]
+
+    superuser["record_delete"] = 1
+    superuser["record_rename"] = 1
+    superuser["lock_records_all_forms"] = 1
+    superuser["lock_records"] = 1
+
+    res = proj.import_users([superuser])
+    assert res == 1
+
+    return proj
+
+
 @pytest.fixture(scope="module")
 def simple_project(redcapdemo_url, simple_project_token):
     """A simple REDCap project"""
-    return Project(redcapdemo_url, simple_project_token)
+    simple_proj = Project(redcapdemo_url, simple_project_token)
+    simple_proj = grant_superuser_rights(simple_proj)
+    return simple_proj
 
 
 @pytest.fixture(scope="module")
@@ -76,4 +96,6 @@ def long_project_token(redcapdemo_url) -> str:
 @pytest.fixture(scope="module")
 def long_project(redcapdemo_url, long_project_token):
     """A long REDCap project"""
-    return Project(redcapdemo_url, long_project_token)
+    long_proj = Project(redcapdemo_url, long_project_token)
+    long_proj = grant_superuser_rights(long_proj)
+    return long_proj
