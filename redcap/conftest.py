@@ -8,7 +8,11 @@ from pathlib import Path
 import pytest
 
 from redcap.project import Project
-from tests.integration.conftest import create_project, SUPER_TOKEN
+from tests.integration.conftest import (
+    create_project,
+    grant_superuser_rights,
+    SUPER_TOKEN,
+)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -22,5 +26,6 @@ def add_doctest_objects(doctest_namespace):
         project_xml_path=doctest_project_xml,
     )
     doctest_project = Project(url, doctest_token)
+    doctest_project = grant_superuser_rights(doctest_project)
     doctest_namespace["proj"] = doctest_project
     doctest_namespace["TOKEN"] = doctest_token
