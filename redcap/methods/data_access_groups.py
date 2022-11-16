@@ -142,7 +142,7 @@ class DataAccessGroups(Base):
         Delete dags from the project.
 
         Args:
-            dags: List of usernames to delete from the project
+            dags: List of dags to delete from the project
             return_format_type:
                 Response format. By default, response will be json-decoded.
 
