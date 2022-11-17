@@ -1,5 +1,19 @@
 # HISTORY
 
+## 2.2.0 (2022-11-17)
+
+### API Support :robot:
+
+- Add support for `delete_roles`
+
+### Package Improvements :muscle:
+
+- Add check for missing token and url
+
+### Documentation :memo:
+
+- Modify instructions for installing `pandas` (optional package dependency)
+
 ## 2.1.0 (2022-04-05)
 
 ### API Support :robot:
