@@ -12,6 +12,34 @@ if TYPE_CHECKING:
 class Records(Base):
     """Responsible for all API methods under 'Records' in the API Playground"""
 
+    def _backfill_fields(self, fields: list[str], forms: list[str]):
+        """
+        Properly backfill fields to explicitly request the primary keys and
+        "form_complete" fields of the project. REDCap won't include fields like
+        the record_id if they're not on the form being requested, despite the user
+        almost always wanting that field to be included. When record_id is requested,
+        that automatically adds other fields like redcap_event_name, redcap_repeat_instrument,
+        and redcap_repeat_instance to the reponse as well.
+
+        Args:
+            fields: requested fields
+            forms: requested forms
+
+        Returns: A list of all fields to request, including
+        self.def_field (record_id) and the "form_complete" fields
+        """
+        form_complete_fields = [f"{ form }_complete" for form in self.forms]
+        if forms and not fields:
+            return form_complete_fields + [self.def_field]
+
+        if fields and self.def_field not in fields:
+            return fields + [self.def_field]
+
+        if not fields:
+            return self.field_names + form_complete_fields
+
+        return fields
+
     # pylint: disable=too-many-locals
     @overload
     def export_records(
@@ -107,7 +135,7 @@ class Records(Base):
         df_kwargs: Optional[Dict[str, Any]] = None,
     ):
         # pylint: disable=line-too-long
-        """
+        r"""
         Export data from the REDCap project.
 
         Args:
@@ -197,7 +225,7 @@ class Records(Base):
             ...     fields=["field_1", "checkbox_field"],
             ...     raw_or_label="label"
             ... )
-            'field_1,checkbox_field___1,checkbox_field___2\\nYes,Unchecked,Checked\\nNo,Unchecked,Unchecked\\n'
+            'record_id,redcap_event_name,redcap_repeat_instrument,redcap_repeat_instance,field_1,checkbox_field___1,checkbox_field___2\n1,"Event 1",,1,Yes,Unchecked,Checked\n2,"Event 1",,1,No,Unchecked,Unchecked\n'
 
             >>> import pandas as pd
             >>> pd.set_option("display.max_columns", 3)
@@ -212,6 +240,9 @@ class Records(Base):
         payload = self._initialize_payload(
             content="record", format_type=format_type, record_type=record_type
         )
+
+        fields = self._backfill_fields(fields, forms)
+
         keys_to_add = (
             records,
             fields,
