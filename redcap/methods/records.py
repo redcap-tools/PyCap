@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class Records(Base):
     """Responsible for all API methods under 'Records' in the API Playground"""
 
-    def _backfill_fields(self, fields: list[str], forms: list[str]):
+    def _backfill_fields(self, fields: List[str], forms: List[str]):
         """
         Properly backfill fields to explicitly request the primary keys and
         "form_complete" fields of the project. REDCap won't include fields like
