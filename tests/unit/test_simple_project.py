@@ -477,6 +477,10 @@ def test_export_checkbox_labels(simple_project):
 
 
 def test_export_always_include_def_field(simple_project):
+    """This isn't actually tested with the mocked response
+    but it does go through the code logic. We also have an
+    integration test that will test it for real
+    """
     # If we just ask for a form, must also get def_field in there
     records = simple_project.export_records(forms=["imaging"])
     for record in records:

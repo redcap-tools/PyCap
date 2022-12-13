@@ -47,6 +47,7 @@ class Base:
         self.verify_ssl = verify_ssl
         # attributes which require API calls
         self._metadata = None
+        self._forms = None
         self._field_names = None
         self._def_field = None
         self._is_longitudinal = None
@@ -69,6 +70,14 @@ class Base:
             self._metadata = self._call_api(payload, return_type="json")
 
         return self._metadata
+
+    @property
+    def forms(self) -> List[str]:
+        """Project form names"""
+        if self._forms is None:
+            self._forms = list(set(self._filter_metadata(key="form_name")))
+
+        return self._forms
 
     @property
     def field_names(self) -> List[str]:

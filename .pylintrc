@@ -1,6 +1,10 @@
 [MASTER]
 ignore=docs
 
+[DESIGN]
+# Our Base class needs a few more attributes than the default allows
+max-attributes=8
+
 [MESSAGES CONTROL]
 
 # Disable the message, report, category or checker with the given id(s). You

@@ -28,6 +28,12 @@ def test_export_records(simple_project):
 
 
 @pytest.mark.integration
+def test_export_records_always_has_record_id(simple_project):
+    proj_records_export = simple_project.export_records(fields=["first_name"])
+    assert "record_id" in proj_records_export[0].keys()
+
+
+@pytest.mark.integration
 def test_export_records_df(simple_project):
     proj_records_export = simple_project.export_records(format_type="df")
     assert len(proj_records_export) == 3
