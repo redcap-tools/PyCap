@@ -2,92 +2,92 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>http://redcap-tools.github.io/PyCap/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/quickstart/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/using-in-app-or-package/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/data_access_groups/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/field_names/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/files/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/instruments/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/logging/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/metadata/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/project/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/project_info/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/records/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/repeating/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/reports/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/surveys/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/user_roles/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/users/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>http://redcap-tools.github.io/PyCap/api_reference/version/</loc>
-         <lastmod>2022-11-17</lastmod>
+         <lastmod>2022-12-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
