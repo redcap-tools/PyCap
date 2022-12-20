@@ -226,7 +226,7 @@ class UserRoles(Base):
 
         Examples:
             >>> proj.export_user_role_assignment()
-            [{'username': ..., 'unique_role_name': ''}]
+            [{'username': ..., 'unique_role_name': '', 'data_access_group': ''}]
         """
         payload = self._initialize_payload(
             content="userRoleMapping", format_type=format_type
