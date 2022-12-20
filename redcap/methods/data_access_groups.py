@@ -29,6 +29,7 @@ class DataAccessGroups(Base):
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         df_kwargs: Optional[Dict[str, Any]] = None,
     ):
+        # pylint: disable=line-too-long
         """
         Export the DAGs of the Project
 
@@ -44,8 +45,9 @@ class DataAccessGroups(Base):
 
         Examples:
             >>> proj.export_dags()
-            [{'data_access_group_name': 'Test DAG', 'unique_group_name': 'test_dag'}]
+            [{'data_access_group_name': 'Test DAG', 'unique_group_name': 'test_dag', 'data_access_group_id': ...}]
         """
+        # pylint:enable=line-too-long
         payload = self._initialize_payload(content="dag", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
         response = self._call_api(payload, return_type)
