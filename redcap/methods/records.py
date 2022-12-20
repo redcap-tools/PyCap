@@ -28,15 +28,14 @@ class Records(Base):
         Returns: A list of all fields to request, including
         self.def_field (record_id) and the "form_complete" fields
         """
-        form_complete_fields = [f"{ form }_complete" for form in self.forms]
         if forms and not fields:
-            return form_complete_fields + [self.def_field]
+            return [f"{ form }_complete" for form in forms] + [self.def_field]
 
         if fields and self.def_field not in fields:
             return fields + [self.def_field]
 
         if not fields:
-            return self.field_names + form_complete_fields
+            return self.field_names + [f"{ form }_complete" for form in self.forms]
 
         return fields
 
