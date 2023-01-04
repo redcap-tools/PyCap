@@ -7,7 +7,7 @@
 
 ## Intro
 
-`PyCap` is a python module exposing the REDCap API through some helpful abstractions. Information about the REDCap project can be found at http://project-redcap.org/.
+`PyCap` is a python module exposing the REDCap API through some helpful abstractions. Information about the REDCap project can be found at https://project-redcap.org/.
 
 Available under the MIT license.
 
@@ -33,7 +33,7 @@ $ pip install -e git+https://github.com/redcap-tools/PyCap.git#egg=PyCap
 
 ## Documentation
 
-Canonical documentation and usage examples can be found [here](http://redcap-tools.github.io/PyCap/).
+Canonical documentation and usage examples can be found [here](https://redcap-tools.github.io/PyCap/).
 
 ## Features
 
