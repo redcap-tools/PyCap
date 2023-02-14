@@ -364,7 +364,7 @@ class Records(Base):
         force_auto_number: bool = False,
     ):
         """
-        Import data into the RedCap Project
+        Import data into the REDCap Project
 
         Args:
             to_import:
