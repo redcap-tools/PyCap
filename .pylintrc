@@ -3,7 +3,7 @@ ignore=docs
 
 [DESIGN]
 # Our Base class needs a few more attributes than the default allows
-max-attributes=8
+max-attributes=9
 
 [MESSAGES CONTROL]
 

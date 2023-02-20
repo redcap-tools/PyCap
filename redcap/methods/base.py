@@ -39,16 +39,22 @@ FileMap = Tuple[bytes, dict]
 class Base:
     """Base attributes and methods for the REDCap API"""
 
-    def __init__(self, url: str, token: str, verify_ssl: Union[bool, str] = True, **request_kwargs):
+    def __init__(
+        self,
+        url: str,
+        token: str,
+        verify_ssl: Union[bool, str] = True,
+        **request_kwargs,
+    ):
         """Initialize a Project, validate url and token"""
         self._validate_url_and_token(url, token)
         self._url = url
         self._token = token
         self.verify_ssl = verify_ssl
-        
+
         self._validate_request_kwargs(**request_kwargs)
         self._request_kwargs = request_kwargs
-        
+
         # attributes which require API calls
         self._metadata = None
         self._forms = None
@@ -140,14 +146,25 @@ class Base:
             f"Incorrect token format '{ token }', token must must be",
             f"{ expected_token_len } characters long",
         )
-        
+
     @staticmethod
     def _validate_request_kwargs(**request_kwargs):
         """Run basic validation on user supplied kwargs for requests"""
         # list of kwargs hardcoded in _RCRequest.execute(...) and self._call_api(...)
-        hardcoded_kwargs = ["url", "data", "verify, verify_ssl", "return_headers", "files", "file"]
-        unallowed_kwargs = [kwarg for kwarg in request_kwargs if kwarg in hardcoded_kwargs]
-        assert len(unallowed_kwargs) == 0, f"Not allowed to define {unallowed_kwargs} when initiating object"
+        hardcoded_kwargs = [
+            "url",
+            "data",
+            "verify, verify_ssl",
+            "return_headers",
+            "files",
+            "file",
+        ]
+        unallowed_kwargs = [
+            kwarg for kwarg in request_kwargs if kwarg in hardcoded_kwargs
+        ]
+        assert (
+            len(unallowed_kwargs) == 0
+        ), f"Not allowed to define {unallowed_kwargs} when initiating object"
 
     # pylint: disable=import-outside-toplevel
     @staticmethod
@@ -525,5 +542,8 @@ class Base:
 
         rcr = _RCRequest(url=self.url, payload=payload, config=config)
         return rcr.execute(
-            verify_ssl=self.verify_ssl, return_headers=return_headers, file=file, **self._request_kwargs
+            verify_ssl=self.verify_ssl,
+            return_headers=return_headers,
+            file=file,
+            **self._request_kwargs,
         )

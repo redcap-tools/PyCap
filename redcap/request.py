@@ -190,7 +190,7 @@ class _RCRequest:
                 Whether or not response headers should be returned along
                 with the request content
             file: A file object to send along with the request
-            **kwargs: passed to requesets.request() to control 
+            **kwargs: passed to requesets.request() to control
                 the configuration to perform requests to the api
 
         Returns:
