@@ -82,3 +82,28 @@ def test_import_export_repeating_forms(long_project):
             to_import=rep, import_format=format_type
         )
         assert res == 1
+
+
+@pytest.mark.integration
+def test_limit_export_records_forms_and_fields(long_project):
+    # only request forms
+    records_df = long_project.export_records(
+        forms=["demographics", "baseline_data"], format_type="df"
+    )
+    complete_cols = [col for col in records_df.columns if col.endswith("_complete")]
+
+    assert long_project.def_field in records_df.index.names
+    assert complete_cols == ["demographics_complete", "baseline_data_complete"]
+    # only request fields
+    records_df = long_project.export_records(
+        fields=["study_comments"], format_type="df"
+    )
+    assert long_project.def_field in records_df.index.names
+    # request forms and fields
+    records_df = long_project.export_records(
+        forms=["baseline_data"], fields=["study_comments"], format_type="df"
+    )
+    complete_cols = [col for col in records_df.columns if col.endswith("_complete")]
+
+    assert long_project.def_field in records_df.index.names
+    assert complete_cols == ["baseline_data_complete"]

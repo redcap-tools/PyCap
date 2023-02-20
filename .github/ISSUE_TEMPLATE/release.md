@@ -8,8 +8,9 @@ assignees: ''
 ---
 
 ## To do
+- [ ] Draft GitHub release
 - [ ] Bump version: `poetry version minor`
 - [ ] Run all tests/styling/linting: `pytest`
-- [ ] Update cannonical documentation: `mkdocs gh-deploy`
 - [ ] Merge release PR
+- [ ] Update cannonical documentation: `mkdocs gh-deploy`
 - [ ] Publish to pypi: `poetry publish`
