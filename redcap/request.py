@@ -161,6 +161,7 @@ class _RCRequest:
         verify_ssl: Union[bool, str],
         return_headers: Literal[True],
         file: Optional[FileUpload],
+        **kwargs,
     ) -> Tuple[Union[Json, str, bytes], dict]:
         ...
 
@@ -170,6 +171,7 @@ class _RCRequest:
         verify_ssl: Union[bool, str],
         return_headers: Literal[False],
         file: Optional[FileUpload],
+        **kwargs,
     ) -> Union[List[Dict[str, Any]], str, bytes]:
         ...
 
@@ -178,6 +180,7 @@ class _RCRequest:
         verify_ssl: Union[bool, str],
         return_headers: bool,
         file: Optional[FileUpload],
+        **kwargs,
     ):
         """Execute the API request and return data
 
@@ -187,6 +190,8 @@ class _RCRequest:
                 Whether or not response headers should be returned along
                 with the request content
             file: A file object to send along with the request
+            **kwargs: passed to requesets.request() to control
+                the configuration to perform requests to the api
 
         Returns:
             Data object from JSON decoding process if format=='json',
@@ -198,7 +203,7 @@ class _RCRequest:
                 exist, field doesn't exist, etc.
         """
         response = self.session.post(
-            self.url, data=self.payload, verify=verify_ssl, files=file
+            self.url, data=self.payload, verify=verify_ssl, files=file, **kwargs
         )
 
         content = self.get_content(
