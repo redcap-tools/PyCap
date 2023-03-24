@@ -1,5 +1,5 @@
 """REDCap API methods for Project reports"""
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, cast, overload
 
 from redcap.methods.base import Base, Json
 
@@ -117,15 +117,16 @@ class Reports(Base):
             "csvDelimiter",
         )
         for key, data in zip(str_keys, keys_to_add):
+            data = cast(str, data)
             if data:
                 payload[key] = data
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="report",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore

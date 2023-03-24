@@ -83,14 +83,14 @@ class Metadata(Base):
                     payload[f"{key}[{i}]"] = value
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="metadata",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore
 
     @overload
     def import_metadata(
@@ -157,6 +157,6 @@ class Metadata(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return response

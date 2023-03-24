@@ -1,6 +1,6 @@
 """REDCap API methods for Project field names"""
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, cast, overload
 
 from redcap.methods.base import Base, Json
 
@@ -151,7 +151,9 @@ class Logging(Base):
             [{'timestamp': ..., 'username': ..., 'action': 'Manage/Design ',
             'details': 'Create project ...'}, ...]
         """
-        payload = self._initialize_payload(content="log", format_type=format_type)
+        payload: Dict[str, Any] = self._initialize_payload(
+            content="log", format_type=format_type
+        )
         optional_args = [
             ("returnFormat", return_format_type),
             ("logtype", log_type),
@@ -166,17 +168,18 @@ class Logging(Base):
             arg_name, arg_value = arg
             if arg_value:
                 if arg_name in ["beginTime", "endTime"]:
+                    arg_value = cast(datetime, arg_value)
                     arg_value = arg_value.strftime("%Y-%m-%d %H:%M:%S")
 
                 payload[arg_name] = arg_value
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="log",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore
         # pylint: enable=too-many-locals

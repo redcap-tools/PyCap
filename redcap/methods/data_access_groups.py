@@ -50,14 +50,14 @@ class DataAccessGroups(Base):
         # pylint:enable=line-too-long
         payload = self._initialize_payload(content="dag", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="dag",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore
 
     @overload
     def import_dags(
@@ -121,7 +121,7 @@ class DataAccessGroups(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return response
 
@@ -173,7 +173,7 @@ class DataAccessGroups(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="delete"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
         return response
 
     def switch_dag(
@@ -202,7 +202,7 @@ class DataAccessGroups(Base):
         payload["action"] = "switch"
         payload["dag"] = dag
 
-        response = self._call_api(payload, return_type="str")
+        response: Literal["1"] = self._call_api(payload, return_type="str")  # type: ignore
         return response
 
     @overload
@@ -250,14 +250,14 @@ class DataAccessGroups(Base):
             content="userDagMapping", format_type=format_type
         )
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="userDagMapping",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore
 
     @overload
     def import_user_dag_assignment(
@@ -333,6 +333,6 @@ class DataAccessGroups(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return response

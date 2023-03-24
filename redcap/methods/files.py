@@ -1,6 +1,6 @@
 """REDCap API methods for Project files"""
 
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 from redcap.methods.base import Base, EmptyJson, FileMap
 
@@ -73,7 +73,7 @@ class Files(Base):
         # This might just be due to some typing issues, maybe we can come back and
         # remove this disable eventually.
         # pylint: disable=unpacking-non-sequence
-        content, headers = self._call_api(payload=payload, return_type="file_map")
+        content, headers = self._call_api(payload=payload, return_type="file_map")  # type: ignore
         # pylint: enable=unpacking-non-sequence
         # REDCap adds some useful things in content-type
         content_map = {}
@@ -138,7 +138,7 @@ class Files(Base):
         """
         self._check_file_field(field)
         # load up payload
-        payload = self._initialize_payload(content="file")
+        payload: Dict[str, Any] = self._initialize_payload(content="file")
         payload["action"] = "import"
         payload["field"] = field
         payload["record"] = record
@@ -150,7 +150,7 @@ class Files(Base):
 
         return self._call_api(
             payload=payload, return_type="empty_json", file=file_upload_dict
-        )
+        )  # type: ignore
 
     def delete_file(
         self,
@@ -201,4 +201,4 @@ class Files(Base):
         if event:
             payload["event"] = event
 
-        return self._call_api(payload=payload, return_type="empty_json")
+        return self._call_api(payload=payload, return_type="empty_json")  # type: ignore

@@ -59,14 +59,14 @@ class UserRoles(Base):
         """
         payload = self._initialize_payload(content="userRole", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="userRole",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore
 
     @overload
     def import_user_roles(
@@ -123,7 +123,7 @@ class UserRoles(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return response
 
@@ -139,7 +139,7 @@ class UserRoles(Base):
     ) -> str:
         ...
 
-    def delete_user_roles(
+    def delete_user_roles(  # type: ignore
         self,
         roles: List[str],
         return_format_type: Literal["json", "csv", "xml"] = "json",
@@ -184,7 +184,7 @@ class UserRoles(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="delete"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
         return response
 
     @overload
@@ -232,14 +232,14 @@ class UserRoles(Base):
             content="userRoleMapping", format_type=format_type
         )
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="userRoleMapping",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore
 
     @overload
     def import_user_role_assignment(
@@ -296,6 +296,6 @@ class UserRoles(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return response

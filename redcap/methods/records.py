@@ -1,7 +1,17 @@
 """REDCap API methods for Project records"""
 from datetime import datetime
 
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    cast,
+    overload,
+)
 
 from redcap.methods.base import Base, EmptyJson, Json
 
@@ -12,7 +22,7 @@ if TYPE_CHECKING:
 class Records(Base):
     """Responsible for all API methods under 'Records' in the API Playground"""
 
-    def _backfill_fields(self, fields: List[str], forms: List[str]):
+    def _backfill_fields(self, fields: Optional[List[str]], forms: Optional[List[str]]):
         """
         Properly backfill fields to explicitly request the primary keys and
         "form_complete" fields of the project. REDCap won't include fields like
@@ -236,7 +246,7 @@ class Records(Base):
             ...
         """
         # pylint: enable=line-too-long
-        payload = self._initialize_payload(
+        payload: Dict[str, Any] = self._initialize_payload(
             content="record", format_type=format_type, record_type=record_type
         )
 
@@ -277,6 +287,7 @@ class Records(Base):
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 if key in ("fields", "records", "forms", "events"):
+                    data = cast(List[str], data)
                     for i, value in enumerate(data):
                         payload[f"{ key }[{ i }]"] = value
                 else:
@@ -289,7 +300,7 @@ class Records(Base):
             payload["dateRangeEnd"] = date_end.strftime("%Y-%m-%d %H:%M:%S")
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
@@ -297,7 +308,7 @@ class Records(Base):
             format_type=format_type,
             df_kwargs=df_kwargs,
             record_type=record_type,
-        )
+        )  # type: ignore
 
     # pylint: enable=too-many-locals
 
@@ -427,7 +438,7 @@ class Records(Base):
             request_type="import",
             import_records_format=return_content,
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return response
 
@@ -482,7 +493,7 @@ class Records(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="delete"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
         return response
 
     def generate_next_record_name(self) -> str:

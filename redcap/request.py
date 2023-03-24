@@ -215,12 +215,12 @@ class _RCRequest:
 
         if self.fmt == "json":
             try:
-                bad_request = "error" in content.keys()
+                bad_request = "error" in content.keys()  # type: ignore
             except AttributeError:
                 # we're not dealing with an error dict
                 bad_request = False
         elif self.fmt == "csv":
-            bad_request = content.lower().startswith("error:")
+            bad_request = content.lower().startswith("error:")  # type: ignore
         # xml is the default returnFormat for error messages
         elif self.fmt == "xml" or self.fmt is None:
             bad_request = "<error>" in str(content).lower()

@@ -50,14 +50,14 @@ class Users(Base):
         """
         payload = self._initialize_payload(content="user", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="user",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore
 
     @overload
     def import_users(
@@ -132,7 +132,7 @@ class Users(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return response
 
@@ -182,5 +182,5 @@ class Users(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="delete"
         )
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
         return response

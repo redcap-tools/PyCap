@@ -79,11 +79,11 @@ class FieldNames(Base):
             payload["field"] = field
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = self._call_api(payload, return_type)  # type: ignore
 
         return self._return_data(
             response=response,
             content="exportFieldNames",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )
+        )  # type: ignore

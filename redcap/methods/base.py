@@ -9,6 +9,7 @@ from typing import (
     List,
     Literal,
     Optional,
+    cast,
     overload,
     Tuple,
     TYPE_CHECKING,
@@ -56,11 +57,11 @@ class Base:
         self._request_kwargs = request_kwargs
 
         # attributes which require API calls
-        self._metadata = None
-        self._forms = None
-        self._field_names = None
-        self._def_field = None
-        self._is_longitudinal = None
+        self._metadata: Optional[List[Dict[str, Any]]] = None
+        self._forms: Optional[List[str]] = None
+        self._field_names: Optional[List[str]] = None
+        self._def_field: Optional[str] = None
+        self._is_longitudinal: Optional[bool] = None
 
     @property
     def url(self) -> str:
@@ -236,6 +237,8 @@ class Base:
 
     def _filter_metadata(self, key: str, field_name: Optional[str] = None):
         """Safely filter project metadata based off requested column and field_name"""
+        res: Union[list, str]
+
         if field_name:
             try:
                 res = str(
@@ -312,6 +315,8 @@ class Base:
             content=content, return_format_type=return_format_type
         )
         if import_format == "df":
+            to_import = cast("pd.DataFrame", to_import)
+
             buf = StringIO()
             has_named_index = to_import.index.name is not None
             to_import.to_csv(buf, index=has_named_index)
@@ -322,6 +327,7 @@ class Base:
             payload["data"] = json.dumps(to_import, separators=(",", ":"))
         else:
             # don't do anything to csv/xml
+            to_import = cast("str", to_import)
             payload["data"] = to_import
 
         payload["format"] = import_format
@@ -445,6 +451,8 @@ class Base:
             else:
                 df_kwargs = {}
 
+        response = cast(str, response)
+
         buf = StringIO(response)
         dataframe = self._read_csv(buf, **df_kwargs)
         buf.close()
@@ -546,4 +554,4 @@ class Base:
             return_headers=return_headers,
             file=file,
             **self._request_kwargs,
-        )
+        )  # type: ignore
