@@ -38,6 +38,7 @@ def create_project(url: str, super_token: str, project_xml_path: Path) -> str:
             "data": project_info,
             "odm": project_data,
         },
+        timeout=60,
     )
     # Response includes a bunch of SQL statements before we get to the token
     # This limits the return value to just the token
