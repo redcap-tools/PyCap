@@ -1,5 +1,14 @@
 """REDCap API methods for Project metadata"""
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    cast,
+)
 
 from redcap.methods.base import Base, Json
 
@@ -9,36 +18,6 @@ if TYPE_CHECKING:
 
 class Metadata(Base):
     """Responsible for all API methods under 'Metadata' in the API Playground"""
-
-    @overload
-    def export_metadata(
-        self,
-        format_type: Literal["json"],
-        fields: Optional[List[str]] = None,
-        forms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> Json:
-        ...
-
-    @overload
-    def export_metadata(
-        self,
-        format_type: Literal["csv", "xml"],
-        fields: Optional[List[str]] = None,
-        forms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        ...
-
-    @overload
-    def export_metadata(
-        self,
-        format_type: Literal["df"],
-        fields: Optional[List[str]] = None,
-        forms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> "pd.DataFrame":
-        ...
 
     def export_metadata(
         self,
@@ -83,34 +62,14 @@ class Metadata(Base):
                     payload[f"{key}[{i}]"] = value
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
             content="metadata",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )  # type: ignore
-
-    @overload
-    def import_metadata(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["json"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
-    ) -> int:
-        ...
-
-    @overload
-    def import_metadata(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["csv", "xml"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
-    ) -> str:
-        ...
+        )
 
     def import_metadata(
         self,
@@ -157,6 +116,6 @@ class Metadata(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return response

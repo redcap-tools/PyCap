@@ -24,7 +24,6 @@ from redcap.request import (
     RedcapError,
     FileUpload,
     Json,
-    EmptyJson,
 )
 
 if TYPE_CHECKING:
@@ -57,7 +56,7 @@ class Base:
         self._request_kwargs = request_kwargs
 
         # attributes which require API calls
-        self._metadata: Optional[List[Dict[str, Any]]] = None
+        self._metadata: Optional[Json] = None
         self._forms: Optional[List[str]] = None
         self._field_names: Optional[List[str]] = None
         self._def_field: Optional[str] = None
@@ -74,11 +73,11 @@ class Base:
         return self._token
 
     @property
-    def metadata(self) -> List[Dict[str, Any]]:
+    def metadata(self) -> Json:
         """Project metadata in JSON format"""
         if self._metadata is None:
             payload = self._initialize_payload("metadata", format_type="json")
-            self._metadata = self._call_api(payload, return_type="json")
+            self._metadata = cast(Json, self._call_api(payload, return_type="json"))
 
         return self._metadata
 
@@ -333,78 +332,24 @@ class Base:
         payload["format"] = import_format
         return payload
 
-    @overload
-    def _return_data(
-        self,
-        response: Json,
-        content: Literal[
-            "exportFieldNames",
-            "formEventMapping",
-            "metadata",
-            "participantList",
-            "project",
-            "record",
-            "report",
-            "user",
-        ],
-        format_type: Literal["json"],
-        df_kwargs: None,
-        record_type: Literal["flat", "eav"] = "flat",
-    ) -> Json:
-        ...
-
-    @overload
-    def _return_data(
-        self,
-        response: str,
-        content: Literal[
-            "exportFieldNames",
-            "formEventMapping",
-            "metadata",
-            "participantList",
-            "project",
-            "record",
-            "report",
-            "user",
-        ],
-        format_type: Literal["csv", "xml"],
-        df_kwargs: None,
-        record_type: Literal["flat", "eav"] = "flat",
-    ) -> str:
-        ...
-
-    @overload
-    def _return_data(
-        self,
-        response: str,
-        content: Literal[
-            "exportFieldNames",
-            "formEventMapping",
-            "metadata",
-            "participantList",
-            "project",
-            "record",
-            "report",
-            "user",
-        ],
-        format_type: Literal["df"],
-        df_kwargs: Optional[Dict[str, Any]],
-        record_type: Literal["flat", "eav"] = "flat",
-    ) -> "pd.DataFrame":
-        ...
-
     def _return_data(
         self,
         response: Union[Json, str],
         content: Literal[
+            "dag",
             "exportFieldNames",
             "formEventMapping",
+            "log",
             "metadata",
             "participantList",
             "project",
             "record",
             "report",
             "user",
+            "userDagMapping",
+            "userRole",
+            "userRoleMapping",
+            "repeatingFormsEvents",
         ],
         format_type: Literal["json", "csv", "xml", "df"],
         df_kwargs: Optional[Dict[str, Any]] = None,
@@ -459,69 +404,6 @@ class Base:
 
         return dataframe
 
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        return_type: Literal["file_map"],
-        file: None,
-    ) -> FileMap:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        return_type: Literal["json"],
-        file: None = None,
-    ) -> Json:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        return_type: Literal["empty_json"],
-        file: FileUpload,
-    ) -> EmptyJson:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        return_type: Literal["count_dict"],
-        file: None = None,
-    ) -> Dict[str, int]:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        return_type: Literal["ids_list"],
-        file: None = None,
-    ) -> List[str]:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        return_type: Literal["int"],
-        file: None = None,
-    ) -> int:
-        ...
-
-    @overload
-    def _call_api(
-        self,
-        payload: Dict[str, Any],
-        return_type: Literal["str"],
-        file: None = None,
-    ) -> str:
-        ...
-
     def _call_api(
         self,
         payload: Dict[str, Any],
@@ -529,7 +411,9 @@ class Base:
             "file_map", "json", "empty_json", "count_dict", "ids_list", "str", "int"
         ],
         file: Optional[FileUpload] = None,
-    ) -> Union[FileMap, Json, Dict[str, int], List[dict], List[str], int, str]:
+    ) -> Union[
+        FileMap, Json, Dict[str, int], List[dict], List[str], int, str, Literal["1"]
+    ]:
         """Make a POST Requst to the REDCap API
 
         Args:
@@ -554,4 +438,4 @@ class Base:
             return_headers=return_headers,
             file=file,
             **self._request_kwargs,
-        )  # type: ignore
+        )

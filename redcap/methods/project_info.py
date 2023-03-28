@@ -1,5 +1,5 @@
 """REDCap API methods for Project info"""
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json
 
@@ -9,24 +9,6 @@ if TYPE_CHECKING:
 
 class ProjectInfo(Base):
     """Responsible for all API methods under 'Projects' in the API Playground"""
-
-    @overload
-    def export_project_info(
-        self, format_type: Literal["json"], df_kwargs: None
-    ) -> Json:
-        ...
-
-    @overload
-    def export_project_info(
-        self, format_type: Literal["csv", "xml"], df_kwargs: None
-    ) -> str:
-        ...
-
-    @overload
-    def export_project_info(
-        self, format_type: Literal["df"], df_kwargs: Optional[Dict[str, Any]]
-    ) -> "pd.DataFrame":
-        ...
 
     def export_project_info(
         self,
@@ -64,11 +46,11 @@ class ProjectInfo(Base):
         payload = self._initialize_payload(content="project", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
 
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
             content="project",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )  # type: ignore
+        )

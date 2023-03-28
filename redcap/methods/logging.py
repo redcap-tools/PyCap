@@ -1,6 +1,6 @@
 """REDCap API methods for Project field names"""
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, cast, overload
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json
 
@@ -12,86 +12,6 @@ class Logging(Base):
     """Responsible for all API methods under 'Logging' in the API Playground"""
 
     # pylint: disable=too-many-locals
-    @overload
-    def export_logging(
-        self,
-        format_type: Literal["json"],
-        return_format_type: Optional[Literal["json", "csv", "xml"]] = None,
-        log_type: Optional[
-            Literal[
-                "export",
-                "manage",
-                "user",
-                "record",
-                "record_add",
-                "record_edit",
-                "record_delete",
-                "lock_record",
-                "page_view",
-            ]
-        ] = None,
-        user: Optional[str] = None,
-        record: Optional[str] = None,
-        dag: Optional[str] = None,
-        begin_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> Json:
-        ...
-
-    @overload
-    def export_logging(
-        self,
-        format_type: Literal["csv", "xml"],
-        return_format_type: Optional[Literal["json", "csv", "xml"]] = None,
-        log_type: Optional[
-            Literal[
-                "export",
-                "manage",
-                "user",
-                "record",
-                "record_add",
-                "record_edit",
-                "record_delete",
-                "lock_record",
-                "page_view",
-            ]
-        ] = None,
-        user: Optional[str] = None,
-        record: Optional[str] = None,
-        dag: Optional[str] = None,
-        begin_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        ...
-
-    @overload
-    def export_logging(
-        self,
-        format_type: Literal["df"],
-        return_format_type: Optional[Literal["json", "csv", "xml"]] = None,
-        log_type: Optional[
-            Literal[
-                "export",
-                "manage",
-                "user",
-                "record",
-                "record_add",
-                "record_edit",
-                "record_delete",
-                "lock_record",
-                "page_view",
-            ]
-        ] = None,
-        user: Optional[str] = None,
-        record: Optional[str] = None,
-        dag: Optional[str] = None,
-        begin_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> "pd.DataFrame":
-        ...
 
     def export_logging(
         self,
@@ -174,12 +94,12 @@ class Logging(Base):
                 payload[arg_name] = arg_value
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
             content="log",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )  # type: ignore
+        )
         # pylint: enable=too-many-locals

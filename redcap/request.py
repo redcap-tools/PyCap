@@ -155,26 +155,6 @@ class _RCRequest:
         # don't do anything to csv/xml strings
         return response.text
 
-    @overload
-    def execute(
-        self,
-        verify_ssl: Union[bool, str],
-        return_headers: Literal[True],
-        file: Optional[FileUpload],
-        **kwargs,
-    ) -> Tuple[Union[Json, str, bytes], dict]:
-        ...
-
-    @overload
-    def execute(
-        self,
-        verify_ssl: Union[bool, str],
-        return_headers: Literal[False],
-        file: Optional[FileUpload],
-        **kwargs,
-    ) -> Union[List[Dict[str, Any]], str, bytes]:
-        ...
-
     def execute(
         self,
         verify_ssl: Union[bool, str],

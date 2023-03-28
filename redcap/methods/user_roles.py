@@ -1,5 +1,14 @@
 """REDCap API methods for Project user roles"""
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    cast,
+)
 
 from redcap.methods.base import Base, Json
 
@@ -9,22 +18,6 @@ if TYPE_CHECKING:
 
 class UserRoles(Base):
     """Responsible for all API methods under 'Users Roles' in the API Playground"""
-
-    @overload
-    def export_user_roles(self, format_type: Literal["json"], df_kwargs: None) -> Json:
-        ...
-
-    @overload
-    def export_user_roles(
-        self, format_type: Literal["csv", "xml"], df_kwargs: None
-    ) -> str:
-        ...
-
-    @overload
-    def export_user_roles(
-        self, format_type: Literal["df"], df_kwargs: Optional[Dict[str, Any]]
-    ) -> "pd.DataFrame":
-        ...
 
     def export_user_roles(
         self,
@@ -59,32 +52,14 @@ class UserRoles(Base):
         """
         payload = self._initialize_payload(content="userRole", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
             content="userRole",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )  # type: ignore
-
-    @overload
-    def import_user_roles(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["json"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-    ) -> int:
-        ...
-
-    @overload
-    def import_user_roles(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["csv", "xml"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-    ) -> str:
-        ...
+        )
 
     def import_user_roles(
         self,
@@ -123,23 +98,11 @@ class UserRoles(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return response
 
-    @overload
     def delete_user_roles(
-        self, user_roles: List[str], return_format_type: Literal["json"]
-    ) -> int:
-        ...
-
-    @overload
-    def delete_user_roles(
-        self, user_roles: List[str], return_format_type: Literal["csv", "xml"]
-    ) -> str:
-        ...
-
-    def delete_user_roles(  # type: ignore
         self,
         roles: List[str],
         return_format_type: Literal["json", "csv", "xml"] = "json",
@@ -184,26 +147,8 @@ class UserRoles(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="delete"
         )
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
         return response
-
-    @overload
-    def export_user_role_assignment(
-        self, format_type: Literal["json"], df_kwargs: None
-    ) -> Json:
-        ...
-
-    @overload
-    def export_user_role_assignment(
-        self, format_type: Literal["csv", "xml"], df_kwargs: None
-    ) -> str:
-        ...
-
-    @overload
-    def export_user_role_assignment(
-        self, format_type: Literal["df"], df_kwargs: Optional[Dict[str, Any]]
-    ) -> "pd.DataFrame":
-        ...
 
     def export_user_role_assignment(
         self,
@@ -232,32 +177,14 @@ class UserRoles(Base):
             content="userRoleMapping", format_type=format_type
         )
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
             content="userRoleMapping",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )  # type: ignore
-
-    @overload
-    def import_user_role_assignment(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["json"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-    ) -> int:
-        ...
-
-    @overload
-    def import_user_role_assignment(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["csv", "xml"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-    ) -> str:
-        ...
+        )
 
     def import_user_role_assignment(
         self,
@@ -296,6 +223,6 @@ class UserRoles(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return response

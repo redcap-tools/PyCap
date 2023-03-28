@@ -1,8 +1,9 @@
 """REDCap API methods for Project files"""
 
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 
-from redcap.methods.base import Base, EmptyJson, FileMap
+from redcap.methods.base import Base, FileMap
+from redcap.request import EmptyJson, FileUpload
 
 if TYPE_CHECKING:
     from io import TextIOWrapper
@@ -70,11 +71,9 @@ class Files(Base):
             payload["event"] = event
         if repeat_instance:
             payload["repeat_instance"] = str(repeat_instance)
-        # This might just be due to some typing issues, maybe we can come back and
-        # remove this disable eventually.
-        # pylint: disable=unpacking-non-sequence
-        content, headers = self._call_api(payload=payload, return_type="file_map")  # type: ignore
-        # pylint: enable=unpacking-non-sequence
+        content, headers = cast(
+            FileMap, self._call_api(payload=payload, return_type="file_map")
+        )
         # REDCap adds some useful things in content-type
         content_map = {}
         if "content-type" in headers:
@@ -146,11 +145,14 @@ class Files(Base):
             payload["event"] = event
         if repeat_instance:
             payload["repeat_instance"] = repeat_instance
-        file_upload_dict = {"file": (file_name, file_object)}
+        file_upload_dict: FileUpload = {"file": (file_name, file_object)}
 
-        return self._call_api(
-            payload=payload, return_type="empty_json", file=file_upload_dict
-        )  # type: ignore
+        return cast(
+            EmptyJson,
+            self._call_api(
+                payload=payload, return_type="empty_json", file=file_upload_dict
+            ),
+        )
 
     def delete_file(
         self,
@@ -201,4 +203,6 @@ class Files(Base):
         if event:
             payload["event"] = event
 
-        return self._call_api(payload=payload, return_type="empty_json")  # type: ignore
+        return cast(
+            EmptyJson, self._call_api(payload=payload, return_type="empty_json")
+        )

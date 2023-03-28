@@ -1,5 +1,5 @@
 """REDCap API methods for Project users"""
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, overload
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json
 
@@ -9,20 +9,6 @@ if TYPE_CHECKING:
 
 class Users(Base):
     """Responsible for all API methods under 'Users & User Privileges' in the API Playground"""
-
-    @overload
-    def export_users(self, format_type: Literal["json"], df_kwargs: None) -> Json:
-        ...
-
-    @overload
-    def export_users(self, format_type: Literal["csv", "xml"], df_kwargs: None) -> str:
-        ...
-
-    @overload
-    def export_users(
-        self, format_type: Literal["df"], df_kwargs: Optional[Dict[str, Any]]
-    ) -> "pd.DataFrame":
-        ...
 
     def export_users(
         self,
@@ -50,32 +36,14 @@ class Users(Base):
         """
         payload = self._initialize_payload(content="user", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
             content="user",
             format_type=format_type,
             df_kwargs=df_kwargs,
-        )  # type: ignore
-
-    @overload
-    def import_users(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["json"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-    ) -> int:
-        ...
-
-    @overload
-    def import_users(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["csv", "xml"],
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-    ) -> str:
-        ...
+        )
 
     def import_users(
         self,
@@ -132,21 +100,9 @@ class Users(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return response
-
-    @overload
-    def delete_users(
-        self, users: List[str], return_format_type: Literal["json"]
-    ) -> int:
-        ...
-
-    @overload
-    def delete_users(
-        self, users: List[str], return_format_type: Literal["csv", "xml"]
-    ) -> str:
-        ...
 
     def delete_users(
         self,
@@ -182,5 +138,5 @@ class Users(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="delete"
         )
-        response = self._call_api(payload, return_type)  # type: ignore
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
         return response

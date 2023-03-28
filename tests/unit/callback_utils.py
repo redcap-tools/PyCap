@@ -1,13 +1,10 @@
 """Utility functions for unit test callbacks"""
 
 import json
-from typing import Callable, List, Tuple, Union
+
+from typing import Any, Callable, List, Union
 
 from urllib import parse
-
-from requests import Request
-
-MockResponse = Tuple[int, dict, dict]
 
 
 def is_json(data: List[dict]):
@@ -23,7 +20,7 @@ def is_json(data: List[dict]):
     return is_list and is_list_of_dicts
 
 
-def parse_request(req: Request) -> List[Union[dict, str]]:
+def parse_request(req: Any) -> List[Union[dict, str]]:
     """Extract the body of a request into a dict"""
     parsed = parse.urlparse(f"?{req.body}")
     data = parse.parse_qs(parsed.query)
@@ -41,7 +38,7 @@ def parse_request(req: Request) -> List[Union[dict, str]]:
     return [data, headers, request_type]
 
 
-def handle_long_project_arms_request(**kwargs) -> MockResponse:
+def handle_long_project_arms_request(**kwargs) -> Any:
     """Give back list of arms for long project"""
     headers = kwargs["headers"]
     resp = [{"arm_num": 1, "name": "test"}]
@@ -49,7 +46,7 @@ def handle_long_project_arms_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_dag_request(**kwargs) -> MockResponse:
+def handle_dag_request(**kwargs) -> Any:
     """Handle DAG requests"""
     headers = kwargs["headers"]
     data = kwargs["data"]
@@ -90,7 +87,7 @@ def handle_user_dag_assignment_request(**kwargs):
     return (201, headers, json.dumps(resp))
 
 
-def handle_export_field_names_request(**kwargs) -> MockResponse:
+def handle_export_field_names_request(**kwargs) -> Any:
     """Give back list of project export field names"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -122,7 +119,7 @@ def handle_export_field_names_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_simple_project_form_event_mapping_request(**kwargs) -> MockResponse:
+def handle_simple_project_form_event_mapping_request(**kwargs) -> Any:
     """Handle events export, used at project initialization"""
     headers = kwargs["headers"]
     resp = {"error": "no events"}
@@ -130,7 +127,7 @@ def handle_simple_project_form_event_mapping_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_long_project_form_event_mapping_request(**kwargs) -> MockResponse:
+def handle_long_project_form_event_mapping_request(**kwargs) -> Any:
     """Give back list of events for long project"""
     headers = kwargs["headers"]
     resp = [{"unique_event_name": "raw"}]
@@ -138,7 +135,7 @@ def handle_long_project_form_event_mapping_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_long_project_repeating_form_request(**kwargs) -> MockResponse:
+def handle_long_project_repeating_form_request(**kwargs) -> Any:
     """Give back list of repeating instruments for long project"""
     headers = kwargs["headers"]
     data = kwargs["data"]
@@ -154,7 +151,7 @@ def handle_long_project_repeating_form_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_simple_project_file_request(**kwargs) -> MockResponse:
+def handle_simple_project_file_request(**kwargs) -> Any:
     """Handle file import/export requests"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -167,7 +164,7 @@ def handle_simple_project_file_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_long_project_file_request(**kwargs) -> MockResponse:
+def handle_long_project_file_request(**kwargs) -> Any:
     """Handle file import/export/delete requests"""
     # test using blank headers
     data = kwargs["data"]
@@ -181,7 +178,7 @@ def handle_long_project_file_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_generate_next_record_name_request(**kwargs) -> MockResponse:
+def handle_generate_next_record_name_request(**kwargs) -> Any:
     """Handle generating next record name"""
     headers = kwargs["headers"]
     resp = 123
@@ -189,7 +186,7 @@ def handle_generate_next_record_name_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_logging_request(**kwargs) -> MockResponse:
+def handle_logging_request(**kwargs) -> Any:
     """Handle logging request"""
     headers = kwargs["headers"]
     data = kwargs["data"]
@@ -234,7 +231,7 @@ def handle_logging_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
+def handle_simple_project_metadata_request(**kwargs) -> Any:
     """Handle metadata import/export request"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -288,7 +285,7 @@ def handle_simple_project_metadata_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_long_project_metadata_request(**kwargs) -> MockResponse:
+def handle_long_project_metadata_request(**kwargs) -> Any:
     """Handle metadata export for long project"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -318,7 +315,7 @@ def handle_long_project_metadata_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_project_info_request(**kwargs) -> MockResponse:
+def handle_project_info_request(**kwargs) -> Any:
     """Handle project info export request"""
     headers = kwargs["headers"]
     resp = {"project_id": 123}
@@ -355,7 +352,7 @@ def handle_simple_project_import_records(data: dict) -> dict:
     return resp
 
 
-def handle_simple_project_records_request(**kwargs) -> MockResponse:
+def handle_simple_project_records_request(**kwargs) -> Any:
     """Handle records import/export request"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -399,7 +396,7 @@ def handle_simple_project_records_request(**kwargs) -> MockResponse:
     return (status_code, headers, json.dumps(resp))
 
 
-def handle_long_project_records_request(**kwargs) -> MockResponse:
+def handle_long_project_records_request(**kwargs) -> Any:
     """Handle csv export for long project"""
     data = kwargs["data"]
     # if the None value gets returned it means the test failed
@@ -424,7 +421,7 @@ def handle_long_project_records_request(**kwargs) -> MockResponse:
     return (201, headers, resp)
 
 
-def handle_survey_project_records_request(**kwargs) -> MockResponse:
+def handle_survey_project_records_request(**kwargs) -> Any:
     """Handle export with survey fields requested"""
     headers = kwargs["headers"]
     data = kwargs["data"]
@@ -447,7 +444,7 @@ def handle_survey_project_records_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_simple_project_reports_request(**kwargs) -> MockResponse:
+def handle_simple_project_reports_request(**kwargs) -> Any:
     """Export report data from project"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -477,7 +474,7 @@ def handle_simple_project_reports_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_long_project_reports_request(**kwargs) -> MockResponse:
+def handle_long_project_reports_request(**kwargs) -> Any:
     """Export report data from long project, csv only for now"""
     data = kwargs["data"]
     headers = kwargs["headers"]
@@ -490,7 +487,7 @@ def handle_long_project_reports_request(**kwargs) -> MockResponse:
     return (201, headers, resp)
 
 
-def handle_user_request(**kwargs) -> MockResponse:
+def handle_user_request(**kwargs) -> Any:
     """Handle user requests"""
     headers = kwargs["headers"]
     data = kwargs["data"]
@@ -519,7 +516,7 @@ def handle_user_request(**kwargs) -> MockResponse:
     return (201, headers, resp)
 
 
-def handle_user_role_request(**kwargs) -> MockResponse:
+def handle_user_role_request(**kwargs) -> Any:
     """Handle user role requests"""
     headers = kwargs["headers"]
     data = kwargs["data"]
@@ -547,7 +544,7 @@ def handle_user_role_request(**kwargs) -> MockResponse:
     return (201, headers, json.dumps(resp))
 
 
-def handle_user_role_assignment_request(**kwargs) -> MockResponse:
+def handle_user_role_assignment_request(**kwargs) -> Any:
     """Handle user role mapping requests"""
     headers = kwargs["headers"]
     data = kwargs["data"]
@@ -562,14 +559,14 @@ def handle_user_role_assignment_request(**kwargs) -> MockResponse:
 
 
 # pylint: disable=unused-argument
-def handle_simple_project_version_request(**kwargs) -> MockResponse:
+def handle_simple_project_version_request(**kwargs) -> Any:
     """Handle REDCap version request"""
     resp = b"11.2.3"
     headers = {"content-type": "text/csv; charset=utf-8"}
     return (201, headers, resp)
 
 
-def handle_long_project_version_request(**kwargs) -> MockResponse:
+def handle_long_project_version_request(**kwargs) -> Any:
     """Return error for REDCap version request"""
     resp = b"error"
     headers = {"content-type": "text/csv; charset=utf-8"}
@@ -579,7 +576,7 @@ def handle_long_project_version_request(**kwargs) -> MockResponse:
 # pylint: enable=unused-argument
 
 
-def handle_long_project_survey_participants_request(**kwargs) -> MockResponse:
+def handle_long_project_survey_participants_request(**kwargs) -> Any:
     """Get the survey participants for an instrument"""
     data = kwargs["data"]
     headers = kwargs["headers"]
