@@ -1,9 +1,18 @@
 """REDCap API methods for Project records"""
 from datetime import datetime
 
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    cast,
+)
 
-from redcap.methods.base import Base, EmptyJson, Json
+from redcap.methods.base import Base, Json
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -12,7 +21,7 @@ if TYPE_CHECKING:
 class Records(Base):
     """Responsible for all API methods under 'Records' in the API Playground"""
 
-    def _backfill_fields(self, fields: List[str], forms: List[str]):
+    def _backfill_fields(self, fields: Optional[List[str]], forms: Optional[List[str]]):
         """
         Properly backfill fields to explicitly request the primary keys and
         "form_complete" fields of the project. REDCap won't include fields like
@@ -40,77 +49,6 @@ class Records(Base):
         return fields
 
     # pylint: disable=too-many-locals
-    @overload
-    def export_records(
-        self,
-        format_type: Literal["json"],
-        records: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None,
-        forms: Optional[List[str]] = None,
-        events: Optional[List[str]] = None,
-        raw_or_label: Literal["raw", "label", "both"] = "raw",
-        raw_or_label_headers: Literal["raw", "label"] = "raw",
-        event_name: Literal["label", "unique"] = "label",
-        record_type: Literal["flat", "eav"] = "flat",
-        export_survey_fields: bool = False,
-        export_data_access_groups: bool = False,
-        export_checkbox_labels: bool = False,
-        filter_logic: Optional[str] = None,
-        date_begin: Optional[datetime] = None,
-        date_end: Optional[datetime] = None,
-        decimal_character: Optional[Literal[",", "."]] = None,
-        export_blank_for_gray_form_status: Optional[bool] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> Json:
-        ...
-
-    @overload
-    def export_records(
-        self,
-        format_type: Literal["csv", "xml"],
-        records: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None,
-        forms: Optional[List[str]] = None,
-        events: Optional[List[str]] = None,
-        raw_or_label: Literal["raw", "label", "both"] = "raw",
-        raw_or_label_headers: Literal["raw", "label"] = "raw",
-        event_name: Literal["label", "unique"] = "label",
-        record_type: Literal["flat", "eav"] = "flat",
-        export_survey_fields: bool = False,
-        export_data_access_groups: bool = False,
-        export_checkbox_labels: bool = False,
-        filter_logic: Optional[str] = None,
-        date_begin: Optional[datetime] = None,
-        date_end: Optional[datetime] = None,
-        decimal_character: Optional[Literal[",", "."]] = None,
-        export_blank_for_gray_form_status: Optional[bool] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        ...
-
-    @overload
-    def export_records(
-        self,
-        format_type: Literal["df"],
-        records: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None,
-        forms: Optional[List[str]] = None,
-        events: Optional[List[str]] = None,
-        raw_or_label: Literal["raw", "label", "both"] = "raw",
-        raw_or_label_headers: Literal["raw", "label"] = "raw",
-        event_name: Literal["label", "unique"] = "label",
-        record_type: Literal["flat", "eav"] = "flat",
-        export_survey_fields: bool = False,
-        export_data_access_groups: bool = False,
-        export_checkbox_labels: bool = False,
-        filter_logic: Optional[str] = None,
-        date_begin: Optional[datetime] = None,
-        date_end: Optional[datetime] = None,
-        decimal_character: Optional[Literal[",", "."]] = None,
-        export_blank_for_gray_form_status: Optional[bool] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> "pd.DataFrame":
-        ...
 
     def export_records(
         self,
@@ -236,7 +174,7 @@ class Records(Base):
             ...
         """
         # pylint: enable=line-too-long
-        payload = self._initialize_payload(
+        payload: Dict[str, Any] = self._initialize_payload(
             content="record", format_type=format_type, record_type=record_type
         )
 
@@ -277,6 +215,7 @@ class Records(Base):
         for key, data in zip(str_keys, keys_to_add):
             if data:
                 if key in ("fields", "records", "forms", "events"):
+                    data = cast(List[str], data)
                     for i, value in enumerate(data):
                         payload[f"{ key }[{ i }]"] = value
                 else:
@@ -289,7 +228,7 @@ class Records(Base):
             payload["dateRangeEnd"] = date_end.strftime("%Y-%m-%d %H:%M:%S")
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
@@ -300,58 +239,6 @@ class Records(Base):
         )
 
     # pylint: enable=too-many-locals
-
-    @overload
-    def import_records(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["json"],
-        return_content: Literal["count", "auto_ids"],
-        overwrite: Literal["normal", "overwrite"] = "normal",
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
-        force_auto_number: bool = False,
-    ) -> Dict[str, int]:
-        ...
-
-    @overload
-    def import_records(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["json"],
-        return_content: Literal["ids"],
-        overwrite: Literal["normal", "overwrite"] = "normal",
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
-        force_auto_number: bool = False,
-    ) -> List[str]:
-        ...
-
-    @overload
-    def import_records(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["json"],
-        return_content: Literal["nothing"],
-        overwrite: Literal["normal", "overwrite"] = "normal",
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
-        force_auto_number: bool = False,
-    ) -> EmptyJson:
-        ...
-
-    @overload
-    def import_records(
-        self,
-        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
-        return_format_type: Literal["csv", "xml"],
-        return_content: Literal["count", "ids", "auto_ids", "nothing"],
-        overwrite: Literal["normal", "overwrite"] = "normal",
-        import_format: Literal["json", "csv", "xml", "df"] = "json",
-        date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
-        force_auto_number: bool = False,
-    ) -> str:
-        ...
 
     def import_records(
         self,
@@ -427,21 +314,9 @@ class Records(Base):
             request_type="import",
             import_records_format=return_content,
         )
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return response
-
-    @overload
-    def delete_records(
-        self, records: List[str], return_format_type: Literal["json"]
-    ) -> int:
-        ...
-
-    @overload
-    def delete_records(
-        self, records: List[str], return_format_type: Literal["csv", "xml"]
-    ) -> str:
-        ...
 
     def delete_records(
         self,
@@ -482,7 +357,7 @@ class Records(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="delete"
         )
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
         return response
 
     def generate_next_record_name(self) -> str:
@@ -502,4 +377,4 @@ class Records(Base):
             content="generateNextRecordName", format_type="csv"
         )
 
-        return self._call_api(payload, return_type="str")
+        return cast(str, self._call_api(payload, return_type="str"))

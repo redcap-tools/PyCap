@@ -1,5 +1,5 @@
 """Test fixtures for unit tests only"""
-from typing import Dict
+from typing import Dict, Generator
 
 import pytest
 import responses
@@ -24,7 +24,7 @@ def project_urls() -> Dict[str, str]:
 
 # See here for docs: https://github.com/getsentry/responses#responses-as-a-pytest-fixture
 @pytest.fixture(scope="module")
-def mocked_responses() -> responses.RequestsMock:
+def mocked_responses() -> Generator:
     """Base fixture for all mocked responses"""
     with responses.RequestsMock() as resps:
         yield resps

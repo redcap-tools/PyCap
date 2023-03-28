@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 
 from pathlib import Path
+from typing import cast
 
 import pytest
 import requests
@@ -38,6 +39,7 @@ def create_project(url: str, super_token: str, project_xml_path: Path) -> str:
             "data": project_info,
             "odm": project_data,
         },
+        timeout=60,
     )
     # Response includes a bunch of SQL statements before we get to the token
     # This limits the return value to just the token
@@ -54,7 +56,10 @@ def redcapdemo_url() -> str:
 def simple_project_token(redcapdemo_url) -> str:
     """Create a simple project and return it's API token"""
     simple_project_xml_path = Path("tests/data/test_simple_project.xml")
-    project_token = create_project(redcapdemo_url, SUPER_TOKEN, simple_project_xml_path)
+    super_token = cast(str, SUPER_TOKEN)
+    project_token = create_project(  # type: ignore
+        redcapdemo_url, super_token, simple_project_xml_path
+    )
 
     return project_token
 
@@ -88,7 +93,8 @@ def simple_project(redcapdemo_url, simple_project_token):
 def long_project_token(redcapdemo_url) -> str:
     """Create a long project and return it's API token"""
     long_project_xml_path = Path("tests/data/test_long_project.xml")
-    project_token = create_project(redcapdemo_url, SUPER_TOKEN, long_project_xml_path)
+    super_token = cast(str, SUPER_TOKEN)
+    project_token = create_project(redcapdemo_url, super_token, long_project_xml_path)
 
     return project_token
 

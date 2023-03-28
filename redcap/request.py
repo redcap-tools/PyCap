@@ -155,26 +155,6 @@ class _RCRequest:
         # don't do anything to csv/xml strings
         return response.text
 
-    @overload
-    def execute(
-        self,
-        verify_ssl: Union[bool, str],
-        return_headers: Literal[True],
-        file: Optional[FileUpload],
-        **kwargs,
-    ) -> Tuple[Union[Json, str, bytes], dict]:
-        ...
-
-    @overload
-    def execute(
-        self,
-        verify_ssl: Union[bool, str],
-        return_headers: Literal[False],
-        file: Optional[FileUpload],
-        **kwargs,
-    ) -> Union[List[Dict[str, Any]], str, bytes]:
-        ...
-
     def execute(
         self,
         verify_ssl: Union[bool, str],
@@ -215,12 +195,12 @@ class _RCRequest:
 
         if self.fmt == "json":
             try:
-                bad_request = "error" in content.keys()
+                bad_request = "error" in content.keys()  # type: ignore
             except AttributeError:
                 # we're not dealing with an error dict
                 bad_request = False
         elif self.fmt == "csv":
-            bad_request = content.lower().startswith("error:")
+            bad_request = content.lower().startswith("error:")  # type: ignore
         # xml is the default returnFormat for error messages
         elif self.fmt == "xml" or self.fmt is None:
             bad_request = "<error>" in str(content).lower()

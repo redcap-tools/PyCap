@@ -1,5 +1,5 @@
 """REDCap API methods for Project surveys"""
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json
 
@@ -9,36 +9,6 @@ if TYPE_CHECKING:
 
 class Surveys(Base):
     """Responsible for all API methods under 'Surveys' in the API Playground"""
-
-    @overload
-    def export_survey_participant_list(
-        self,
-        instrument: str,
-        format_type: Literal["json"],
-        event: Optional[str],
-        df_kwargs: None,
-    ) -> Json:
-        ...
-
-    @overload
-    def export_survey_participant_list(
-        self,
-        instrument: str,
-        format_type: Literal["csv", "xml"],
-        event: Optional[str],
-        df_kwargs: None,
-    ) -> str:
-        ...
-
-    @overload
-    def export_survey_participant_list(
-        self,
-        instrument: str,
-        format_type: Literal["df"],
-        event: Optional[str] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> "pd.DataFrame":
-        ...
 
     def export_survey_participant_list(
         self,
@@ -87,7 +57,7 @@ class Surveys(Base):
             payload["event"] = event
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,

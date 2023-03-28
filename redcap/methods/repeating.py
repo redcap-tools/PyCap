@@ -1,7 +1,8 @@
 """REDCap API methods for Project repeating instruments"""
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, Literal
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, Literal, cast
 
 from redcap.methods.base import Base
+from redcap.request import Json
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -41,7 +42,7 @@ class Repeating(Base):
         )
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
@@ -87,6 +88,6 @@ class Repeating(Base):
         return_type = self._lookup_return_type(
             format_type=return_format_type, request_type="import"
         )
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return response

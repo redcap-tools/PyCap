@@ -1,5 +1,5 @@
 """REDCap API methods for Project reports"""
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json
 
@@ -9,45 +9,6 @@ if TYPE_CHECKING:
 
 class Reports(Base):
     """Responsible for all API methods under 'Reports' in the API Playground"""
-
-    @overload
-    def export_report(
-        self,
-        report_id: str,
-        format_type: Literal["json"],
-        raw_or_label: Literal["raw", "label"] = "raw",
-        raw_or_label_headers: Literal["raw", "label"] = "raw",
-        export_checkbox_labels: bool = False,
-        csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> Json:
-        ...
-
-    @overload
-    def export_report(
-        self,
-        report_id: str,
-        format_type: Literal["csv", "xml"],
-        raw_or_label: Literal["raw", "label"] = "raw",
-        raw_or_label_headers: Literal["raw", "label"] = "raw",
-        export_checkbox_labels: bool = False,
-        csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        ...
-
-    @overload
-    def export_report(
-        self,
-        report_id: str,
-        format_type: Literal["df"],
-        raw_or_label: Literal["raw", "label"] = "raw",
-        raw_or_label_headers: Literal["raw", "label"] = "raw",
-        export_checkbox_labels: bool = False,
-        csv_delimiter: Literal[",", "tab", ";", "|", "^"] = ",",
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> "pd.DataFrame":
-        ...
 
     def export_report(
         self,
@@ -117,11 +78,12 @@ class Reports(Base):
             "csvDelimiter",
         )
         for key, data in zip(str_keys, keys_to_add):
+            data = cast(str, data)
             if data:
                 payload[key] = data
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,

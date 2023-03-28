@@ -1,5 +1,5 @@
 """REDCap API methods for Project field names"""
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, overload
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json
 
@@ -9,33 +9,6 @@ if TYPE_CHECKING:
 
 class FieldNames(Base):
     """Responsible for all API methods under 'Field Names' in the API Playground"""
-
-    @overload
-    def export_field_names(
-        self,
-        format_type: Literal["json"],
-        field: Optional[str],
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> Json:
-        ...
-
-    @overload
-    def export_field_names(
-        self,
-        format_type: Literal["csv", "xml"],
-        field: Optional[str],
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        ...
-
-    @overload
-    def export_field_names(
-        self,
-        format_type: Literal["df"],
-        field: Optional[str],
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> "pd.DataFrame":
-        ...
 
     def export_field_names(
         self,
@@ -79,7 +52,7 @@ class FieldNames(Base):
             payload["field"] = field
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,

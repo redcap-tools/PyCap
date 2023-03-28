@@ -1,7 +1,17 @@
 """REDCap API methods for Project instruments"""
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    cast,
+)
 
 from redcap.methods.base import Base
+from redcap.request import Json
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -9,33 +19,6 @@ if TYPE_CHECKING:
 
 class Instruments(Base):
     """Responsible for all API methods under 'Instruments' in the API Playground"""
-
-    @overload
-    def export_instrument_event_mappings(
-        self,
-        format_type: Literal["json"],
-        arms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:
-        ...
-
-    @overload
-    def export_instrument_event_mappings(
-        self,
-        format_type: Literal["csv", "xml"],
-        arms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        ...
-
-    @overload
-    def export_instrument_event_mappings(
-        self,
-        format_type: Literal["df"],
-        arms: Optional[List[str]] = None,
-        df_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> "pd.DataFrame":
-        ...
 
     def export_instrument_event_mappings(
         self,
@@ -71,7 +54,7 @@ class Instruments(Base):
                 payload[f"arms[{ i }]"] = value
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = self._call_api(payload, return_type)
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
         return self._return_data(
             response=response,
