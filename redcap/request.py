@@ -186,6 +186,9 @@ class _RCRequest:
             self.url, data=self.payload, verify=verify_ssl, files=file, **kwargs
         )
 
+        if response.status_code == 500:
+            raise RedcapError(f"HTTP error 500 {response.reason}")
+
         content = self.get_content(
             response,
             format_type=self.fmt,
