@@ -16,7 +16,7 @@ from typing import (
     overload,
 )
 
-from requests import RequestException, Response, Session
+from requests import RequestException, Response, Session, JSONDecodeError
 
 if TYPE_CHECKING:
     from io import TextIOWrapper
@@ -150,7 +150,10 @@ class _RCRequest:
             return [{}]
 
         if format_type == "json":
-            return response.json()
+            try:
+                return response.json()
+            except JSONDecodeError as jde:
+                raise RedcapError("Unable to decode response as JSON") from jde
 
         # don't do anything to csv/xml strings
         return response.text
