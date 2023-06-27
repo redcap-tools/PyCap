@@ -178,6 +178,12 @@ class Records(Base):
             content="record", format_type=format_type, record_type=record_type
         )
 
+        if isinstance(str, fields):
+            fields = [fields]
+
+        if isinstance(str, forms):
+            forms = [forms]
+
         fields = self._backfill_fields(fields, forms)
 
         keys_to_add = (
