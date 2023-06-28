@@ -88,9 +88,9 @@ class Records(Base):
                 fields to pull.
                 By default, all fields are exported
             forms:
-                Single form name or array of form names to export. If in the 
-                web UI, the form name has a space in it, replace the space 
-                with an underscore. 
+                Single form name or array of form names to export. If in the
+                web UI, the form name has a space in it, replace the space
+                with an underscore.
                 By default, all forms are exported
             events:
                 An array of unique event names from which to export records
@@ -180,10 +180,10 @@ class Records(Base):
             content="record", format_type=format_type, record_type=record_type
         )
 
-        if isinstance(str, fields):
+        if isinstance(fields, str):
             fields = [fields]
 
-        if isinstance(str, forms):
+        if isinstance(forms, str):
             forms = [forms]
 
         fields = self._backfill_fields(fields, forms)
