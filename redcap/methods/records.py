@@ -243,7 +243,6 @@ class Records(Base):
             content="record",
             format_type=format_type,
             df_kwargs=df_kwargs,
-            record_type=record_type,
         )
 
     # pylint: enable=too-many-locals
