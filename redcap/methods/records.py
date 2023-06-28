@@ -54,8 +54,8 @@ class Records(Base):
         self,
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         records: Optional[List[str]] = None,
-        fields: Optional[List[str]] = None,
-        forms: Optional[List[str]] = None,
+        fields: Optional[Union[List[str], str]] = None,
+        forms: Optional[Union[List[str], str]] = None,
         events: Optional[List[str]] = None,
         raw_or_label: Literal["raw", "label", "both"] = "raw",
         raw_or_label_headers: Literal["raw", "label"] = "raw",
@@ -84,11 +84,13 @@ class Records(Base):
                 Array of record names specifying specific records to export.
                 By default, all records are exported
             fields:
-                Array of field names specifying specific fields to pull
-                by default, all fields are exported
+                Single field name or array of field names specifying specific
+                fields to pull.
+                By default, all fields are exported
             forms:
-                Array of form names to export. If in the web UI, the form
-                name has a space in it, replace the space with an underscore
+                Single form name or array of form names to export. If in the
+                web UI, the form name has a space in it, replace the space
+                with an underscore.
                 By default, all forms are exported
             events:
                 An array of unique event names from which to export records
@@ -177,6 +179,12 @@ class Records(Base):
         payload: Dict[str, Any] = self._initialize_payload(
             content="record", format_type=format_type, record_type=record_type
         )
+
+        if isinstance(fields, str):
+            fields = [fields]
+
+        if isinstance(forms, str):
+            forms = [forms]
 
         fields = self._backfill_fields(fields, forms)
 
