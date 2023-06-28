@@ -482,7 +482,7 @@ def test_export_always_include_def_field(simple_project):
     integration test that will test it for real
     """
     # If we just ask for a form, must also get def_field in there
-    records = simple_project.export_records(forms=["imaging"])
+    records = simple_project.export_records(forms="imaging")
     for record in records:
         assert simple_project.def_field in record
     # still need it def_field even if not asked for in form and fields
@@ -490,7 +490,7 @@ def test_export_always_include_def_field(simple_project):
     for record in records:
         assert simple_project.def_field in record
     # If we just ask for some fields, still need def_field
-    records = simple_project.export_records(fields=["foo_score"])
+    records = simple_project.export_records(fields="foo_score")
     for record in records:
         assert simple_project.def_field in record
     records = simple_project.export_records(fields=["record_id", "foo_score"])
