@@ -18,7 +18,7 @@ This package uses [`poetry`](https://python-poetry.org/docs/master/#installation
 1. Install `poetry`
 
 ```sh
-$ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+$ curl -sSL https://install.python-poetry.org | python3 -
 ```
 
 2. Install all project dependencies (including development/optional dependencies).
