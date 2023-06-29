@@ -414,6 +414,41 @@ def test_df_export(simple_project):
     assert hasattr(dataframe.index, "name")
 
 
+def test_df_export_empty_df_kwargs(simple_project):
+    dataframe = simple_project.export_records(format_type="df", df_kwargs={})
+
+    assert isinstance(dataframe, pd.DataFrame)
+
+    # should be set by default
+    assert dataframe.index.name == "record_id"
+
+
+def test_df_export_extend_df_kwargs_default_values(simple_project):
+    kept_columns = ["first_name", "study_id"]
+
+    dataframe = simple_project.export_records(
+        format_type="df", df_kwargs={"usecols": kept_columns + ["record_id"]}
+    )
+
+    assert isinstance(dataframe, pd.DataFrame)
+
+    # should be set by default
+    assert dataframe.index.name == "record_id"
+
+    # expected based on usecols (else would have additional columns)
+    assert dataframe.columns.tolist() == kept_columns
+
+
+def test_df_export_override_df_kwargs_default_values(simple_project):
+    dataframe = simple_project.export_records(
+        format_type="df", df_kwargs={"index_col": "first_name"}
+    )
+
+    assert isinstance(dataframe, pd.DataFrame)
+
+    assert dataframe.index.name == "first_name"
+
+
 def test_export_with_date_filters(simple_project):
     all_records = simple_project.export_records()
     limited_records = simple_project.export_records(
