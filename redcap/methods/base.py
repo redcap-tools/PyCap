@@ -381,20 +381,18 @@ class Base:
             return response
 
         if not df_kwargs:
-            if record_type == "eav":
-                df_kwargs = {}
-            elif content == "exportFieldNames":
-                df_kwargs = {"index_col": "original_field_name"}
+            df_kwargs = {}
+
+        if "index_col" not in df_kwargs.keys() and record_type != "eav":
+            if content == "exportFieldNames":
+                df_kwargs["index_col"] = "original_field_name"
             elif content == "metadata":
-                df_kwargs = {"index_col": "field_name"}
+                df_kwargs["index_col"] = "field_name"
             elif content in ["report", "record"]:
                 if self.is_longitudinal:
-                    df_kwargs = {"index_col": [self.def_field, "redcap_event_name"]}
+                    df_kwargs["index_col"] = [self.def_field, "redcap_event_name"]
                 else:
-                    df_kwargs = {"index_col": self.def_field}
-            # catchall for other endpoints
-            else:
-                df_kwargs = {}
+                    df_kwargs["index_col"] = self.def_field
 
         response = cast(str, response)
 
