@@ -353,6 +353,7 @@ class Base:
         ],
         format_type: Literal["json", "csv", "xml", "df"],
         df_kwargs: Optional[Dict[str, Any]] = None,
+        record_type: Literal["flat", "eav"] = "flat",
     ):
         """Handle returning data for export methods
 
@@ -382,7 +383,7 @@ class Base:
         if not df_kwargs:
             df_kwargs = {}
 
-        if "index_col" not in df_kwargs.keys():
+        if "index_col" not in df_kwargs.keys() and record_type != "eav":
             if content == "exportFieldNames":
                 df_kwargs["index_col"] = "original_field_name"
             elif content == "metadata":
