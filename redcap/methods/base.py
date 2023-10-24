@@ -336,6 +336,7 @@ class Base:
         self,
         response: Union[Json, str],
         content: Literal[
+            "arm",
             "dag",
             "exportFieldNames",
             "formEventMapping",

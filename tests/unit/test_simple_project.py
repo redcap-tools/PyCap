@@ -618,3 +618,8 @@ def test_reports_df_export(simple_project):
 def test_reports_export_stricly_enforces_format(simple_project):
     with pytest.raises(ValueError):
         simple_project.export_report(report_id="1", format_type="unsupported")
+
+
+def test_arms_export(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_arms()

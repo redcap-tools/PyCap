@@ -38,10 +38,33 @@ def parse_request(req: Any) -> List[Union[dict, str]]:
     return [data, headers, request_type]
 
 
-def handle_long_project_arms_request(**kwargs) -> Any:
-    """Give back list of arms for long project"""
+def handle_simple_project_arms_request(**kwargs) -> Any:
+    """Handle Arm requests for simple project"""
     headers = kwargs["headers"]
-    resp = [{"arm_num": 1, "name": "test"}]
+    resp = {"error": "ERROR: You cannot export arms for classic projects"}
+
+    return (400, headers, json.dumps(resp))
+
+
+def handle_long_project_arms_request(**kwargs) -> Any:
+    """Handle Arm requests for long project"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # Arm import (JSON only)
+    if "data" in str(data):
+        override = json.loads(data["override"][0])
+        if override == 0:
+            resp = 1
+        elif override == 1:
+            resp = 2
+        else:
+            resp = {"error": "test error"}
+    # Arm delete (JSON only)
+    elif "delete" in str(data):
+        resp = 1
+    # Arm export (JSON only)
+    else:
+        resp = [{"arm_num": 1, "name": "test_1"}]
 
     return (201, headers, json.dumps(resp))
 
@@ -614,6 +637,7 @@ def handle_long_project_survey_participants_request(**kwargs) -> Any:
 def get_simple_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
+        "arm": handle_simple_project_arms_request,
         "dag": handle_dag_request,
         "exportFieldNames": handle_export_field_names_request,
         "file": handle_simple_project_file_request,

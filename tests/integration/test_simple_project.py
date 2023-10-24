@@ -266,3 +266,11 @@ def test_export_logging(simple_project):
     logs = simple_project.export_logging(log_type="manage")
     first_log = logs.pop()
     assert "manage/design" in first_log["action"].lower()
+
+
+@pytest.mark.integration
+def test_export_arms(simple_project):
+    res = simple_project.export_arms()
+    print(res)
+
+    assert len(res) == 1

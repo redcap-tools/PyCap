@@ -19,6 +19,7 @@ __copyright__ = "2014, Vanderbilt University"
 
 
 class Project(
+    methods.arms.Arms,
     methods.data_access_groups.DataAccessGroups,
     methods.field_names.FieldNames,
     methods.files.Files,

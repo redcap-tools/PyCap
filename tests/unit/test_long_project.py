@@ -138,3 +138,30 @@ def test_import_export_repeating_forms(long_project):
         to_import=rep, import_format="json"
     )
     assert res == 1
+
+
+def test_arms_export(long_project):
+    response = long_project.export_arms()
+
+    assert len(response) == 1
+
+
+def test_arms_import(long_project):
+    new_arms = [{"arm_num": 2, "name": "test_2"}]
+    response = long_project.import_arms(new_arms)
+
+    assert response == 1
+
+
+def test_arms_import_override(long_project):
+    new_arms = [{"arm_num": 3, "name": "test_3"}, {"arm_num": 4, "name": "test_4"}]
+    response = long_project.import_arms(new_arms, override=1)
+
+    assert response == 2
+
+
+def test_arms_delete(long_project):
+    arm = [3]
+    response = long_project.delete_arms(arm)
+
+    assert response == 1
