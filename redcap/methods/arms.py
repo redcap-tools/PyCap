@@ -13,7 +13,7 @@ class Arms(Base):
     def export_arms(
         self,
         format_type: Literal["json", "csv", "xml", "df"] = "json",
-        df_kwargs: Optional[Dict[str, Any]] = None,
+        arms: Optional[List[int]] = None,
     ):
         # pylint: disable=line-too-long
         """
@@ -25,9 +25,9 @@ class Arms(Base):
         Args:
             format_type:
                 Response return format
-            df_kwargs:
-                Passed to `pandas.read_csv` to control construction of
-                returned DataFrame. By default, nothing
+            arms:
+                An array of arm numbers that you wish to pull arms for
+                (by default, all arms are pulled)
 
         Returns:
             Union[List[Dict[str, Any]], str, pandas.DataFrame]: List of Arms
@@ -38,6 +38,8 @@ class Arms(Base):
         """
         # pylint:enable=line-too-long
         payload = self._initialize_payload(content="arm", format_type=format_type)
+        if arms:
+            payload["arms"] = arms
         return_type = self._lookup_return_type(format_type, request_type="export")
         response = cast(Union[Json, str], self._call_api(payload, return_type))
 
@@ -45,7 +47,6 @@ class Arms(Base):
             response=response,
             content="arm",
             format_type=format_type,
-            df_kwargs=df_kwargs,
         )
 
     def import_arms(
