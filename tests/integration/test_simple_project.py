@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 import semantic_version
 
+from redcap import RedcapError
 
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     pytest.skip(
@@ -270,7 +271,5 @@ def test_export_logging(simple_project):
 
 @pytest.mark.integration
 def test_export_arms(simple_project):
-    res = simple_project.export_arms()
-    print(res)
-
-    assert len(res) == 1
+    with pytest.raises(RedcapError):
+        simple_project.export_arms()
