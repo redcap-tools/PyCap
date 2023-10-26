@@ -107,3 +107,97 @@ def test_limit_export_records_forms_and_fields(long_project):
 
     assert long_project.def_field in records_df.index.names
     assert complete_cols == ["baseline_data_complete"]
+
+
+@pytest.mark.integration
+def test_arms_export(long_project):
+    response = long_project.export_arms()
+
+    assert len(response) == 2
+
+    arm_nums = list(response.keys())
+    arm_names = list(response.values())
+
+    assert arm_nums == [1, 2]
+    assert arm_names == ["Drug A", "Drug B"]
+
+
+@pytest.mark.integration
+def test_arms_import(long_project):
+    new_arms = [{"arm_num": 3, "name": "Drug C"}]
+    response = long_project.import_arms(new_arms)
+
+    assert response == 1
+
+    response = long_project.export_arms()
+
+    assert len(response) == 3
+
+    arm_nums = list(response.keys())
+    arm_names = list(response.values())
+
+    assert arm_nums == [1, 2, 3]
+    assert arm_names == ["Drug A", "Drug B", "Drug C"]
+
+
+@pytest.mark.integration
+def test_arms_import_rename(long_project):
+    new_arms = [{"arm_num": 1, "name": "Drug Alpha"}]
+    response = long_project.import_arms(new_arms)
+
+    assert response == 1
+
+    response = long_project.export_arms()
+
+    assert len(response) == 3
+
+    arm_nums = list(response.keys())
+    arm_names = list(response.values())
+
+    assert arm_nums == [1, 2, 3]
+    assert arm_names == ["Drug Alpha", "Drug B", "Drug C"]
+
+
+@pytest.mark.integration
+def test_arms_delete(long_project):
+    arm = [3]
+    response = long_project.delete_arms(arm)
+
+    assert response == 1
+
+    response = long_project.export_arms()
+
+    assert len(response) == 2
+
+    arm_nums = list(response.keys())
+    arm_names = list(response.values())
+
+    assert arm_nums == [1, 2]
+    assert arm_names == ["Drug Alpha", "Drug B"]
+
+
+@pytest.mark.integration
+def test_arms_import_override(long_project):
+    new_arms = [{"arm_num": 3, "name": "Drug C"}]
+    response = long_project.import_arms(new_arms)
+
+    assert response == 1
+
+    response = long_project.export_arms()
+
+    assert len(response) == 3
+
+    new_arms = [{"arm_num": 1, "name": "Drug A"}, {"arm_num": 2, "name": "Drug B"}]
+    response = long_project.import_arms(new_arms, override=1)
+
+    assert response == 2
+
+    response = long_project.export_arms()
+
+    assert len(response) == 2
+
+    arm_nums = list(response.keys())
+    arm_names = list(response.values())
+
+    assert arm_nums == [1, 2]
+    assert arm_names == ["Drug A", "Drug B"]
