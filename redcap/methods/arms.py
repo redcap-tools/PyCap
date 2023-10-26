@@ -103,7 +103,7 @@ class Arms(Base):
 
     def delete_arms(
         self,
-        arms: List[str],
+        arms: List[int],
         return_format_type: Literal["json", "csv", "xml"] = "json",
     ):
         """
