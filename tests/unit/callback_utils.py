@@ -41,7 +41,7 @@ def parse_request(req: Any) -> List[Union[dict, str]]:
 def handle_simple_project_arms_request(**kwargs) -> Any:
     """Handle Arm requests for simple project"""
     headers = kwargs["headers"]
-    resp = {"error": "ERROR: You cannot export arms for classic projects"}
+    resp = {"error": "You cannot export arms for classic projects"}
 
     return (400, headers, json.dumps(resp))
 
@@ -65,6 +65,45 @@ def handle_long_project_arms_request(**kwargs) -> Any:
     # Arm export (JSON only)
     else:
         resp = [{"arm_num": 1, "name": "test_1"}]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_simple_project_events_request(**kwargs) -> Any:
+    """Handle Event requests for simple project"""
+    headers = kwargs["headers"]
+    resp = {"error": "You cannot export events for classic projects"}
+
+    return (400, headers, json.dumps(resp))
+
+
+def handle_long_project_events_request(**kwargs) -> Any:
+    """Handle Event requests for long project"""
+    headers = kwargs["headers"]
+    data = kwargs["data"]
+    # Event import (JSON only)
+    if "data" in str(data):
+        override = json.loads(data["override"][0])
+        if override == 0:
+            resp = 1
+        elif override == 1:
+            resp = 2
+        else:
+            resp = {"error": "test error"}
+    # Event delete (JSON only)
+    elif "delete" in str(data):
+        resp = 1
+    # Event export (JSON only)
+    else:
+        resp = [
+            {
+                "event_name": "Event 1",
+                "arm_num": 1,
+                "unique_event_name": "event_1_arm_1",
+                "custom_event_label": "",
+                "event_id": 1,
+            }
+        ]
 
     return (201, headers, json.dumps(resp))
 
@@ -639,6 +678,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
     handlers_dict = {
         "arm": handle_simple_project_arms_request,
         "dag": handle_dag_request,
+        "event": handle_simple_project_events_request,
         "exportFieldNames": handle_export_field_names_request,
         "file": handle_simple_project_file_request,
         "formEventMapping": handle_simple_project_form_event_mapping_request,
@@ -662,6 +702,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
         "arm": handle_long_project_arms_request,
+        "event": handle_long_project_events_request,
         "file": handle_long_project_file_request,
         "formEventMapping": handle_long_project_form_event_mapping_request,
         "repeatingFormsEvents": handle_long_project_repeating_form_request,

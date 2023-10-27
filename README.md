@@ -43,6 +43,7 @@ Currently, these API calls are available:
 
 * Arms
 * Data Access Groups
+* Events
 * Field names
 * Instrument-event mapping
 * File
@@ -63,6 +64,7 @@ Currently, these API calls are available:
 
 * Arms
 * Data Access Groups
+* Events
 * File
 * Metadata
 * Records
@@ -76,6 +78,7 @@ Currently, these API calls are available:
 
 * Arms
 * Data Access Groups
+* Events
 * File
 * Records
 * Users

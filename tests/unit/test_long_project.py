@@ -165,3 +165,33 @@ def test_arms_delete(long_project):
     response = long_project.delete_arms(arms)
 
     assert response == 1
+
+
+def test_events_export(long_project):
+    response = long_project.export_events()
+
+    assert len(response) == 1
+
+
+def test_events_import(long_project):
+    new_events = [{"event_name": "Event 2", "arm_num": "1"}]
+    response = long_project.import_events(new_events)
+
+    assert response == 1
+
+
+def test_events_import_override(long_project):
+    new_events = [
+        {"event_name": "Event 3", "arm_num": "1"},
+        {"event_name": "Event 4", "arm_num": "1"},
+    ]
+    response = long_project.import_events(new_events, override=1)
+
+    assert response == 2
+
+
+def test_events_delete(long_project):
+    events = ["event_4_arm_1"]
+    response = long_project.delete_events(events)
+
+    assert response == 1

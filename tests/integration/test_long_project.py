@@ -129,8 +129,12 @@ def test_arms_import(long_project):
 
     assert response == 1
 
-    response = long_project.export_arms()
+    # REDCap will not return an Arm unless it has an event associated with it
+    # Need to add an event to the newly created Arm
+    new_events = [{"event_name": "new_event", "arm_num": "3"}]
+    response = long_project.import_events(new_events)
 
+    response = long_project.export_arms()
     assert len(response) == 3
 
     arm_nums = list(response.keys())
@@ -201,3 +205,34 @@ def test_arms_import_override(long_project):
 
     assert arm_nums == [1, 2]
     assert arm_names == ["Drug A", "Drug B"]
+
+
+@pytest.mark.integration
+def test_events_export(long_project):
+    response = long_project.export_events()
+
+    assert len(response) == 16
+
+
+@pytest.mark.integration
+def test_events_import(long_project):
+    new_events = [{"event_name": "XYZ", "arm_num": "2"}]
+    response = long_project.import_events(new_events)
+
+    assert response == 1
+
+    response = long_project.export_events()
+
+    assert len(response) == 17
+
+
+@pytest.mark.integration
+def test_events_delete(long_project):
+    events = ["xyz_arm_2"]
+    response = long_project.delete_events(events)
+
+    assert response == 1
+
+    response = long_project.export_arms()
+
+    assert len(response) == 16

@@ -12,6 +12,7 @@ nav:
         - Project: api_reference/project.md
         - Arms: api_reference/arms.md
         - Data Access Groups: api_reference/data_access_groups.md
+        - Events: api_reference/events.md
         - Field Names: api_reference/field_names.md
         - Files: api_reference/files.md
         - Instruments: api_reference/instruments.md

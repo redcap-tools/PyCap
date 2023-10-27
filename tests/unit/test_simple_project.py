@@ -623,3 +623,8 @@ def test_reports_export_stricly_enforces_format(simple_project):
 def test_arms_export(simple_project):
     with pytest.raises(RedcapError):
         simple_project.export_arms()
+
+
+def test_events_export(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_events()

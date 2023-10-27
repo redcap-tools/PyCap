@@ -338,6 +338,7 @@ class Base:
         content: Literal[
             "arm",
             "dag",
+            "event",
             "exportFieldNames",
             "formEventMapping",
             "log",
