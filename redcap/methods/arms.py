@@ -13,7 +13,7 @@ class Arms(Base):
     def export_arms(
         self,
         format_type: Literal["json", "csv", "xml", "df"] = "json",
-        arms: Optional[List[int]] = None,
+        arms: Optional[List[str]] = None,
     ):
         # pylint: disable=line-too-long
         """
@@ -39,7 +39,9 @@ class Arms(Base):
         # pylint:enable=line-too-long
         payload = self._initialize_payload(content="arm", format_type=format_type)
         if arms:
-            payload["arms"] = arms
+            # Turn list of arms into dict, and append to payload
+            arms_dict = {f"arms[{ idx }]": arm for idx, arm in enumerate(arms)}
+            payload.update(arms_dict)
         return_type = self._lookup_return_type(format_type, request_type="export")
         response = cast(Union[Json, str], self._call_api(payload, return_type))
 
@@ -104,7 +106,7 @@ class Arms(Base):
 
     def delete_arms(
         self,
-        arms: List[int],
+        arms: List[str],
         return_format_type: Literal["json", "csv", "xml"] = "json",
     ):
         """

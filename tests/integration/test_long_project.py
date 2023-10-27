@@ -160,8 +160,8 @@ def test_arms_import_rename(long_project):
 
 @pytest.mark.integration
 def test_arms_delete(long_project):
-    arm = [3]
-    response = long_project.delete_arms(arm)
+    arms = [3]
+    response = long_project.delete_arms(arms)
 
     assert response == 1
 
