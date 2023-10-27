@@ -64,7 +64,12 @@ def handle_long_project_arms_request(**kwargs) -> Any:
         resp = 1
     # Arm export (JSON only)
     else:
-        resp = [{"arm_num": 1, "name": "test_1"}]
+        # Check for optional arms arg
+        arms = data.get("arms[0]", [])
+        if len(arms):
+            resp = [{"arm_num": 2, "name": "test_2"}]
+        else:
+            resp = [{"arm_num": 1, "name": "test_1"}]
 
     return (201, headers, json.dumps(resp))
 
@@ -95,15 +100,36 @@ def handle_long_project_events_request(**kwargs) -> Any:
         resp = 1
     # Event export (JSON only)
     else:
-        resp = [
-            {
-                "event_name": "Event 1",
-                "arm_num": 1,
-                "unique_event_name": "event_1_arm_1",
-                "custom_event_label": "",
-                "event_id": 1,
-            }
-        ]
+        # Check for optional arms arg
+        arms = data.get("arms[0]", [])
+        if len(arms):
+            resp = [
+                {
+                    "event_name": "Event 1",
+                    "arm_num": 1,
+                    "unique_event_name": "event_1_arm_1",
+                    "custom_event_label": "",
+                    "event_id": 1,
+                },
+                {
+                    "event_name": "Event 2",
+                    "arm_num": 1,
+                    "unique_event_name": "event_2_arm_1",
+                    "custom_event_label": "",
+                    "event_id": 2,
+                },
+            ]
+
+        else:
+            resp = [
+                {
+                    "event_name": "Event 1",
+                    "arm_num": 1,
+                    "unique_event_name": "event_1_arm_1",
+                    "custom_event_label": "",
+                    "event_id": 1,
+                }
+            ]
 
     return (201, headers, json.dumps(resp))
 

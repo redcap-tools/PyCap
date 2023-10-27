@@ -153,6 +153,14 @@ def test_arms_import(long_project):
     assert response == 1
 
 
+def test_arms_export_specify_arm(long_project):
+    response = long_project.export_arms(arms=[2])
+
+    assert len(response) == 1
+
+    assert any(arm["name"] == "test_2" for arm in response)
+
+
 def test_arms_import_override(long_project):
     new_arms = [{"arm_num": 3, "name": "test_3"}, {"arm_num": 4, "name": "test_4"}]
     response = long_project.import_arms(new_arms, override=1)
@@ -178,6 +186,14 @@ def test_events_import(long_project):
     response = long_project.import_events(new_events)
 
     assert response == 1
+
+
+def test_events_export_specify_arm(long_project):
+    response = long_project.export_events(arms=[1])
+
+    assert len(response) == 2
+
+    assert any(event["arm_num"] == 1 for event in response)
 
 
 def test_events_import_override(long_project):
