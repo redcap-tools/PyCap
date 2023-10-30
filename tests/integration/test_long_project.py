@@ -4,6 +4,8 @@ import os
 
 import pytest
 
+from redcap import RedcapError
+
 
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     pytest.skip(
@@ -182,10 +184,15 @@ def test_arms_delete(long_project):
 
 @pytest.mark.integration
 def test_arms_import_override(long_project):
+    # Cache current events, so they can be restored for subsequent tests
+    current_events = long_project.export_events()
+
     new_arms = [{"arm_num": 3, "name": "Drug C"}]
     response = long_project.import_arms(new_arms)
-
     assert response == 1
+    # Add event for new arm
+    new_event = [{"event_name": "new_event", "arm_num": "3"}]
+    response = long_project.import_events(new_event)
 
     response = long_project.export_arms()
 
