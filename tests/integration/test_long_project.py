@@ -202,9 +202,14 @@ def test_arms_import_override(long_project):
     response = long_project.import_arms(new_arms, override=1)
 
     assert response == 2
+    # Confirm that there are no events associated with new override arms
+    with pytest.raises(RedcapError):
+        response = long_project.export_arms()
+
+    response = long_project.import_events(current_events)
+    assert response == 16
 
     response = long_project.export_arms()
-
     assert len(response) == 2
 
     arm_nums = [arm["arm_num"] for arm in response]
@@ -240,6 +245,6 @@ def test_events_delete(long_project):
 
     assert response == 1
 
-    response = long_project.export_arms()
+    response = long_project.export_events()
 
     assert len(response) == 16
