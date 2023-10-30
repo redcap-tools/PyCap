@@ -115,8 +115,8 @@ def test_arms_export(long_project):
 
     assert len(response) == 2
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2]
     assert arm_names == ["Drug A", "Drug B"]
@@ -137,8 +137,8 @@ def test_arms_import(long_project):
     response = long_project.export_arms()
     assert len(response) == 3
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2, 3]
     assert arm_names == ["Drug A", "Drug B", "Drug C"]
@@ -155,8 +155,8 @@ def test_arms_import_rename(long_project):
 
     assert len(response) == 3
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2, 3]
     assert arm_names == ["Drug Alpha", "Drug B", "Drug C"]
@@ -173,8 +173,8 @@ def test_arms_delete(long_project):
 
     assert len(response) == 2
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2]
     assert arm_names == ["Drug Alpha", "Drug B"]
@@ -200,8 +200,8 @@ def test_arms_import_override(long_project):
 
     assert len(response) == 2
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2]
     assert arm_names == ["Drug A", "Drug B"]
