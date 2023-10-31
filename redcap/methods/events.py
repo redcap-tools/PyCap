@@ -34,8 +34,8 @@ class Events(Base):
 
         Examples:
             >>> proj.export_events()
-            [{"event_name": "Event 1", "arm_num": 1, "unique_event_name": "event_1_arm_1",
-            "custom_event_label": null, "event_id": 1}]
+            [{'event_name': 'Event 1', 'arm_num': 1, 'unique_event_name': 'event_1_arm_1',
+            'custom_event_label': '', 'event_id': ...}, {'event_name': 'Event 2', ...}]
         """
         # pylint:enable=line-too-long
         payload = self._initialize_payload(content="event", format_type=format_type)

@@ -40,8 +40,8 @@ class UserRoles(Base):
 
         Examples:
             >>> proj.export_user_roles()
-            [{'unique_role_name': ..., 'role_label': 'Test role', 'design': '0', 'user_rights': '0',
-            'data_access_groups': '0', 'reports': '0', 'stats_and_charts': '0',
+            [{'unique_role_name': ..., 'role_label': 'Test role', 'design': '0', 'alerts': '0',
+            'user_rights': '0', 'data_access_groups': '0', 'reports': '0', 'stats_and_charts': '0',
             'manage_survey_participants': '0', 'calendar': '0', 'data_import_tool': '0',
             'data_comparison_tool': '0', 'logging': '0', 'file_repository': '0',
             'data_quality_create': '0', 'data_quality_execute': '0', 'api_export': '0',

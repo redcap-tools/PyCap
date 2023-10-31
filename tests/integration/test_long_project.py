@@ -4,6 +4,8 @@ import os
 
 import pytest
 
+from redcap import RedcapError
+
 
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     pytest.skip(
@@ -115,8 +117,8 @@ def test_arms_export(long_project):
 
     assert len(response) == 2
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2]
     assert arm_names == ["Drug A", "Drug B"]
@@ -137,8 +139,8 @@ def test_arms_import(long_project):
     response = long_project.export_arms()
     assert len(response) == 3
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2, 3]
     assert arm_names == ["Drug A", "Drug B", "Drug C"]
@@ -155,8 +157,8 @@ def test_arms_import_rename(long_project):
 
     assert len(response) == 3
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2, 3]
     assert arm_names == ["Drug Alpha", "Drug B", "Drug C"]
@@ -173,8 +175,8 @@ def test_arms_delete(long_project):
 
     assert len(response) == 2
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2]
     assert arm_names == ["Drug Alpha", "Drug B"]
@@ -182,10 +184,15 @@ def test_arms_delete(long_project):
 
 @pytest.mark.integration
 def test_arms_import_override(long_project):
+    # Cache current events, so they can be restored for subsequent tests
+    current_events = long_project.export_events()
+
     new_arms = [{"arm_num": 3, "name": "Drug C"}]
     response = long_project.import_arms(new_arms)
-
     assert response == 1
+    # Add event for new arm
+    new_event = [{"event_name": "new_event", "arm_num": "3"}]
+    response = long_project.import_events(new_event)
 
     response = long_project.export_arms()
 
@@ -195,13 +202,18 @@ def test_arms_import_override(long_project):
     response = long_project.import_arms(new_arms, override=1)
 
     assert response == 2
+    # Confirm that there are no events associated with new override arms
+    with pytest.raises(RedcapError):
+        response = long_project.export_arms()
+
+    response = long_project.import_events(current_events)
+    assert response == 16
 
     response = long_project.export_arms()
-
     assert len(response) == 2
 
-    arm_nums = list(response.keys())
-    arm_names = list(response.values())
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
 
     assert arm_nums == [1, 2]
     assert arm_names == ["Drug A", "Drug B"]
@@ -233,6 +245,6 @@ def test_events_delete(long_project):
 
     assert response == 1
 
-    response = long_project.export_arms()
+    response = long_project.export_events()
 
     assert len(response) == 16
