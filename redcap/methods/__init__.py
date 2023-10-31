@@ -1,6 +1,8 @@
 """Make the method modules available upon import"""
 
+import redcap.methods.arms
 import redcap.methods.data_access_groups
+import redcap.methods.events
 import redcap.methods.field_names
 import redcap.methods.files
 import redcap.methods.instruments

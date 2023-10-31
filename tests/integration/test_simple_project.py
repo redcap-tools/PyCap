@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 import semantic_version
 
+from redcap import RedcapError
 
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     pytest.skip(
@@ -266,3 +267,15 @@ def test_export_logging(simple_project):
     logs = simple_project.export_logging(log_type="manage")
     first_log = logs.pop()
     assert "manage/design" in first_log["action"].lower()
+
+
+@pytest.mark.integration
+def test_export_arms(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_arms()
+
+
+@pytest.mark.integration
+def test_export_events(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_events()

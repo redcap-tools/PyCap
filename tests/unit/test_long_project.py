@@ -138,3 +138,76 @@ def test_import_export_repeating_forms(long_project):
         to_import=rep, import_format="json"
     )
     assert res == 1
+
+
+def test_arms_export(long_project):
+    response = long_project.export_arms()
+
+    assert len(response) == 1
+
+
+def test_arms_import(long_project):
+    new_arms = [{"arm_num": 2, "name": "test_2"}]
+    response = long_project.import_arms(new_arms)
+
+    assert response == 1
+
+
+def test_arms_export_specify_arm(long_project):
+    response = long_project.export_arms(arms=[2])
+
+    assert len(response) == 1
+
+    assert any(arm["name"] == "test_2" for arm in response)
+
+
+def test_arms_import_override(long_project):
+    new_arms = [{"arm_num": 3, "name": "test_3"}, {"arm_num": 4, "name": "test_4"}]
+    response = long_project.import_arms(new_arms, override=1)
+
+    assert response == 2
+
+
+def test_arms_delete(long_project):
+    arms = [3]
+    response = long_project.delete_arms(arms)
+
+    assert response == 1
+
+
+def test_events_export(long_project):
+    response = long_project.export_events()
+
+    assert len(response) == 1
+
+
+def test_events_import(long_project):
+    new_events = [{"event_name": "Event 2", "arm_num": "1"}]
+    response = long_project.import_events(new_events)
+
+    assert response == 1
+
+
+def test_events_export_specify_arm(long_project):
+    response = long_project.export_events(arms=[1])
+
+    assert len(response) == 2
+
+    assert any(event["arm_num"] == 1 for event in response)
+
+
+def test_events_import_override(long_project):
+    new_events = [
+        {"event_name": "Event 3", "arm_num": "1"},
+        {"event_name": "Event 4", "arm_num": "1"},
+    ]
+    response = long_project.import_events(new_events, override=1)
+
+    assert response == 2
+
+
+def test_events_delete(long_project):
+    events = ["event_4_arm_1"]
+    response = long_project.delete_events(events)
+
+    assert response == 1

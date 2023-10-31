@@ -4,6 +4,8 @@ import os
 
 import pytest
 
+from redcap import RedcapError
+
 
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     pytest.skip(
@@ -107,3 +109,142 @@ def test_limit_export_records_forms_and_fields(long_project):
 
     assert long_project.def_field in records_df.index.names
     assert complete_cols == ["baseline_data_complete"]
+
+
+@pytest.mark.integration
+def test_arms_export(long_project):
+    response = long_project.export_arms()
+
+    assert len(response) == 2
+
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
+
+    assert arm_nums == [1, 2]
+    assert arm_names == ["Drug A", "Drug B"]
+
+
+@pytest.mark.integration
+def test_arms_import(long_project):
+    new_arms = [{"arm_num": 3, "name": "Drug C"}]
+    response = long_project.import_arms(new_arms)
+
+    assert response == 1
+
+    # REDCap will not return an Arm unless it has an event associated with it
+    # Need to add an event to the newly created Arm
+    new_events = [{"event_name": "new_event", "arm_num": "3"}]
+    response = long_project.import_events(new_events)
+
+    response = long_project.export_arms()
+    assert len(response) == 3
+
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
+
+    assert arm_nums == [1, 2, 3]
+    assert arm_names == ["Drug A", "Drug B", "Drug C"]
+
+
+@pytest.mark.integration
+def test_arms_import_rename(long_project):
+    new_arms = [{"arm_num": 1, "name": "Drug Alpha"}]
+    response = long_project.import_arms(new_arms)
+
+    assert response == 1
+
+    response = long_project.export_arms()
+
+    assert len(response) == 3
+
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
+
+    assert arm_nums == [1, 2, 3]
+    assert arm_names == ["Drug Alpha", "Drug B", "Drug C"]
+
+
+@pytest.mark.integration
+def test_arms_delete(long_project):
+    arms = [3]
+    response = long_project.delete_arms(arms)
+
+    assert response == 1
+
+    response = long_project.export_arms()
+
+    assert len(response) == 2
+
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
+
+    assert arm_nums == [1, 2]
+    assert arm_names == ["Drug Alpha", "Drug B"]
+
+
+@pytest.mark.integration
+def test_arms_import_override(long_project):
+    # Cache current events, so they can be restored for subsequent tests
+    current_events = long_project.export_events()
+
+    new_arms = [{"arm_num": 3, "name": "Drug C"}]
+    response = long_project.import_arms(new_arms)
+    assert response == 1
+    # Add event for new arm
+    new_event = [{"event_name": "new_event", "arm_num": "3"}]
+    response = long_project.import_events(new_event)
+
+    response = long_project.export_arms()
+
+    assert len(response) == 3
+
+    new_arms = [{"arm_num": 1, "name": "Drug A"}, {"arm_num": 2, "name": "Drug B"}]
+    response = long_project.import_arms(new_arms, override=1)
+
+    assert response == 2
+    # Confirm that there are no events associated with new override arms
+    with pytest.raises(RedcapError):
+        response = long_project.export_arms()
+
+    response = long_project.import_events(current_events)
+    assert response == 16
+
+    response = long_project.export_arms()
+    assert len(response) == 2
+
+    arm_nums = [arm["arm_num"] for arm in response]
+    arm_names = [arm["name"] for arm in response]
+
+    assert arm_nums == [1, 2]
+    assert arm_names == ["Drug A", "Drug B"]
+
+
+@pytest.mark.integration
+def test_events_export(long_project):
+    response = long_project.export_events()
+
+    assert len(response) == 16
+
+
+@pytest.mark.integration
+def test_events_import(long_project):
+    new_events = [{"event_name": "XYZ", "arm_num": "2"}]
+    response = long_project.import_events(new_events)
+
+    assert response == 1
+
+    response = long_project.export_events()
+
+    assert len(response) == 17
+
+
+@pytest.mark.integration
+def test_events_delete(long_project):
+    events = ["xyz_arm_2"]
+    response = long_project.delete_events(events)
+
+    assert response == 1
+
+    response = long_project.export_events()
+
+    assert len(response) == 16

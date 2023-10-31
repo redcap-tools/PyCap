@@ -31,8 +31,8 @@ class Users(Base):
         Examples:
             >>> proj.export_users()
             [{'username': ..., 'email': ..., 'expiration': '', 'data_access_group': '',
-            'data_access_group_id': '', 'design': 1, 'user_rights': 1, 'data_access_groups': 1,
-            'reports': 1, ...}]
+            'data_access_group_id': '', 'design': 1, 'alerts': 1, 'user_rights': 1,
+            'data_access_groups': 1, 'reports': 1, ...}]
         """
         payload = self._initialize_payload(content="user", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")

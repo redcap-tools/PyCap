@@ -41,7 +41,9 @@ Currently, these API calls are available:
 
 ### Export
 
+* Arms
 * Data Access Groups
+* Events
 * Field names
 * Instrument-event mapping
 * File
@@ -60,7 +62,9 @@ Currently, these API calls are available:
 
 ### Import
 
+* Arms
 * Data Access Groups
+* Events
 * File
 * Metadata
 * Records
@@ -72,7 +76,9 @@ Currently, these API calls are available:
 
 ### Delete
 
+* Arms
 * Data Access Groups
+* Events
 * File
 * Records
 * Users
