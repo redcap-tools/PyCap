@@ -298,8 +298,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../arms/" class="md-nav__link">
+        Arms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../data_access_groups/" class="md-nav__link">
         Data Access Groups
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../events/" class="md-nav__link">
+        Events
       </a>
     </li>
   
@@ -845,8 +873,8 @@ UserRoles            (<span title="redcap.methods.base.Base">Base</span>)
 <a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>
 <a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="sd">        Examples:</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="sd">            &gt;&gt;&gt; proj.export_user_roles()</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="sd">            [{&#39;unique_role_name&#39;: ..., &#39;role_label&#39;: &#39;Test role&#39;, &#39;design&#39;: &#39;0&#39;, &#39;user_rights&#39;: &#39;0&#39;,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="sd">            &#39;data_access_groups&#39;: &#39;0&#39;, &#39;reports&#39;: &#39;0&#39;, &#39;stats_and_charts&#39;: &#39;0&#39;,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="sd">            [{&#39;unique_role_name&#39;: ..., &#39;role_label&#39;: &#39;Test role&#39;, &#39;design&#39;: &#39;0&#39;, &#39;alerts&#39;: &#39;0&#39;,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="sd">            &#39;user_rights&#39;: &#39;0&#39;, &#39;data_access_groups&#39;: &#39;0&#39;, &#39;reports&#39;: &#39;0&#39;, &#39;stats_and_charts&#39;: &#39;0&#39;,</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="sd">            &#39;manage_survey_participants&#39;: &#39;0&#39;, &#39;calendar&#39;: &#39;0&#39;, &#39;data_import_tool&#39;: &#39;0&#39;,</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="sd">            &#39;data_comparison_tool&#39;: &#39;0&#39;, &#39;logging&#39;: &#39;0&#39;, &#39;file_repository&#39;: &#39;0&#39;,</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="sd">            &#39;data_quality_create&#39;: &#39;0&#39;, &#39;data_quality_execute&#39;: &#39;0&#39;, &#39;api_export&#39;: &#39;0&#39;,</span>
@@ -1509,8 +1537,8 @@ returned DataFrame. By default, nothing</p></td>
 </table>
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">proj</span><span class="o">.</span><span class="n">export_user_roles</span><span class="p">()</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">[{</span><span class="s1">&#39;unique_role_name&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;role_label&#39;</span><span class="p">:</span> <span class="s1">&#39;Test role&#39;</span><span class="p">,</span> <span class="s1">&#39;design&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;user_rights&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="s1">&#39;data_access_groups&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;reports&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;stats_and_charts&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">[{</span><span class="s1">&#39;unique_role_name&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;role_label&#39;</span><span class="p">:</span> <span class="s1">&#39;Test role&#39;</span><span class="p">,</span> <span class="s1">&#39;design&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;alerts&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="s1">&#39;user_rights&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;data_access_groups&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;reports&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;stats_and_charts&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="s1">&#39;manage_survey_participants&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;calendar&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;data_import_tool&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="s1">&#39;data_comparison_tool&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;file_repository&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="s1">&#39;data_quality_create&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;data_quality_execute&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;api_export&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
@@ -1543,8 +1571,8 @@ returned DataFrame. By default, nothing</p></td>
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
 <a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="sd">    Examples:</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="sd">        &gt;&gt;&gt; proj.export_user_roles()</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="sd">        [{&#39;unique_role_name&#39;: ..., &#39;role_label&#39;: &#39;Test role&#39;, &#39;design&#39;: &#39;0&#39;, &#39;user_rights&#39;: &#39;0&#39;,</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="sd">        &#39;data_access_groups&#39;: &#39;0&#39;, &#39;reports&#39;: &#39;0&#39;, &#39;stats_and_charts&#39;: &#39;0&#39;,</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="sd">        [{&#39;unique_role_name&#39;: ..., &#39;role_label&#39;: &#39;Test role&#39;, &#39;design&#39;: &#39;0&#39;, &#39;alerts&#39;: &#39;0&#39;,</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="sd">        &#39;user_rights&#39;: &#39;0&#39;, &#39;data_access_groups&#39;: &#39;0&#39;, &#39;reports&#39;: &#39;0&#39;, &#39;stats_and_charts&#39;: &#39;0&#39;,</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="sd">        &#39;manage_survey_participants&#39;: &#39;0&#39;, &#39;calendar&#39;: &#39;0&#39;, &#39;data_import_tool&#39;: &#39;0&#39;,</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="sd">        &#39;data_comparison_tool&#39;: &#39;0&#39;, &#39;logging&#39;: &#39;0&#39;, &#39;file_repository&#39;: &#39;0&#39;,</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="sd">        &#39;data_quality_create&#39;: &#39;0&#39;, &#39;data_quality_execute&#39;: &#39;0&#39;, &#39;api_export&#39;: &#39;0&#39;,</span>
