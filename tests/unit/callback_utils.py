@@ -215,6 +215,30 @@ def handle_simple_project_form_event_mapping_request(**kwargs) -> Any:
     return (201, headers, json.dumps(resp))
 
 
+def handle_simple_project_instruments_request(**kwargs) -> Any:
+    """Handle Instrument requests for simple project"""
+    headers = kwargs["headers"]
+
+    # Instrument export (JSON only)
+    resp = [{"instrument_name": "form_1", "instrument_label": "Form 1"}]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_long_project_instruments_request(**kwargs) -> Any:
+    """Handle Instrument requests for long project"""
+    headers = kwargs["headers"]
+
+    # Instrument export (JSON only)
+    resp = [
+        {"instrument_name": "form_1", "instrument_label": "Form 1"},
+        {"instrument_name": "form_2", "instrument_label": "Form 2"},
+        {"instrument_name": "form_3", "instrument_label": "Form 3"},
+    ]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_long_project_form_event_mapping_request(**kwargs) -> Any:
     """Give back list of events for long project"""
     headers = kwargs["headers"]
@@ -709,6 +733,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "file": handle_simple_project_file_request,
         "formEventMapping": handle_simple_project_form_event_mapping_request,
         "generateNextRecordName": handle_generate_next_record_name_request,
+        "instrument": handle_simple_project_instruments_request,
         "log": handle_logging_request,
         "metadata": handle_simple_project_metadata_request,
         "project": handle_project_info_request,
@@ -731,6 +756,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "event": handle_long_project_events_request,
         "file": handle_long_project_file_request,
         "formEventMapping": handle_long_project_form_event_mapping_request,
+        "instrument": handle_long_project_instruments_request,
         "repeatingFormsEvents": handle_long_project_repeating_form_request,
         "metadata": handle_long_project_metadata_request,
         "participantList": handle_long_project_survey_participants_request,

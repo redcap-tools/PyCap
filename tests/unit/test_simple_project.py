@@ -463,6 +463,12 @@ def test_export_records_strictly_enforces_format(simple_project):
         simple_project.export_records(format_type="unsupported")
 
 
+def test_instruments_export(simple_project):
+    response = simple_project.export_instruments()
+
+    assert len(response) == 1
+
+
 def test_fem_export_passes_filters_as_arrays(simple_project, mocker):
     mocked_api_call = mocker.patch.object(
         simple_project, "_call_api", return_value=None

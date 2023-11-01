@@ -248,3 +248,9 @@ def test_events_delete(long_project):
     response = long_project.export_events()
 
     assert len(response) == 16
+
+
+@pytest.mark.integration
+def test_export_instruments(long_project):
+    response = long_project.export_events()
+    assert len(response) == 9

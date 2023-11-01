@@ -217,6 +217,12 @@ def test_export_field_names_df(simple_project):
 
 
 @pytest.mark.integration
+def test_export_instruments(simple_project):
+    events = simple_project.export_events()
+    assert len(events) == 1
+
+
+@pytest.mark.integration
 def test_export_and_import_metadata(simple_project):
     original_metadata = simple_project.export_metadata()
     assert len(original_metadata) == 15

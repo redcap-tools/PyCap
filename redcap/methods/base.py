@@ -341,6 +341,7 @@ class Base:
             "event",
             "exportFieldNames",
             "formEventMapping",
+            "instrument",
             "log",
             "metadata",
             "participantList",

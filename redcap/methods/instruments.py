@@ -1,14 +1,5 @@
 """REDCap API methods for Project instruments"""
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base
 from redcap.request import Json
@@ -19,6 +10,36 @@ if TYPE_CHECKING:
 
 class Instruments(Base):
     """Responsible for all API methods under 'Instruments' in the API Playground"""
+
+    def export_instruments(
+        self,
+        format_type: Literal["json", "csv", "xml", "df"] = "json",
+    ):
+        """
+        Export the Instruments of the Project
+
+        Args:
+            format_type:
+                Response return format
+
+        Returns:
+            Union[List[Dict[str, Any]], str, pandas.DataFrame]: List of Instruments
+
+        Examples:
+            >>> proj.export_instruments()
+            [{'instrument_name': 'demo', 'instrument_label': 'Demographics'}]
+        """
+        payload = self._initialize_payload(
+            content="instrument", format_type=format_type
+        )
+        return_type = self._lookup_return_type(format_type, request_type="export")
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
+
+        return self._return_data(
+            response=response,
+            content="instrument",
+            format_type=format_type,
+        )
 
     def export_instrument_event_mappings(
         self,

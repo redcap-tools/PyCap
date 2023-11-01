@@ -81,6 +81,12 @@ def test_is_longitudinal(long_project):
     assert long_project.is_longitudinal
 
 
+def test_instruments_export(long_project):
+    response = long_project.export_instruments()
+
+    assert len(response) == 3
+
+
 def test_export_with_events(long_project):
     events = long_project.export_instrument_event_mappings()
     unique_event = events[0]["unique_event_name"]
