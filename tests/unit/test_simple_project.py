@@ -469,6 +469,12 @@ def test_instruments_export(simple_project):
     assert len(response) == 1
 
 
+def test_pdf_export(simple_project):
+    content, _ = simple_project.export_pdf()
+
+    assert isinstance(content, bytes)
+
+
 def test_fem_export_passes_filters_as_arrays(simple_project, mocker):
     mocked_api_call = mocker.patch.object(
         simple_project, "_call_api", return_value=None

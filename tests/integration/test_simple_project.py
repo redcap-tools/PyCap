@@ -1,7 +1,6 @@
 """Test suite for simple REDCap Project against real REDCap server"""
 # pylint: disable=missing-function-docstring
 import os
-
 from io import StringIO
 
 import pandas as pd
@@ -220,6 +219,13 @@ def test_export_field_names_df(simple_project):
 def test_export_instruments(simple_project):
     events = simple_project.export_events()
     assert len(events) == 1
+
+
+@pytest.mark.integration
+def test_export_pdf(simple_project):
+    content, _ = simple_project.export_pdf()
+
+    assert isinstance(content, bytes)
 
 
 @pytest.mark.integration

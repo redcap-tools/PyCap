@@ -1,7 +1,7 @@
 """REDCap API methods for Project instruments"""
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, cast
 
-from redcap.methods.base import Base
+from redcap.methods.base import Base, FileMap
 from redcap.request import Json
 
 if TYPE_CHECKING:
@@ -40,6 +40,74 @@ class Instruments(Base):
             content="instrument",
             format_type=format_type,
         )
+
+    def export_pdf(
+        self,
+        record: Optional[str] = None,
+        event: Optional[str] = None,
+        instrument: Optional[str] = None,
+        repeat_instance: Optional[int] = None,
+        all_records: Optional[bool] = None,
+        compact_display: Optional[bool] = None,
+    ) -> FileMap:
+        """
+        Export PDF file of instruments, either as blank or with data
+
+        Args:
+            record: Record ID
+            event: For longitudinal projects, the unique event name
+            instrument: Unique instrument name
+            repeat_instance:
+                (Only for projects with repeating instruments/events)
+                The repeat instance number of the repeating event (if longitudinal)
+                or the repeating instrument (if classic or longitudinal).
+            all_records:
+                If True, then all records will be exported as a single PDF file.
+                Note: If this is True, then record, event, and instrument parameters
+                      are all ignored.
+            compact_display:
+                If True, then the PDF will be exported in compact display mode.
+
+        Returns:
+            Content of the file
+
+        Examples:
+            >>> proj.export_pdf()
+            b'%PDF-1.3\n3 0 obj\n...'
+        """
+        # load up payload
+        payload = self._initialize_payload(content="pdf", return_format_type="json")
+        # there's no format field in this call
+        payload["action"] = "export"
+        if record:
+            payload["record"] = record
+        if event:
+            payload["event"] = event
+        if instrument:
+            payload["instrument"] = instrument
+        if repeat_instance:
+            payload["repeat_instance"] = str(repeat_instance)
+        if all_records:
+            payload["allRecords"] = str(all_records == "True")
+        if compact_display:
+            payload["compactDisplay"] = str(compact_display == "True")
+        content, headers = cast(
+            FileMap, self._call_api(payload=payload, return_type="file_map")
+        )
+        # REDCap adds some useful things in content-type
+        content_map = {}
+        if "content-type" in headers:
+            splat = [
+                key_values.strip() for key_values in headers["content-type"].split(";")
+            ]
+            key_values = [
+                (key_values.split("=")[0], key_values.split("=")[1].replace('"', ""))
+                for key_values in splat
+                if "=" in key_values
+            ]
+            content_map = dict(key_values)
+
+        return content, content_map
 
     def export_instrument_event_mappings(
         self,

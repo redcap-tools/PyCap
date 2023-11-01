@@ -225,6 +225,14 @@ def handle_simple_project_instruments_request(**kwargs) -> Any:
     return (201, headers, json.dumps(resp))
 
 
+def handle_simple_project_pdf_request(**kwargs) -> Any:
+    """Handle PDF requests for simple project"""
+    headers = kwargs["headers"]
+    resp = {}
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_long_project_instruments_request(**kwargs) -> Any:
     """Handle Instrument requests for long project"""
     headers = kwargs["headers"]
@@ -235,6 +243,14 @@ def handle_long_project_instruments_request(**kwargs) -> Any:
         {"instrument_name": "form_2", "instrument_label": "Form 2"},
         {"instrument_name": "form_3", "instrument_label": "Form 3"},
     ]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_long_project_pdf_request(**kwargs) -> Any:
+    """Handle PDF requests for long project"""
+    headers = kwargs["headers"]
+    resp = {}
 
     return (201, headers, json.dumps(resp))
 
@@ -742,6 +758,7 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "instrument": handle_simple_project_instruments_request,
         "log": handle_logging_request,
         "metadata": handle_simple_project_metadata_request,
+        "pdf": handle_simple_project_pdf_request,
         "project": handle_project_info_request,
         "record": handle_simple_project_records_request,
         "report": handle_simple_project_reports_request,
@@ -766,6 +783,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "repeatingFormsEvents": handle_long_project_repeating_form_request,
         "metadata": handle_long_project_metadata_request,
         "participantList": handle_long_project_survey_participants_request,
+        "pdf": handle_long_project_pdf_request,
         "record": handle_long_project_records_request,
         "report": handle_long_project_reports_request,
         "version": handle_long_project_version_request,

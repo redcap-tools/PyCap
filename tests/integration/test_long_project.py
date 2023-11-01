@@ -257,6 +257,13 @@ def test_export_instruments(long_project):
 
 
 @pytest.mark.integration
+def test_export_pdf(long_project):
+    content, _ = long_project.export_pdf()
+
+    assert isinstance(content, bytes)
+
+
+@pytest.mark.integration
 def test_fem_export(long_project):
     response = long_project.export_instrument_event_mappings()
 

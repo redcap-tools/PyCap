@@ -35,7 +35,7 @@ Export a file
 
 ```python
 content, headers = project.export_file('1', 'file')
-with open(headers['name'], 'w') as fobj:
+with open(headers['name'], 'wb') as fobj:
     fobj.write(content)
 ```
 
@@ -49,4 +49,12 @@ except redcap.RedcapError:
 except ValueError:
     # You screwed up and gave it a bad field name, etc
     pass
+```
+
+Export a PDF file of all instruments (blank)
+
+```python
+content, _headers = project.export_pdf()
+with open('all_instruments_blank.pdf', 'wb') as fobj:
+    fobj.write(content)
 ```

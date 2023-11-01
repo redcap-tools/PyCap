@@ -87,6 +87,32 @@ def test_instruments_export(long_project):
     assert len(response) == 3
 
 
+def test_pdf_export(long_project):
+    content, _ = long_project.export_pdf()
+
+    assert isinstance(content, bytes)
+
+
+def test_pdf_export_specify(long_project):
+    content, _ = long_project.export_pdf(
+        record="1", event="raw", instrument="test", repeat_instance=1
+    )
+
+    assert isinstance(content, bytes)
+
+
+def test_pdf_export_all_records(long_project):
+    content, _ = long_project.export_pdf(all_records=True)
+
+    assert isinstance(content, bytes)
+
+
+def test_pdf_export_compact_display(long_project):
+    content, _ = long_project.export_pdf(compact_display=True)
+
+    assert isinstance(content, bytes)
+
+
 def test_export_with_events(long_project):
     events = long_project.export_instrument_event_mappings()
     unique_event = events[0]["unique_event_name"]
