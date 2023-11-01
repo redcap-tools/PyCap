@@ -634,3 +634,8 @@ def test_arms_export_throws_exception(simple_project):
 def test_events_export_throws_exception(simple_project):
     with pytest.raises(RedcapError):
         simple_project.export_events()
+
+
+def test_instrument_event_mapping_export_throws_exception(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_instrument_event_mappings()

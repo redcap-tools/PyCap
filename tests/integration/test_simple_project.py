@@ -285,3 +285,9 @@ def test_export_arms(simple_project):
 def test_export_events(simple_project):
     with pytest.raises(RedcapError):
         simple_project.export_events()
+
+
+@pytest.mark.integration
+def test_export_instrument_event_mapping(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_instrument_event_mappings()

@@ -254,3 +254,40 @@ def test_events_delete(long_project):
 def test_export_instruments(long_project):
     response = long_project.export_events()
     assert len(response) == 9
+
+
+@pytest.mark.integration
+def test_fem_export(long_project):
+    response = long_project.export_instrument_event_mappings()
+
+    assert len(response) == 44
+
+
+@pytest.mark.integration
+def test_fem_import(long_project):
+    # Cache current instrument-event mappings, so they can be restored for subsequent tests
+    current_fem = long_project.export_instrument_event_mappings()
+
+    instrument_event_mappings = [
+        {
+            "arm_num": "1",
+            "unique_event_name": "enrollment_arm_1",
+            "form": "demographics",
+        }
+    ]
+    response = long_project.import_instrument_event_mappings(instrument_event_mappings)
+    assert response == 1
+
+    response = long_project.export_instrument_event_mappings()
+    assert len(response) == 1
+
+    fem_arm_nums = [fem["arm_num"] for fem in response]
+    fem_unique_event_names = [fem["unique_event_name"] for fem in response]
+    fem_forms = [fem["form"] for fem in response]
+
+    assert fem_arm_nums == [1]
+    assert fem_unique_event_names == ["enrollment_arm_1"]
+    assert fem_forms == ["demographics"]
+
+    response = long_project.import_instrument_event_mappings(current_fem)
+    assert response == 44

@@ -106,10 +106,21 @@ def test_fem_export(long_project):
     for arm in fem:
         assert isinstance(arm, dict)
 
+    assert len(fem) == 1
+
 
 def test_fem_export_stricly_enforces_format(long_project):
     with pytest.raises(ValueError):
         long_project.export_instrument_event_mappings(format_type="unsupported")
+
+
+def test_fem_import(long_project):
+    instrument_event_mappings = [
+        {"arm_num": "1", "unique_event_name": "event_1_arm_1", "form": "form_2"}
+    ]
+    res = long_project.import_instrument_event_mappings(instrument_event_mappings)
+
+    assert res == 1
 
 
 def test_export_to_df_gives_multi_index(long_project):

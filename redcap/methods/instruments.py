@@ -83,3 +83,51 @@ class Instruments(Base):
             format_type=format_type,
             df_kwargs=df_kwargs,
         )
+
+    def import_instrument_event_mappings(
+        self,
+        to_import: Union[str, List[Dict[str, Any]], "pd.DataFrame"],
+        return_format_type: Literal["json", "csv", "xml"] = "json",
+        import_format: Literal["json", "csv", "xml", "df"] = "json",
+    ):
+        # pylint: disable=line-too-long
+        """
+        Import the project's instrument to event mapping
+
+        Note:
+            This only works for longitudinal projects.
+
+        Args:
+            to_import: array of dicts, csv/xml string, `pandas.DataFrame`
+                Note:
+                    If you pass a csv or xml string, you should use the
+                    `import format` parameter appropriately.
+            return_format_type:
+                Response format. By default, response will be json-decoded.
+            import_format:
+                Format of incoming data. By default, import_format
+                will be json-encoded
+
+        Returns:
+            Union[int, str]: Number of instrument-event mappings imported
+
+        Examples:
+            Import instrument-event mappings
+            >>> instrument_event_mappings = [{"arm_num": "1", "unique_event_name": "event_1_arm_1", "form": "form_1"}]
+            >>> proj.import_instrument_event_mappings(instrument_event_mappings)
+            1
+        """
+        payload = self._initialize_import_payload(
+            to_import=to_import,
+            import_format=import_format,
+            return_format_type=return_format_type,
+            content="formEventMapping",
+        )
+        payload["action"] = "import"
+
+        return_type = self._lookup_return_type(
+            format_type=return_format_type, request_type="import"
+        )
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
+
+        return response

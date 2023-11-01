@@ -210,9 +210,9 @@ def handle_export_field_names_request(**kwargs) -> Any:
 def handle_simple_project_form_event_mapping_request(**kwargs) -> Any:
     """Handle events export, used at project initialization"""
     headers = kwargs["headers"]
-    resp = {"error": "no events"}
+    resp = {"error": "You cannot export form/event mappings for classic projects"}
 
-    return (201, headers, json.dumps(resp))
+    return (400, headers, json.dumps(resp))
 
 
 def handle_simple_project_instruments_request(**kwargs) -> Any:
@@ -240,9 +240,15 @@ def handle_long_project_instruments_request(**kwargs) -> Any:
 
 
 def handle_long_project_form_event_mapping_request(**kwargs) -> Any:
-    """Give back list of events for long project"""
+    """Handle instrument-event mappings for long project"""
     headers = kwargs["headers"]
-    resp = [{"unique_event_name": "raw"}]
+    data = kwargs["data"]
+    # FEM import (JSON only)
+    if "data" in str(data):
+        resp = 1
+    # FEM export (JSON only)
+    else:
+        resp = [{"arm_num": 1, "unique_event_name": "raw", "form": "form_1"}]
 
     return (201, headers, json.dumps(resp))
 
