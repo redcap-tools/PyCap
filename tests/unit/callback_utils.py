@@ -210,15 +210,61 @@ def handle_export_field_names_request(**kwargs) -> Any:
 def handle_simple_project_form_event_mapping_request(**kwargs) -> Any:
     """Handle events export, used at project initialization"""
     headers = kwargs["headers"]
-    resp = {"error": "no events"}
+    resp = {"error": "You cannot export form/event mappings for classic projects"}
+
+    return (400, headers, json.dumps(resp))
+
+
+def handle_simple_project_instruments_request(**kwargs) -> Any:
+    """Handle Instrument requests for simple project"""
+    headers = kwargs["headers"]
+
+    # Instrument export (JSON only)
+    resp = [{"instrument_name": "form_1", "instrument_label": "Form 1"}]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_simple_project_pdf_request(**kwargs) -> Any:
+    """Handle PDF requests for simple project"""
+    headers = kwargs["headers"]
+    resp = {}
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_long_project_instruments_request(**kwargs) -> Any:
+    """Handle Instrument requests for long project"""
+    headers = kwargs["headers"]
+
+    # Instrument export (JSON only)
+    resp = [
+        {"instrument_name": "form_1", "instrument_label": "Form 1"},
+        {"instrument_name": "form_2", "instrument_label": "Form 2"},
+        {"instrument_name": "form_3", "instrument_label": "Form 3"},
+    ]
+
+    return (201, headers, json.dumps(resp))
+
+
+def handle_long_project_pdf_request(**kwargs) -> Any:
+    """Handle PDF requests for long project"""
+    headers = kwargs["headers"]
+    resp = {}
 
     return (201, headers, json.dumps(resp))
 
 
 def handle_long_project_form_event_mapping_request(**kwargs) -> Any:
-    """Give back list of events for long project"""
+    """Handle instrument-event mappings for long project"""
     headers = kwargs["headers"]
-    resp = [{"unique_event_name": "raw"}]
+    data = kwargs["data"]
+    # FEM import (JSON only)
+    if "data" in str(data):
+        resp = 1
+    # FEM export (JSON only)
+    else:
+        resp = [{"arm_num": 1, "unique_event_name": "raw", "form": "form_1"}]
 
     return (201, headers, json.dumps(resp))
 
@@ -709,8 +755,10 @@ def get_simple_project_request_handler(request_type: str) -> Callable:
         "file": handle_simple_project_file_request,
         "formEventMapping": handle_simple_project_form_event_mapping_request,
         "generateNextRecordName": handle_generate_next_record_name_request,
+        "instrument": handle_simple_project_instruments_request,
         "log": handle_logging_request,
         "metadata": handle_simple_project_metadata_request,
+        "pdf": handle_simple_project_pdf_request,
         "project": handle_project_info_request,
         "record": handle_simple_project_records_request,
         "report": handle_simple_project_reports_request,
@@ -731,9 +779,11 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "event": handle_long_project_events_request,
         "file": handle_long_project_file_request,
         "formEventMapping": handle_long_project_form_event_mapping_request,
+        "instrument": handle_long_project_instruments_request,
         "repeatingFormsEvents": handle_long_project_repeating_form_request,
         "metadata": handle_long_project_metadata_request,
         "participantList": handle_long_project_survey_participants_request,
+        "pdf": handle_long_project_pdf_request,
         "record": handle_long_project_records_request,
         "report": handle_long_project_reports_request,
         "version": handle_long_project_version_request,

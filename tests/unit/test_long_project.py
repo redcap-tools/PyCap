@@ -81,6 +81,38 @@ def test_is_longitudinal(long_project):
     assert long_project.is_longitudinal
 
 
+def test_instruments_export(long_project):
+    response = long_project.export_instruments()
+
+    assert len(response) == 3
+
+
+def test_pdf_export(long_project):
+    content, _ = long_project.export_pdf()
+
+    assert isinstance(content, bytes)
+
+
+def test_pdf_export_specify(long_project):
+    content, _ = long_project.export_pdf(
+        record="1", event="raw", instrument="test", repeat_instance=1
+    )
+
+    assert isinstance(content, bytes)
+
+
+def test_pdf_export_all_records(long_project):
+    content, _ = long_project.export_pdf(all_records=True)
+
+    assert isinstance(content, bytes)
+
+
+def test_pdf_export_compact_display(long_project):
+    content, _ = long_project.export_pdf(compact_display=True)
+
+    assert isinstance(content, bytes)
+
+
 def test_export_with_events(long_project):
     events = long_project.export_instrument_event_mappings()
     unique_event = events[0]["unique_event_name"]
@@ -100,10 +132,21 @@ def test_fem_export(long_project):
     for arm in fem:
         assert isinstance(arm, dict)
 
+    assert len(fem) == 1
+
 
 def test_fem_export_stricly_enforces_format(long_project):
     with pytest.raises(ValueError):
         long_project.export_instrument_event_mappings(format_type="unsupported")
+
+
+def test_fem_import(long_project):
+    instrument_event_mappings = [
+        {"arm_num": "1", "unique_event_name": "event_1_arm_1", "form": "form_2"}
+    ]
+    res = long_project.import_instrument_event_mappings(instrument_event_mappings)
+
+    assert res == 1
 
 
 def test_export_to_df_gives_multi_index(long_project):

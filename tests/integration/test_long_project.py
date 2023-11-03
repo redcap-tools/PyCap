@@ -184,8 +184,12 @@ def test_arms_delete(long_project):
 
 @pytest.mark.integration
 def test_arms_import_override(long_project):
-    # Cache current events, so they can be restored for subsequent tests
-    current_events = long_project.export_events()
+    # Cache current events, so they can be restored for subsequent tests, because arms, events,
+    # and mappings are deleted when the 'override' parameter is used.
+    state_dict = {
+        "events": long_project.export_events(),
+        "form_event_map": long_project.export_instrument_event_mappings(),
+    }
 
     new_arms = [{"arm_num": 3, "name": "Drug C"}]
     response = long_project.import_arms(new_arms)
@@ -206,8 +210,13 @@ def test_arms_import_override(long_project):
     with pytest.raises(RedcapError):
         response = long_project.export_arms()
 
-    response = long_project.import_events(current_events)
+    response = long_project.import_events(state_dict["events"])
     assert response == 16
+
+    response = long_project.import_instrument_event_mappings(
+        state_dict["form_event_map"]
+    )
+    assert response == 44
 
     response = long_project.export_arms()
     assert len(response) == 2
@@ -248,3 +257,53 @@ def test_events_delete(long_project):
     response = long_project.export_events()
 
     assert len(response) == 16
+
+
+@pytest.mark.integration
+def test_export_instruments(long_project):
+    response = long_project.export_instruments()
+    assert len(response) == 9
+
+
+@pytest.mark.integration
+def test_export_pdf(long_project):
+    content, _ = long_project.export_pdf()
+
+    assert isinstance(content, bytes)
+
+
+@pytest.mark.integration
+def test_fem_export(long_project):
+    response = long_project.export_instrument_event_mappings()
+
+    assert len(response) == 44
+
+
+@pytest.mark.integration
+def test_fem_import(long_project):
+    # Cache current instrument-event mappings, so they can be restored for subsequent tests
+    current_fem = long_project.export_instrument_event_mappings()
+
+    instrument_event_mappings = [
+        {
+            "arm_num": "1",
+            "unique_event_name": "enrollment_arm_1",
+            "form": "demographics",
+        }
+    ]
+    response = long_project.import_instrument_event_mappings(instrument_event_mappings)
+    assert response == 1
+
+    response = long_project.export_instrument_event_mappings()
+    assert len(response) == 1
+
+    fem_arm_nums = [fem["arm_num"] for fem in response]
+    fem_unique_event_names = [fem["unique_event_name"] for fem in response]
+    fem_forms = [fem["form"] for fem in response]
+
+    assert fem_arm_nums == [1]
+    assert fem_unique_event_names == ["enrollment_arm_1"]
+    assert fem_forms == ["demographics"]
+
+    response = long_project.import_instrument_event_mappings(current_fem)
+    assert response == 44

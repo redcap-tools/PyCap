@@ -463,6 +463,18 @@ def test_export_records_strictly_enforces_format(simple_project):
         simple_project.export_records(format_type="unsupported")
 
 
+def test_instruments_export(simple_project):
+    response = simple_project.export_instruments()
+
+    assert len(response) == 1
+
+
+def test_pdf_export(simple_project):
+    content, _ = simple_project.export_pdf()
+
+    assert isinstance(content, bytes)
+
+
 def test_fem_export_passes_filters_as_arrays(simple_project, mocker):
     mocked_api_call = mocker.patch.object(
         simple_project, "_call_api", return_value=None
@@ -628,3 +640,8 @@ def test_arms_export_throws_exception(simple_project):
 def test_events_export_throws_exception(simple_project):
     with pytest.raises(RedcapError):
         simple_project.export_events()
+
+
+def test_instrument_event_mapping_export_throws_exception(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_instrument_event_mappings()

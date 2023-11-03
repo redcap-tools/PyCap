@@ -1,7 +1,6 @@
 """Test suite for simple REDCap Project against real REDCap server"""
 # pylint: disable=missing-function-docstring
 import os
-
 from io import StringIO
 
 import pandas as pd
@@ -217,6 +216,19 @@ def test_export_field_names_df(simple_project):
 
 
 @pytest.mark.integration
+def test_export_instruments(simple_project):
+    instruments = simple_project.export_instruments()
+    assert len(instruments) == 1
+
+
+@pytest.mark.integration
+def test_export_pdf(simple_project):
+    content, _ = simple_project.export_pdf()
+
+    assert isinstance(content, bytes)
+
+
+@pytest.mark.integration
 def test_export_and_import_metadata(simple_project):
     original_metadata = simple_project.export_metadata()
     assert len(original_metadata) == 15
@@ -279,3 +291,9 @@ def test_export_arms(simple_project):
 def test_export_events(simple_project):
     with pytest.raises(RedcapError):
         simple_project.export_events()
+
+
+@pytest.mark.integration
+def test_export_instrument_event_mapping(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.export_instrument_event_mappings()
