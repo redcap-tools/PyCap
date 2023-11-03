@@ -27,7 +27,7 @@ class Instruments(Base):
 
         Examples:
             >>> proj.export_instruments()
-            [{'instrument_name': 'demo', 'instrument_label': 'Demographics'}]
+            [{'instrument_name': 'form_1', 'instrument_label': 'Form 1'}]
         """
         payload = self._initialize_payload(
             content="instrument", format_type=format_type
@@ -69,11 +69,11 @@ class Instruments(Base):
                 If True, then the PDF will be exported in compact display mode.
 
         Returns:
-            Content of the file
+            Content of the file and dictionary of useful metadata
 
         Examples:
             >>> proj.export_pdf()
-            b'%PDF-1.3\n3 0 obj\n...'
+            (b'%PDF-1.3\\n3 0 obj\\n..., {...})
         """
         # load up payload
         payload = self._initialize_payload(content="pdf", return_format_type="json")
