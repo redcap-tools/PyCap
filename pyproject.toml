@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "PyCap"
-version = "2.5.0"
+version = "2.6.0"
 description = "PyCap: Python interface to REDCap"
 authors = ["Scott Burns <scott.s.burns@gmail.com>"]
 maintainers = ["Paul Wildenhain <pwildenhain@gmail.com>"]
