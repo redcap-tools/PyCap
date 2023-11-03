@@ -41,6 +41,8 @@ class Instruments(Base):
             format_type=format_type,
         )
 
+    #### pylint: disable=too-many-locals
+
     def export_pdf(
         self,
         record: Optional[str] = None,
@@ -77,20 +79,28 @@ class Instruments(Base):
         """
         # load up payload
         payload = self._initialize_payload(content="pdf", return_format_type="json")
-        # there's no format field in this call
+        keys_to_add = (
+            record,
+            event,
+            instrument,
+            repeat_instance,
+            all_records,
+            compact_display,
+        )
+        str_keys = (
+            "record",
+            "event",
+            "instrument",
+            "repeat_instance",
+            "allRecords",
+            "compactDisplay",
+        )
+        for key, data in zip(str_keys, keys_to_add):
+            data = cast(str, data)
+            if data:
+                payload[key] = data
         payload["action"] = "export"
-        if record:
-            payload["record"] = record
-        if event:
-            payload["event"] = event
-        if instrument:
-            payload["instrument"] = instrument
-        if repeat_instance:
-            payload["repeat_instance"] = str(repeat_instance)
-        if all_records:
-            payload["allRecords"] = str(all_records == "True")
-        if compact_display:
-            payload["compactDisplay"] = str(compact_display == "True")
+
         content, headers = cast(
             FileMap, self._call_api(payload=payload, return_type="file_map")
         )
@@ -108,6 +118,8 @@ class Instruments(Base):
             content_map = dict(key_values)
 
         return content, content_map
+
+    #### pylint: enable=too-many-locals
 
     def export_instrument_event_mappings(
         self,
