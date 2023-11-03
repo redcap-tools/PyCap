@@ -217,8 +217,8 @@ def test_export_field_names_df(simple_project):
 
 @pytest.mark.integration
 def test_export_instruments(simple_project):
-    events = simple_project.export_events()
-    assert len(events) == 1
+    instruments = simple_project.export_instruments()
+    assert len(instruments) == 1
 
 
 @pytest.mark.integration
