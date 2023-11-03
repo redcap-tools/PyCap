@@ -45,11 +45,13 @@ Currently, these API calls are available:
 * Data Access Groups
 * Events
 * Field names
+* Instruments
 * Instrument-event mapping
 * File
 * Logging
 * Metadata
 * Project Info
+* PDF of instruments
 * Records
 * Repeating instruments and events
 * Report
@@ -66,6 +68,7 @@ Currently, these API calls are available:
 * Data Access Groups
 * Events
 * File
+* Instrument-event mapping
 * Metadata
 * Records
 * Repeating instruments and events
