@@ -1,4 +1,5 @@
 """The Base class for all REDCap methods"""
+
 from __future__ import annotations
 
 import json
@@ -227,12 +228,10 @@ class Base:
         self,
         key: str,
         field_name: None = None,
-    ) -> list:
-        ...
+    ) -> list: ...
 
     @overload
-    def _filter_metadata(self, key: str, field_name: str) -> str:
-        ...
+    def _filter_metadata(self, key: str, field_name: str) -> str: ...
 
     def _filter_metadata(self, key: str, field_name: Optional[str] = None):
         """Safely filter project metadata based off requested column and field_name"""

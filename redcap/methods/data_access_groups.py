@@ -1,4 +1,5 @@
 """REDCap API methods for Project data access groups"""
+
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json

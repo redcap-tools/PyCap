@@ -70,7 +70,7 @@ class _RCRequest:
 
     @staticmethod
     def _get_format_key(
-        payload: Dict[str, Any]
+        payload: Dict[str, Any],
     ) -> Optional[Literal["json", "csv", "xml"]]:
         """Determine format of the response
 
@@ -101,8 +101,7 @@ class _RCRequest:
         format_type: None,
         return_empty_json: Literal[True],
         return_bytes: Literal[False],
-    ) -> EmptyJson:
-        ...
+    ) -> EmptyJson: ...
 
     @overload
     @staticmethod
@@ -111,8 +110,7 @@ class _RCRequest:
         format_type: None,
         return_empty_json: Literal[False],
         return_bytes: Literal[True],
-    ) -> bytes:
-        ...
+    ) -> bytes: ...
 
     @overload
     @staticmethod
@@ -132,8 +130,7 @@ class _RCRequest:
         format_type: Literal["csv", "xml"],
         return_empty_json: Literal[False],
         return_bytes: Literal[False],
-    ) -> str:
-        ...
+    ) -> str: ...
 
     @staticmethod
     def get_content(

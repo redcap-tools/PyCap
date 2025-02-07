@@ -1,4 +1,5 @@
 """REDCap API methods for Project repeating instruments"""
+
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, Literal, cast
 
 from redcap.methods.base import Base

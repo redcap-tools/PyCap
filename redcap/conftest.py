@@ -3,6 +3,7 @@
 I don't think this is the ideal workflow, but it's the best I
 could come up with for having great, tested, examples
 """
+
 from pathlib import Path
 
 import pytest
