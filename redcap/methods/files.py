@@ -14,11 +14,7 @@ class Files(Base):
 
     def _check_file_field(self, field: str) -> None:
         """Check that field exists and is a file field"""
-        # Since we initialize self.field_names as None, pylint worries that this will
-        # produce an error
-        # pylint: disable=unsupported-membership-test
         is_field = field in self.field_names
-        # pylint: enable=unsupported-membership-test
         is_file = self._filter_metadata(key="field_type", field_name=field) == "file"
         if not (is_field and is_file):
             msg = f"'{ field }' is not a field or not a 'file' field"

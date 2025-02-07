@@ -1,4 +1,5 @@
 """REDCap API methods for Project user roles"""
+
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -43,11 +44,11 @@ class UserRoles(Base):
             [{'unique_role_name': ..., 'role_label': 'Test role', 'design': '0', 'alerts': '0',
             'user_rights': '0', 'data_access_groups': '0', 'reports': '0', 'stats_and_charts': '0',
             'manage_survey_participants': '0', 'calendar': '0', 'data_import_tool': '0',
-            'data_comparison_tool': '0', 'logging': '0', 'file_repository': '0',
-            'data_quality_create': '0', 'data_quality_execute': '0', 'api_export': '0',
-            'api_import': '0', 'mobile_app': '0', 'mobile_app_download_data': '0',
-            'record_create': '0', 'record_rename': '0', 'record_delete': '0',
-            'lock_records_customization': '0', 'lock_records': '0', ...,
+            'data_comparison_tool': '0', 'logging': '0', 'email_logging': '0',
+            'file_repository': '0', 'data_quality_create': '0', 'data_quality_execute': '0',
+            'api_export': '0', 'api_import': '0', 'api_modules': '0', 'mobile_app': '0',
+            'mobile_app_download_data': '0', 'record_create': '0', 'record_rename': '0',
+            'record_delete': '0', 'lock_records_customization': '0', 'lock_records': '0', ...,
             'forms': {'form_1': 2}, 'forms_export': {'form_1': 0}}]
         """
         payload = self._initialize_payload(content="userRole", format_type=format_type)

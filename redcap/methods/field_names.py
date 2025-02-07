@@ -1,4 +1,5 @@
 """REDCap API methods for Project field names"""
+
 from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json

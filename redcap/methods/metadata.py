@@ -1,4 +1,5 @@
 """REDCap API methods for Project metadata"""
+
 from typing import (
     TYPE_CHECKING,
     Any,
