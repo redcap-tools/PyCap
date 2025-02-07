@@ -1,4 +1,5 @@
 """Test suite for simple REDCap Project against real REDCap server"""
+
 # pylint: disable=missing-function-docstring
 import os
 from io import StringIO

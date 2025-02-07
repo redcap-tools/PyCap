@@ -1,4 +1,5 @@
 """Test fixtures for unit tests only"""
+
 from typing import Dict, Generator
 
 import pytest
