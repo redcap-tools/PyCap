@@ -201,6 +201,8 @@ class _RCRequest:
         # xml is the default returnFormat for error messages
         elif self.fmt == "xml" or self.fmt is None:
             bad_request = "<error>" in str(content).lower()
+        else:
+            raise ValueError(f"Unsupported format { self.fmt }")
 
         if bad_request:
             raise RedcapError(content)

@@ -19,6 +19,7 @@ max-attributes=9
 
 # we're going to support as many arguments as the API calls have
 disable=too-many-arguments,
+        too-many-positional-arguments,
         # unfortunately this has to be disabled because of similar
         # import statements across different methods (which are
         # separated by different files by design)

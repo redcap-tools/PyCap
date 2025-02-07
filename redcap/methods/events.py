@@ -16,7 +16,6 @@ class Events(Base):
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         arms: Optional[List[str]] = None,
     ):
-        # pylint: disable=line-too-long
         """
         Export the Events of the Project
 
@@ -38,7 +37,6 @@ class Events(Base):
             [{'event_name': 'Event 1', 'arm_num': 1, 'unique_event_name': 'event_1_arm_1',
             'custom_event_label': '', 'event_id': ...}, {'event_name': 'Event 2', ...}]
         """
-        # pylint:enable=line-too-long
         payload = self._initialize_payload(content="event", format_type=format_type)
         if arms:
             # Turn list of arms into dict, and append to payload

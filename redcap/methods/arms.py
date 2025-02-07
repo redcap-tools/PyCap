@@ -16,7 +16,6 @@ class Arms(Base):
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         arms: Optional[List[str]] = None,
     ):
-        # pylint: disable=line-too-long
         """
         Export the Arms of the Project
 
@@ -37,7 +36,6 @@ class Arms(Base):
             >>> proj.export_arms()
             [{'arm_num': 1, 'name': 'Arm 1'}]
         """
-        # pylint:enable=line-too-long
         payload = self._initialize_payload(content="arm", format_type=format_type)
         if arms:
             # Turn list of arms into dict, and append to payload
