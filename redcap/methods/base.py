@@ -339,6 +339,7 @@ class Base:
             "dag",
             "event",
             "exportFieldNames",
+            "fileRepository",
             "formEventMapping",
             "instrument",
             "log",
