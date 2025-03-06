@@ -16,7 +16,7 @@ SUPER_TOKEN = os.getenv("REDCAPDEMO_SUPERUSER_TOKEN")
 
 
 def create_project(url: str, super_token: str, project_xml_path: Path) -> str:
-    """Create a project for testing on redcapdemo.vanderbilt.edu
+    """Create a project for testing on redcapdemo.vumc.org
     This API method returns the token for the newly created project, which
     used for the integration tests
     """
@@ -47,19 +47,24 @@ def create_project(url: str, super_token: str, project_xml_path: Path) -> str:
     return res.text[-32:]
 
 
-@pytest.fixture(scope="module")
 def redcapdemo_url() -> str:
     """API url for redcapdemo testing site"""
-    return "https://redcapdemo.vanderbilt.edu/api/"
+    return "https://redcapdemo.vumc.org/api/"
 
 
 @pytest.fixture(scope="module")
-def simple_project_token(redcapdemo_url) -> str:
+def redcapdemo_url_fixture() -> str:
+    """API url for redcapdemo testing site, as a testing fixture"""
+    return redcapdemo_url()
+
+
+@pytest.fixture(scope="module")
+def simple_project_token(redcapdemo_url_fixture) -> str:
     """Create a simple project and return it's API token"""
     simple_project_xml_path = Path("tests/data/test_simple_project.xml")
     super_token = cast(str, SUPER_TOKEN)
     project_token = create_project(  # type: ignore
-        redcapdemo_url, super_token, simple_project_xml_path
+        redcapdemo_url_fixture, super_token, simple_project_xml_path
     )
 
     return project_token
@@ -83,26 +88,28 @@ def grant_superuser_rights(proj: Project) -> Project:
 
 
 @pytest.fixture(scope="module")
-def simple_project(redcapdemo_url, simple_project_token):
+def simple_project(redcapdemo_url_fixture, simple_project_token):
     """A simple REDCap project"""
-    simple_proj = Project(redcapdemo_url, simple_project_token)
+    simple_proj = Project(redcapdemo_url_fixture, simple_project_token)
     simple_proj = grant_superuser_rights(simple_proj)
     return simple_proj
 
 
 @pytest.fixture(scope="module")
-def long_project_token(redcapdemo_url) -> str:
+def long_project_token(redcapdemo_url_fixture) -> str:
     """Create a long project and return it's API token"""
     long_project_xml_path = Path("tests/data/test_long_project.xml")
     super_token = cast(str, SUPER_TOKEN)
-    project_token = create_project(redcapdemo_url, super_token, long_project_xml_path)
+    project_token = create_project(
+        redcapdemo_url_fixture, super_token, long_project_xml_path
+    )
 
     return project_token
 
 
 @pytest.fixture(scope="module")
-def long_project(redcapdemo_url, long_project_token):
+def long_project(redcapdemo_url_fixture, long_project_token):
     """A long REDCap project"""
-    long_proj = Project(redcapdemo_url, long_project_token)
+    long_proj = Project(redcapdemo_url_fixture, long_project_token)
     long_proj = grant_superuser_rights(long_proj)
     return long_proj
