@@ -23,6 +23,7 @@ class Project(
     methods.data_access_groups.DataAccessGroups,
     methods.events.Events,
     methods.field_names.FieldNames,
+    methods.file_repository.FileRepository,
     methods.files.Files,
     methods.instruments.Instruments,
     methods.logging.Logging,
