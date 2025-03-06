@@ -49,7 +49,7 @@ class FileRepository(Base):
 
         Examples:
             >>> proj.create_folder(name="New Folder")
-            [{"folder_id": ..., "name": "New Folder"}]
+            [{'folder_id': ...}]
         """
         payload: Dict[str, Any] = self._initialize_payload(
             content="fileRepository", format_type=format_type

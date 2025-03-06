@@ -304,4 +304,4 @@ def test_export_instrument_event_mapping(simple_project):
 def test_create_folder(simple_project):
     folder_name = "New Folder"
     new_folder = simple_project.create_folder(name=folder_name)
-    assert new_folder[0]["name"] == folder_name
+    assert new_folder[0]["folder_id"] > 0
