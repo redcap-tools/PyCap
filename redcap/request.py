@@ -190,19 +190,19 @@ class _RCRequest:
             return_bytes=self.config.return_bytes,
         )
 
+        bad_request = False
+
         if self.fmt == "json":
             try:
                 bad_request = "error" in content.keys()  # type: ignore
             except AttributeError:
                 # we're not dealing with an error dict
-                bad_request = False
+                pass
         elif self.fmt == "csv":
             bad_request = content.lower().startswith("error:")  # type: ignore
         # xml is the default returnFormat for error messages
         elif self.fmt == "xml" or self.fmt is None:
             bad_request = "<error>" in str(content).lower()
-        else:
-            raise ValueError(f"Unsupported format { self.fmt }")
 
         if bad_request:
             raise RedcapError(content)
