@@ -5,9 +5,6 @@ import os
 
 import pytest
 
-from redcap import RedcapError
-
-
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     pytest.skip(
         "Super user token not found, skipping integration tests",
