@@ -18,7 +18,7 @@ class FileRepository(Base):
         dag_id: Optional[int] = None,
         role_id: Optional[int] = None,
         format_type: Literal["json", "csv", "xml"] = "json",
-        return_format_type: Optional[Literal["json", "csv", "xml"]] = None,
+        return_format_type: Literal["json", "csv", "xml"] = "json",
     ):
         """
         Create a New Folder in the File Repository
@@ -52,7 +52,9 @@ class FileRepository(Base):
             [{'folder_id': ...}]
         """
         payload: Dict[str, Any] = self._initialize_payload(
-            content="fileRepository", format_type=format_type
+            content="fileRepository",
+            format_type=format_type,
+            return_format_type=return_format_type,
         )
 
         payload["action"] = "createFolder"
@@ -66,9 +68,6 @@ class FileRepository(Base):
 
         if role_id:
             payload["role_id"] = role_id
-
-        if return_format_type:
-            payload["returnFormat"] = return_format_type
 
         return_type = self._lookup_return_type(format_type, request_type="export")
         response = cast(Union[Json, str], self._call_api(payload, return_type))
