@@ -305,3 +305,9 @@ def test_create_folder(simple_project):
     folder_name = "New Folder"
     new_folder = simple_project.create_folder(name=folder_name)
     assert new_folder[0]["folder_id"] > 0
+
+
+@pytest.mark.integration
+def test_export_file_directory(simple_project):
+    directory = simple_project.export_file_directory()
+    assert len(directory) > 0

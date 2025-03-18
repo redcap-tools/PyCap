@@ -28,5 +28,7 @@ def add_doctest_objects(doctest_namespace):
     )
     doctest_project = Project(redcapdemo_url(), doctest_token)
     doctest_project = grant_superuser_rights(doctest_project)
+    # Import attributes that aren't saved in an the xml file
+    doctest_project.create_folder("A Test Folder")
     doctest_namespace["proj"] = doctest_project
     doctest_namespace["TOKEN"] = doctest_token
