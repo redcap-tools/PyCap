@@ -93,7 +93,7 @@ def simple_project(redcapdemo_url_fixture, simple_project_token):
     simple_proj = Project(redcapdemo_url_fixture, simple_project_token)
     simple_proj = grant_superuser_rights(simple_proj)
     # Import attributes that aren't saved in the xml file
-    simple_proj.create_folder("test")
+    simple_proj.create_folder_in_repository("test")
     return simple_proj
 
 

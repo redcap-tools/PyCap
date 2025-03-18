@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class FileRepository(Base):
     """Responsible for all API methods under 'File Repository' in the API Playground"""
 
-    def create_folder(
+    def create_folder_in_repository(
         self,
         name: str,
         folder_id: Optional[int] = None,
@@ -48,7 +48,7 @@ class FileRepository(Base):
                 data changes, and the creation or deletion of users
 
         Examples:
-            >>> proj.create_folder(name="New Folder")
+            >>> proj.create_folder_in_repository(name="New Folder")
             [{'folder_id': ...}]
         """
         payload: Dict[str, Any] = self._initialize_payload(
@@ -78,7 +78,7 @@ class FileRepository(Base):
             format_type=format_type,
         )
 
-    def export_file_directory(
+    def export_file_repository(
         self,
         folder_id: Optional[int] = None,
         format_type: Literal["json", "csv", "xml"] = "json",
@@ -105,7 +105,7 @@ class FileRepository(Base):
                 data changes, and the creation or deletion of users
 
         Examples:
-            >>> proj.export_file_directory()
+            >>> proj.export_file_repository()
             [{'folder_id': ..., 'name': 'A Test Folder'}, ...]
         """
         payload: Dict[str, Any] = self._initialize_payload(

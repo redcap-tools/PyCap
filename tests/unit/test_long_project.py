@@ -257,5 +257,7 @@ def test_events_delete(long_project):
 
 
 def test_file_repo_folder_create(long_project):
-    response = long_project.create_folder(name="test", folder_id=1, dag_id=2, role_id=3)
+    response = long_project.create_folder_in_repository(
+        name="test", folder_id=1, dag_id=2, role_id=3
+    )
     assert response[0]["folder_id"]
