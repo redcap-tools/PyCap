@@ -77,3 +77,53 @@ class FileRepository(Base):
             content="fileRepository",
             format_type=format_type,
         )
+
+    def export_file_directory(
+        self,
+        folder_id: Optional[int] = None,
+        format_type: Literal["json", "csv", "xml"] = "json",
+        return_format_type: Literal["json", "csv", "xml"] = "json",
+    ):
+        """
+        Export of list of files/folders in the File Repository
+
+        Only exports the top-level of files/folders. To see which files are contained
+        within a folder, use the `folder_id` parameter
+
+        Args:
+            folder_id:
+                The folder_id of a specific folder in the File Repository for which you wish
+                to search for files/folders. If none is provided, the search will be conducted
+                in the top-level directory of the File Repository.
+            format_type:
+                Return the metadata in native objects, csv or xml.
+            return_format_type:
+                Response format. By default, response will be json-decoded.
+        Returns:
+            Union[str, List[Dict[str, Any]]]:
+                List of all changes made to this project, including data exports,
+                data changes, and the creation or deletion of users
+
+        Examples:
+            >>> proj.export_file_directory()
+            [{'folder_id': ..., 'name': 'A Test Folder'}, ...]
+        """
+        payload: Dict[str, Any] = self._initialize_payload(
+            content="fileRepository",
+            format_type=format_type,
+            return_format_type=return_format_type,
+        )
+
+        payload["action"] = "list"
+
+        if folder_id:
+            payload["folder_id"] = folder_id
+
+        return_type = self._lookup_return_type(format_type, request_type="export")
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
+
+        return self._return_data(
+            response=response,
+            content="fileRepository",
+            format_type=format_type,
+        )
