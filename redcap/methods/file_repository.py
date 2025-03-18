@@ -3,9 +3,10 @@
 from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, Json
+from redcap.request import EmptyJson, FileUpload
 
 if TYPE_CHECKING:
-    import pandas as pd
+    from io import TextIOWrapper
 
 
 class FileRepository(Base):
@@ -126,4 +127,49 @@ class FileRepository(Base):
             response=response,
             content="fileRepository",
             format_type=format_type,
+        )
+
+    def import_file_into_repository(
+        self,
+        file_name: str,
+        file_object: "TextIOWrapper",
+        folder_id: Optional[int] = None,
+    ) -> EmptyJson:
+        """
+        Import the contents of a file represented by file_object into
+        the file repository
+
+        Args:
+            file_name: File name visible in REDCap UI
+            file_object: File object as returned by `open`
+            folder_id:
+                The folder_id of a specific folder in the File Repository where
+                you wish to store the file. If none is provided, the file will
+                be stored in the top-level directory of the File Repository.
+
+        Returns:
+            Empty JSON object
+
+        Examples:
+            >>> import tempfile
+            >>> tmp_file = tempfile.TemporaryFile()
+            >>> proj.import_file_into_repository(
+            ...     file_name="myupload.txt",
+            ...     file_object=tmp_file,
+            ... )
+            [{}]
+        """
+        payload: Dict[str, Any] = self._initialize_payload(content="fileRepository")
+        payload["action"] = "import"
+
+        if folder_id:
+            payload["folder_id"] = folder_id
+
+        file_upload_dict: FileUpload = {"file": (file_name, file_object)}
+
+        return cast(
+            EmptyJson,
+            self._call_api(
+                payload=payload, return_type="empty_json", file=file_upload_dict
+            ),
         )
