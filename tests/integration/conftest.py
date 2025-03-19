@@ -1,9 +1,10 @@
 """Test fixtures for integration tests only"""
 
 # pylint: disable=redefined-outer-name
-from datetime import datetime
 import os
+import tempfile
 
+from datetime import datetime
 from pathlib import Path
 from typing import cast
 
@@ -87,13 +88,31 @@ def grant_superuser_rights(proj: Project) -> Project:
     return proj
 
 
+def add_files_to_repository(proj: Project) -> Project:
+    """Given a project, fill out it's file repository
+    For some reason, this doesn't carry over in the XML file so
+    it has to be done after project creation
+    """
+    new_folder = proj.create_folder_in_repository("test").pop()
+
+    tmp_file = tempfile.TemporaryFile()
+    proj.import_file_into_repository(file_name="test.txt", file_object=tmp_file)
+    proj.import_file_into_repository(
+        file_name="test_in_folder.txt",
+        file_object=tmp_file,
+        folder_id=new_folder["folder_id"],
+    )
+
+    return proj
+
+
 @pytest.fixture(scope="module")
 def simple_project(redcapdemo_url_fixture, simple_project_token):
     """A simple REDCap project"""
     simple_proj = Project(redcapdemo_url_fixture, simple_project_token)
     simple_proj = grant_superuser_rights(simple_proj)
-    # Import attributes that aren't saved in the xml file
-    simple_proj.create_folder_in_repository("test")
+    simple_proj = add_files_to_repository(simple_proj)
+
     return simple_proj
 
 

@@ -2,6 +2,8 @@
 
 # pylint: disable=missing-function-docstring
 import os
+import tempfile
+
 from io import StringIO
 
 import pandas as pd
@@ -311,3 +313,17 @@ def test_create_folder_in_repository(simple_project):
 def test_export_file_repository(simple_project):
     directory = simple_project.export_file_repository()
     assert len(directory) > 0
+
+
+@pytest.mark.integration
+def test_import_file_repository(simple_project):
+    initial_len = len(simple_project.export_file_repository())
+
+    tmp_file = tempfile.TemporaryFile()
+    simple_project.import_file_into_repository(
+        file_name="new_upload.txt", file_object=tmp_file
+    )
+
+    new_len = len(simple_project.export_file_repository())
+
+    assert new_len > initial_len
