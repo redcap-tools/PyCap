@@ -3,6 +3,7 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 import os
+import tempfile
 
 import pandas as pd
 import pytest
@@ -261,3 +262,14 @@ def test_file_repo_folder_create(long_project):
         name="test", folder_id=1, dag_id=2, role_id=3
     )
     assert response[0]["folder_id"]
+
+
+def test_file_export_file_repo(long_project):
+    response = long_project.export_file_repository(folder_id=1)
+    assert is_json(response)
+
+
+def test_import_file_into_file_repo(long_project):
+    tmp_file = tempfile.TemporaryFile()
+    resp = long_project.import_file_into_repository("test.txt", tmp_file, folder_id=1)
+    assert resp

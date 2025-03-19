@@ -312,14 +312,29 @@ def handle_long_project_file_request(**kwargs) -> Any:
     return (201, headers, json.dumps(resp))
 
 
+def handle_long_project_file_repo_create_folder(data) -> Any:
+    """Handle the create folder request"""
+    assert data["name"]
+    return [{"folder_id": 101}]
+
+
+def handle_long_project_export_file_repo(data) -> Any:
+    """Handle the export file/folder request"""
+    assert data
+    return [{"folder_id": 101, "name": "test"}]
+
+
 def handle_long_project_file_repository_request(**kwargs) -> Any:
     """Handle file repository requests"""
     data = kwargs["data"]
     headers = kwargs["headers"]
     resp = {}
-    if "createFolder" in data.get("action", "other"):
-        assert data["name"]
-        resp = [{"folder_id": 101}]
+    if "createFolder" in data.get("action"):
+        resp = handle_long_project_file_repo_create_folder(data)
+    elif "list" in data.get("action"):
+        resp = handle_long_project_export_file_repo(data)
+    elif "import" in data.get("action"):
+        resp = [{}]
 
     return (201, headers, json.dumps(resp))
 
