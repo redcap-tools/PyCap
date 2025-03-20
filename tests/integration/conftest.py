@@ -95,7 +95,13 @@ def add_files_to_repository(proj: Project) -> Project:
     """
     new_folder = proj.create_folder_in_repository("test").pop()
 
-    tmp_file = tempfile.TemporaryFile()
+    # pylint: disable=consider-using-with
+    # Can't figure out how to do this in a cleaner way
+    tmp_file = tempfile.NamedTemporaryFile()
+    # pylint: enable=consider-using-with
+    with open(tmp_file.name, mode="w", encoding="utf-8") as tmp:
+        tmp.write("hello")
+
     proj.import_file_into_repository(file_name="test.txt", file_object=tmp_file)
     proj.import_file_into_repository(
         file_name="test_in_folder.txt",
