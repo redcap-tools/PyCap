@@ -1,12 +1,9 @@
 """REDCap API methods for Project file repository"""
 
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, IO, Literal, Optional, Union, cast
 
-from redcap.methods.base import Base, Json
+from redcap.methods.base import Base, FileMap, Json
 from redcap.request import EmptyJson, FileUpload
-
-if TYPE_CHECKING:
-    from io import TextIOWrapper
 
 
 class FileRepository(Base):
@@ -132,7 +129,7 @@ class FileRepository(Base):
     def import_file_into_repository(
         self,
         file_name: str,
-        file_object: "TextIOWrapper",
+        file_object: IO,
         folder_id: Optional[int] = None,
     ) -> EmptyJson:
         """

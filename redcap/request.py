@@ -8,6 +8,7 @@ from typing import (
     Any,
     Dict,
     List,
+    IO,
     Literal,
     Optional,
     Tuple,
@@ -18,8 +19,6 @@ from typing import (
 
 from requests import RequestException, Response, Session
 
-if TYPE_CHECKING:
-    from io import TextIOWrapper
 
 Json = List[Dict[str, Any]]
 EmptyJson = List[dict]
@@ -36,7 +35,7 @@ _session = Session()
 class FileUpload(TypedDict):
     """Typing for the file upload API"""
 
-    file: Tuple[str, "TextIOWrapper"]
+    file: Tuple[str, IO]
 
 
 _ContentConfig = namedtuple("_ContentConfig", ["return_empty_json", "return_bytes"])

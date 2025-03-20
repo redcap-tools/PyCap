@@ -1,12 +1,10 @@
 """REDCap API methods for Project files"""
 
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, IO, Optional, Union, cast
 
 from redcap.methods.base import Base, FileMap
 from redcap.request import EmptyJson, FileUpload
 
-if TYPE_CHECKING:
-    from io import TextIOWrapper
 
 
 class Files(Base):
@@ -90,7 +88,7 @@ class Files(Base):
         record: str,
         field: str,
         file_name: str,
-        file_object: "TextIOWrapper",
+        file_object: IO,
         event: Optional[str] = None,
         repeat_instance: Optional[Union[int, str]] = None,
     ) -> EmptyJson:

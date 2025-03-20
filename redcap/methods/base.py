@@ -260,7 +260,7 @@ class Base:
         format_type: Optional[Literal["json", "csv", "xml", "df"]] = None,
         return_format_type: Optional[Literal["json", "csv", "xml"]] = None,
         record_type: Literal["flat", "eav"] = "flat",
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Create the default dictionary for payloads
 
         This can be used as is for simple API requests or added to
