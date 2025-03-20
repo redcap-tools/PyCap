@@ -324,6 +324,12 @@ def handle_long_project_export_file_repo(data) -> Any:
     return [{"folder_id": 101, "name": "test"}]
 
 
+def handle_long_project_export_file_from_repo(data) -> Any:
+    """Handle the export file from repo request"""
+    assert data["doc_id"]
+    return {}
+
+
 def handle_long_project_file_repository_request(**kwargs) -> Any:
     """Handle file repository requests"""
     data = kwargs["data"]
@@ -333,6 +339,9 @@ def handle_long_project_file_repository_request(**kwargs) -> Any:
         resp = handle_long_project_file_repo_create_folder(data)
     elif "list" in data.get("action"):
         resp = handle_long_project_export_file_repo(data)
+    elif "export" in data.get("action"):
+        resp = handle_long_project_export_file_from_repo(data)
+        headers["content-type"] = "text/plain;name=test.txt"
     elif "import" in data.get("action"):
         resp = [{}]
 

@@ -104,7 +104,7 @@ class FileRepository(Base):
 
         Examples:
             >>> proj.export_file_repository()
-            [{'folder_id': ..., 'name': 'A Test Folder'}, ...]
+            [{'folder_id': ..., 'name': 'New Folder'}, ...]
         """
         payload: Dict[str, Any] = self._initialize_payload(
             content="fileRepository",
@@ -125,6 +125,53 @@ class FileRepository(Base):
             content="fileRepository",
             format_type=format_type,
         )
+
+    def export_file_from_repository(
+        self,
+        doc_id: int,
+        return_format_type: Literal["json", "csv", "xml"] = "json",
+    ) -> FileMap:
+        """
+        Export the contents of a file stored in the File Repository
+
+        Args:
+            doc_id: The doc_id of the file in the File Repository
+            return_format_type:
+                Response format. By default, response will be json-decoded.
+
+        Returns:
+            Content of the file and content-type dictionary
+
+        Examples:
+            >>> file_dir = proj.export_file_repository()
+            >>> text_file = [file for file in file_dir if file["name"] == "test.txt"].pop()
+            >>> proj.export_file_from_repository(doc_id=text_file["doc_id"])
+            (b'hello', {'name': 'test.txt', 'charset': 'UTF-8'})
+        """
+        payload = self._initialize_payload(
+            content="fileRepository", return_format_type=return_format_type
+        )
+        # there's no format field in this call
+        payload["action"] = "export"
+        payload["doc_id"] = doc_id
+
+        content, headers = cast(
+            FileMap, self._call_api(payload=payload, return_type="file_map")
+        )
+        # REDCap adds some useful things in content-type
+        content_map = {}
+        if "content-type" in headers:
+            splat = [
+                key_values.strip() for key_values in headers["content-type"].split(";")
+            ]
+            key_values = [
+                (key_values.split("=")[0], key_values.split("=")[1].replace('"', ""))
+                for key_values in splat
+                if "=" in key_values
+            ]
+            content_map = dict(key_values)
+
+        return content, content_map
 
     def import_file_into_repository(
         self,

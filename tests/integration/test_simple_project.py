@@ -316,6 +316,16 @@ def test_export_file_repository(simple_project):
 
 
 @pytest.mark.integration
+def test_export_file_from_repository(simple_project):
+    file_dir = simple_project.export_file_repository()
+    text_file = [file for file in file_dir if file["name"] == "test.txt"].pop()
+    file_contents, _ = simple_project.export_file_from_repository(
+        doc_id=text_file["doc_id"]
+    )
+    assert isinstance(file_contents, bytes)
+
+
+@pytest.mark.integration
 def test_import_file_repository(simple_project):
     initial_len = len(simple_project.export_file_repository())
 
