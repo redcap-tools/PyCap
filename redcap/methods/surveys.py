@@ -60,6 +60,7 @@ class Surveys(Base):
         return self._return_data(
             response=response,
             content="surveyLink",
+            format_type=return_type,
         )
 
     def export_survey_participant_list(
