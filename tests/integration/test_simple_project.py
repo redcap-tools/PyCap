@@ -337,3 +337,11 @@ def test_import_file_repository(simple_project):
     new_len = len(simple_project.export_file_repository())
 
     assert new_len > initial_len
+
+
+@pytest.mark.integration
+def test_delete_file_from_repository(simple_project):
+    file_dir = simple_project.export_file_repository()
+    text_file = [file for file in file_dir if file["name"] == "test.txt"].pop()
+    resp = simple_project.delete_file_from_repository(doc_id=text_file["doc_id"])
+    assert resp == [{}]

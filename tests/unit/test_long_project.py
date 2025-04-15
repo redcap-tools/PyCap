@@ -279,3 +279,8 @@ def test_import_file_into_file_repo(long_project):
     tmp_file = tempfile.TemporaryFile()
     resp = long_project.import_file_into_repository("test.txt", tmp_file, folder_id=1)
     assert resp
+
+
+def test_delete_file_from_file_repo(long_project):
+    resp = long_project.delete_file_from_repository(doc_id=1)
+    assert resp

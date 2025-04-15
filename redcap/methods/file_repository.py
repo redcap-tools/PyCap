@@ -207,3 +207,42 @@ class FileRepository(Base):
                 payload=payload, return_type="empty_json", file=file_upload_dict
             ),
         )
+
+    def delete_file_from_repository(
+        self,
+        doc_id: int,
+        return_format_type: Literal["json", "csv", "xml"] = "json",
+    ) -> EmptyJson:
+        # pylint: disable=line-too-long
+        """
+        Delete a File from the File Repository
+
+        Once deleted, the file will remain in the Recycle Bin folder for up to 30 days.
+
+        Args:
+            doc_id: The doc_id of the file in the File Repository
+            return_format_type:
+                Response format. By default, response will be json-decoded.
+
+        Returns:
+            Empty JSON object
+
+        Examples:
+            >>> file_dir = proj.export_file_repository()
+            >>> test_folder = [folder for folder in file_dir if folder["name"] == "test"].pop()
+            >>> test_dir = proj.export_file_repository(folder_id=test_folder["folder_id"])
+            >>> test_file = [file for file in test_dir if file["name"] == "test_in_folder.txt"].pop()
+            >>> proj.delete_file_from_repository(doc_id=test_file["doc_id"])
+            [{}]
+        """
+        # pylint: enable=line-too-long
+        payload = self._initialize_payload(
+            content="fileRepository", return_format_type=return_format_type
+        )
+        # there's no format field in this call
+        payload["action"] = "delete"
+        payload["doc_id"] = doc_id
+
+        return cast(
+            EmptyJson, self._call_api(payload=payload, return_type="empty_json")
+        )

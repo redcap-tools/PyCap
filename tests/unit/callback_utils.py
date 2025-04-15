@@ -342,7 +342,7 @@ def handle_long_project_file_repository_request(**kwargs) -> Any:
     elif "export" in data.get("action"):
         resp = handle_long_project_export_file_from_repo(data)
         headers["content-type"] = "text/plain;name=test.txt"
-    elif "import" in data.get("action"):
+    elif data.get("action") in ["import", "delete"]:
         resp = [{}]
 
     return (201, headers, json.dumps(resp))
