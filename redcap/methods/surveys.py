@@ -39,7 +39,7 @@ class Surveys(Base):
 
         Returns:
             Str:
-                URL of survey Link requestet
+                URL of survey link requested
 
         Examples:
             >>> proj.export_survey_link(instrument="form_1", record="5", event="event_1_arm_1")
