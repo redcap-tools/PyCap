@@ -48,6 +48,7 @@ Currently, these API calls are available:
 * Instruments
 * Instrument-event mapping
 * File
+* File Repository
 * Logging
 * Metadata
 * Project Info
@@ -68,6 +69,7 @@ Currently, these API calls are available:
 * Data Access Groups
 * Events
 * File
+* File Repository
 * Instrument-event mapping
 * Metadata
 * Records
@@ -83,6 +85,7 @@ Currently, these API calls are available:
 * Data Access Groups
 * Events
 * File
+* File Repository
 * Records
 * Users
 * User Roles
