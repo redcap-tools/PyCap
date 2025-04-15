@@ -23,6 +23,7 @@ class Project(
     methods.data_access_groups.DataAccessGroups,
     methods.events.Events,
     methods.field_names.FieldNames,
+    methods.file_repository.FileRepository,
     methods.files.Files,
     methods.instruments.Instruments,
     methods.logging.Logging,
@@ -50,7 +51,7 @@ class Project(
 
     Examples:
         >>> from redcap import Project
-        >>> URL = "https://redcapdemo.vanderbilt.edu/api/"
+        >>> URL = "https://redcapdemo.vumc.org/api/"
         >>> proj = Project(URL, TOKEN)
         >>> proj.field_names
         ['record_id', 'field_1', 'checkbox_field', 'upload_field']

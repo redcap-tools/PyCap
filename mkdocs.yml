@@ -14,6 +14,7 @@ nav:
         - Data Access Groups: api_reference/data_access_groups.md
         - Events: api_reference/events.md
         - Field Names: api_reference/field_names.md
+        - File Repository: api_reference/file_repository.md
         - Files: api_reference/files.md
         - Instruments: api_reference/instruments.md
         - Logging: api_reference/logging.md

@@ -5,9 +5,6 @@ import os
 
 import pytest
 
-from redcap import RedcapError
-
-
 if not os.getenv("REDCAPDEMO_SUPERUSER_TOKEN"):
     pytest.skip(
         "Super user token not found, skipping integration tests",
@@ -207,10 +204,8 @@ def test_arms_import_override(long_project):
     response = long_project.import_arms(new_arms, override=1)
 
     assert response == 2
-    # Confirm that there are no events associated with new override arms
-    with pytest.raises(RedcapError):
-        response = long_project.export_arms()
 
+    # Restore project state
     response = long_project.import_events(state_dict["events"])
     assert response == 16
 

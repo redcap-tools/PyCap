@@ -312,6 +312,42 @@ def handle_long_project_file_request(**kwargs) -> Any:
     return (201, headers, json.dumps(resp))
 
 
+def handle_long_project_file_repo_create_folder(data) -> Any:
+    """Handle the create folder request"""
+    assert data["name"]
+    return [{"folder_id": 101}]
+
+
+def handle_long_project_export_file_repo(data) -> Any:
+    """Handle the export file/folder request"""
+    assert data
+    return [{"folder_id": 101, "name": "test"}]
+
+
+def handle_long_project_export_file_from_repo(data) -> Any:
+    """Handle the export file from repo request"""
+    assert data["doc_id"]
+    return {}
+
+
+def handle_long_project_file_repository_request(**kwargs) -> Any:
+    """Handle file repository requests"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = {}
+    if "createFolder" in data.get("action"):
+        resp = handle_long_project_file_repo_create_folder(data)
+    elif "list" in data.get("action"):
+        resp = handle_long_project_export_file_repo(data)
+    elif "export" in data.get("action"):
+        resp = handle_long_project_export_file_from_repo(data)
+        headers["content-type"] = "text/plain;name=test.txt"
+    elif data.get("action") in ["import", "delete"]:
+        resp = [{}]
+
+    return (201, headers, json.dumps(resp))
+
+
 def handle_generate_next_record_name_request(**kwargs) -> Any:
     """Handle generating next record name"""
     headers = kwargs["headers"]
@@ -778,6 +814,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "arm": handle_long_project_arms_request,
         "event": handle_long_project_events_request,
         "file": handle_long_project_file_request,
+        "fileRepository": handle_long_project_file_repository_request,
         "formEventMapping": handle_long_project_form_event_mapping_request,
         "instrument": handle_long_project_instruments_request,
         "repeatingFormsEvents": handle_long_project_repeating_form_request,

@@ -4,10 +4,10 @@
 
 from collections import namedtuple
 from typing import (
-    TYPE_CHECKING,
     Any,
     Dict,
     List,
+    IO,
     Literal,
     Optional,
     Tuple,
@@ -18,8 +18,6 @@ from typing import (
 
 from requests import RequestException, Response, Session
 
-if TYPE_CHECKING:
-    from io import TextIOWrapper
 
 Json = List[Dict[str, Any]]
 EmptyJson = List[dict]
@@ -36,7 +34,7 @@ _session = Session()
 class FileUpload(TypedDict):
     """Typing for the file upload API"""
 
-    file: Tuple[str, "TextIOWrapper"]
+    file: Tuple[str, IO]
 
 
 _ContentConfig = namedtuple("_ContentConfig", ["return_empty_json", "return_bytes"])
@@ -190,19 +188,19 @@ class _RCRequest:
             return_bytes=self.config.return_bytes,
         )
 
+        bad_request = False
+
         if self.fmt == "json":
             try:
                 bad_request = "error" in content.keys()  # type: ignore
             except AttributeError:
                 # we're not dealing with an error dict
-                bad_request = False
+                pass
         elif self.fmt == "csv":
             bad_request = content.lower().startswith("error:")  # type: ignore
         # xml is the default returnFormat for error messages
         elif self.fmt == "xml" or self.fmt is None:
             bad_request = "<error>" in str(content).lower()
-        else:
-            raise ValueError(f"Unsupported format { self.fmt }")
 
         if bad_request:
             raise RedcapError(content)

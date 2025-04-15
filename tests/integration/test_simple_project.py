@@ -2,6 +2,8 @@
 
 # pylint: disable=missing-function-docstring
 import os
+import tempfile
+
 from io import StringIO
 
 import pandas as pd
@@ -298,3 +300,48 @@ def test_export_events(simple_project):
 def test_export_instrument_event_mapping(simple_project):
     with pytest.raises(RedcapError):
         simple_project.export_instrument_event_mappings()
+
+
+@pytest.mark.integration
+def test_create_folder_in_repository(simple_project):
+    folder_name = "New Folder"
+    new_folder = simple_project.create_folder_in_repository(name=folder_name)
+    assert new_folder[0]["folder_id"] > 0
+
+
+@pytest.mark.integration
+def test_export_file_repository(simple_project):
+    directory = simple_project.export_file_repository()
+    assert len(directory) > 0
+
+
+@pytest.mark.integration
+def test_export_file_from_repository(simple_project):
+    file_dir = simple_project.export_file_repository()
+    text_file = [file for file in file_dir if file["name"] == "test.txt"].pop()
+    file_contents, _ = simple_project.export_file_from_repository(
+        doc_id=text_file["doc_id"]
+    )
+    assert isinstance(file_contents, bytes)
+
+
+@pytest.mark.integration
+def test_import_file_repository(simple_project):
+    initial_len = len(simple_project.export_file_repository())
+
+    tmp_file = tempfile.TemporaryFile()
+    simple_project.import_file_into_repository(
+        file_name="new_upload.txt", file_object=tmp_file
+    )
+
+    new_len = len(simple_project.export_file_repository())
+
+    assert new_len > initial_len
+
+
+@pytest.mark.integration
+def test_delete_file_from_repository(simple_project):
+    file_dir = simple_project.export_file_repository()
+    text_file = [file for file in file_dir if file["name"] == "test.txt"].pop()
+    resp = simple_project.delete_file_from_repository(doc_id=text_file["doc_id"])
+    assert resp == [{}]

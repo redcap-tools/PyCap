@@ -3,6 +3,7 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 import os
+import tempfile
 
 import pandas as pd
 import pytest
@@ -254,3 +255,32 @@ def test_events_delete(long_project):
     response = long_project.delete_events(events)
 
     assert response == 1
+
+
+def test_file_repo_folder_create(long_project):
+    response = long_project.create_folder_in_repository(
+        name="test", folder_id=1, dag_id=2, role_id=3
+    )
+    assert response[0]["folder_id"]
+
+
+def test_export_file_repo(long_project):
+    response = long_project.export_file_repository(folder_id=1)
+    assert is_json(response)
+
+
+def test_export_file_from_repo(long_project):
+    resp, headers = long_project.export_file_from_repository(doc_id=1)
+    assert isinstance(resp, bytes)
+    assert headers["name"] == "test.txt"
+
+
+def test_import_file_into_file_repo(long_project):
+    tmp_file = tempfile.TemporaryFile()
+    resp = long_project.import_file_into_repository("test.txt", tmp_file, folder_id=1)
+    assert resp
+
+
+def test_delete_file_from_file_repo(long_project):
+    resp = long_project.delete_file_from_repository(doc_id=1)
+    assert resp
