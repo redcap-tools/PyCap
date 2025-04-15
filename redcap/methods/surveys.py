@@ -11,6 +11,58 @@ if TYPE_CHECKING:
 class Surveys(Base):
     """Responsible for all API methods under 'Surveys' in the API Playground"""
 
+    def export_survey_link(
+        self,
+        instrument: str,
+        record: str,
+        event: Optional[str] = None,
+        repeat_instance: int = 1,
+    ):
+        """
+        Export one survey link
+
+        Note:
+            The passed instrument must be set up as a survey instrument.
+
+        Args:
+            instrument:
+                Name of instrument as seen in the Data Dictionary (metadata).
+            record:
+                Name of the record
+            event:
+                Unique event name, only used in longitudinal projects
+            repeat_instance:
+                only for projects with repeating instruments/events) 
+                The repeat instance number of the repeating event (if longitudinal) 
+                or the repeating instrument (if classic or longitudinal). 
+                Default value is '1'.
+
+        Returns:
+            Str:
+                URL of survey link requested
+
+        Examples:
+            >>> proj.export_survey_link(instrument="form_1", record="5", event="event_1_arm_1")
+            https://redcap.mytld.com/surveys/?s=6B2zFAEWPVSrXnnx
+        """       
+        payload = self._initialize_payload(
+            content="surveyLink"
+        )
+        payload["instrument"] = instrument
+        payload["record"] = record
+        if event:
+            payload["event"] = event
+        payload["repeat_instance"] = repeat_instance
+
+        return_type = "str"
+        response = cast(Union[Json, str], self._call_api(payload, return_type))
+
+        return self._return_data(
+            response=response,
+            content="surveyLink",
+            format_type=return_type,
+        )
+
     def export_survey_participant_list(
         self,
         instrument: str,
