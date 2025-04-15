@@ -1,6 +1,6 @@
 """REDCap API methods for Project file repository"""
 
-from typing import TYPE_CHECKING, Any, Dict, IO, Literal, Optional, Union, cast
+from typing import Any, Dict, IO, Literal, Optional, Union, cast
 
 from redcap.methods.base import Base, FileMap, Json
 from redcap.request import EmptyJson, FileUpload
@@ -68,13 +68,8 @@ class FileRepository(Base):
             payload["role_id"] = role_id
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
-        return self._return_data(
-            response=response,
-            content="fileRepository",
-            format_type=format_type,
-        )
+        return cast(Union[Json, str], self._call_api(payload, return_type))
 
     def export_file_repository(
         self,
@@ -118,13 +113,8 @@ class FileRepository(Base):
             payload["folder_id"] = folder_id
 
         return_type = self._lookup_return_type(format_type, request_type="export")
-        response = cast(Union[Json, str], self._call_api(payload, return_type))
 
-        return self._return_data(
-            response=response,
-            content="fileRepository",
-            format_type=format_type,
-        )
+        return cast(Union[Json, str], self._call_api(payload, return_type))
 
     def export_file_from_repository(
         self,

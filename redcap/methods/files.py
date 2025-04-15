@@ -1,10 +1,9 @@
 """REDCap API methods for Project files"""
 
-from typing import TYPE_CHECKING, Any, Dict, IO, Optional, Union, cast
+from typing import Any, Dict, IO, Optional, Union, cast
 
 from redcap.methods.base import Base, FileMap
 from redcap.request import EmptyJson, FileUpload
-
 
 
 class Files(Base):

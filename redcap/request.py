@@ -4,7 +4,6 @@
 
 from collections import namedtuple
 from typing import (
-    TYPE_CHECKING,
     Any,
     Dict,
     List,
