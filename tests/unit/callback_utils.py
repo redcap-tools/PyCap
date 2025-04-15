@@ -781,6 +781,22 @@ def handle_long_project_survey_participants_request(**kwargs) -> Any:
     return (201, headers, json.dumps(resp))
 
 
+def handle_long_project_survey_link_request(**kwargs) -> Any:
+    """Get the survey link for a record and instrument and event"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+
+    if (
+        "test" in data.get("instrument")
+        and "raw" in data.get("event")
+        and "1" in data.get("record")
+    ):
+        resp = "https://redcapdemo.vumc.org/surveys/?s=DMgheEPAgLETxJkf"
+
+    return (201, headers, resp)
+
+
 def get_simple_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
@@ -823,6 +839,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "pdf": handle_long_project_pdf_request,
         "record": handle_long_project_records_request,
         "report": handle_long_project_reports_request,
+        "surveyLink": handle_long_project_survey_link_request,
         "version": handle_long_project_version_request,
     }
 

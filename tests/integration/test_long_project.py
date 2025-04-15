@@ -303,3 +303,11 @@ def test_fem_import(long_project):
 
     response = long_project.import_instrument_event_mappings(current_fem)
     assert response == 44
+
+
+@pytest.mark.integration
+def test_export_survey_link(long_project):
+    link = long_project.export_survey_link(
+        instrument="contact_info", event="enrollment_arm_1", record="1"
+    )
+    assert link.startswith("https://redcapdemo.vumc.org/surveys/?s=")

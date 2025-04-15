@@ -17,7 +17,7 @@ class Surveys(Base):
         record: str,
         event: Optional[str] = None,
         repeat_instance: int = 1,
-    ):
+    ) -> str:
         """
         Export one survey link
 
@@ -32,36 +32,27 @@ class Surveys(Base):
             event:
                 Unique event name, only used in longitudinal projects
             repeat_instance:
-                only for projects with repeating instruments/events) 
-                The repeat instance number of the repeating event (if longitudinal) 
-                or the repeating instrument (if classic or longitudinal). 
+                only for projects with repeating instruments/events)
+                The repeat instance number of the repeating event (if longitudinal)
+                or the repeating instrument (if classic or longitudinal).
                 Default value is '1'.
 
         Returns:
-            Str:
-                URL of survey link requested
+            URL of survey link requested
 
         Examples:
-            >>> proj.export_survey_link(instrument="form_1", record="5", event="event_1_arm_1")
-            https://redcap.mytld.com/surveys/?s=6B2zFAEWPVSrXnnx
-        """       
-        payload = self._initialize_payload(
-            content="surveyLink"
-        )
+            >>> proj.export_survey_link(instrument="form_1", record="1", event="event_1_arm_1")
+            'https://redcapdemo.vumc.org/surveys/?s=...'
+        """
+        payload = self._initialize_payload(content="surveyLink")
         payload["instrument"] = instrument
         payload["record"] = record
-        if event:
-            payload["event"] = event
         payload["repeat_instance"] = repeat_instance
 
-        return_type = "str"
-        response = cast(Union[Json, str], self._call_api(payload, return_type))
+        if event:
+            payload["event"] = event
 
-        return self._return_data(
-            response=response,
-            content="surveyLink",
-            format_type=return_type,
-        )
+        return cast(str, self._call_api(payload, return_type="str"))
 
     def export_survey_participant_list(
         self,
