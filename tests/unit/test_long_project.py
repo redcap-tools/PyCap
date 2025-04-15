@@ -71,6 +71,11 @@ def test_export_survey_participants_list(long_project):
     assert is_json(res)
 
 
+def test_export_survey_link(long_project):
+    res = long_project.export_survey_link(instrument="test", record="1", event="raw")
+    assert res.startswith("https://redcapdemo.vumc.org/surveys/?s=")
+
+
 def test_metadata_import_handles_api_error(long_project):
     metadata = long_project.export_metadata()
 
