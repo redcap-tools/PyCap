@@ -76,6 +76,13 @@ def test_export_survey_link(long_project):
     assert res.startswith("https://redcapdemo.vumc.org/surveys/?s=")
 
 
+def test_export_survey_access_code(long_project):
+    res = long_project.export_survey_access_code(
+        instrument="test", record="1", event="raw"
+    )
+    assert len(res) == 9
+
+
 def test_metadata_import_handles_api_error(long_project):
     metadata = long_project.export_metadata()
 

@@ -116,7 +116,6 @@ class Surveys(Base):
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         event: Optional[str] = None,
         df_kwargs: Optional[Dict[str, Any]] = None,
-        #return_format_type: Literal["json", "csv", "xml"] = "json",
     ):
         """
         Export the Survey Participant List

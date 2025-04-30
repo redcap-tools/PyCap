@@ -311,3 +311,11 @@ def test_export_survey_link(long_project):
         instrument="contact_info", event="enrollment_arm_1", record="1"
     )
     assert link.startswith("https://redcapdemo.vumc.org/surveys/?s=")
+
+
+@pytest.mark.integration
+def test_export_survey_access_code(long_project):
+    code = long_project.export_survey_access_code(
+        record="1", instrument="contact_info", event="enrollment_arm_1"
+    )
+    assert len(code) == 9
