@@ -13,8 +13,8 @@ class Surveys(Base):
 
     def export_survey_link(
         self,
-        instrument: str,
         record: str,
+        instrument: str,
         event: Optional[str] = None,
         repeat_instance: int = 1,
     ) -> str:
@@ -25,10 +25,10 @@ class Surveys(Base):
             The passed instrument must be set up as a survey instrument.
 
         Args:
-            instrument:
-                Name of instrument as seen in the Data Dictionary (metadata).
             record:
                 Name of the record
+            instrument:
+                Name of instrument as seen in the Data Dictionary (metadata).
             event:
                 Unique event name, only used in longitudinal projects
             repeat_instance:
@@ -41,12 +41,68 @@ class Surveys(Base):
             URL of survey link requested
 
         Examples:
-            >>> proj.export_survey_link(instrument="form_1", record="1", event="event_1_arm_1")
+            >>> proj.export_survey_link(record="1", instrument="form_1", event="event_1_arm_1")
             'https://redcapdemo.vumc.org/surveys/?s=...'
         """
-        payload = self._initialize_payload(content="surveyLink")
-        payload["instrument"] = instrument
+        payload = self._initialize_payload(
+            content="surveyLink",
+            # Hard-coded due to the nature of the response
+            return_format_type="csv",
+        )
+
         payload["record"] = record
+        payload["instrument"] = instrument
+        payload["repeat_instance"] = repeat_instance
+
+        if event:
+            payload["event"] = event
+
+        return cast(str, self._call_api(payload, return_type="str"))
+
+    def export_survey_access_code(
+        self,
+        record: str,
+        instrument: str,
+        event: Optional[str] = None,
+        repeat_instance: int = 1,
+    ) -> str:
+        # pylint: disable=line-too-long
+        """
+        Export a Survey Access Code for a Participant
+
+        Note:
+            The passed instrument must be set up as a survey instrument.
+
+        Args:
+            record:
+                Name of the record
+            instrument:
+                Name of instrument as seen in the Data Dictionary (metadata).
+            event:
+                Unique event name, only used in longitudinal projects
+            repeat_instance:
+                only for projects with repeating instruments/events)
+                The repeat instance number of the repeating event (if longitudinal)
+                or the repeating instrument (if classic or longitudinal).
+                Default value is '1'.
+
+        Returns:
+            A survey access code for a specified record and data collection
+            instrument
+
+        Examples:
+            >>> proj.export_survey_access_code(record="1", instrument="form_1", event="event_1_arm_1")
+            '...'
+        """
+        # pylint: enable=line-too-long
+        payload = self._initialize_payload(
+            content="surveyAccessCode",
+            # Hard-coded due to the nature of the response
+            return_format_type="csv",
+        )
+
+        payload["record"] = record
+        payload["instrument"] = instrument
         payload["repeat_instance"] = repeat_instance
 
         if event:
@@ -60,6 +116,7 @@ class Surveys(Base):
         format_type: Literal["json", "csv", "xml", "df"] = "json",
         event: Optional[str] = None,
         df_kwargs: Optional[Dict[str, Any]] = None,
+        #return_format_type: Literal["json", "csv", "xml"] = "json",
     ):
         """
         Export the Survey Participant List
@@ -94,7 +151,8 @@ class Surveys(Base):
             'survey_access_code': ...}]
         """
         payload = self._initialize_payload(
-            content="participantList", format_type=format_type
+            content="participantList",
+            format_type=format_type,
         )
         payload["instrument"] = instrument
         if event:
