@@ -59,6 +59,38 @@ class Surveys(Base):
 
         return cast(str, self._call_api(payload, return_type="str"))
 
+    def export_survey_queue_link(
+        self,
+        record: str,
+    ) -> str:
+        """
+        Export one survey queue link
+
+        Note:
+            The passed instrument must be set up as a survey instrument. The
+            survey queue must be enabled for the project.
+
+        Args:
+            record:
+                Name of the record
+
+        Returns:
+            URL of survey queue link requested
+
+        Examples:
+            >>> proj.export_survey_queue_link(record="1")
+            'https://redcapdemo.vumc.org/surveys/?sq=...'
+        """
+        payload = self._initialize_payload(
+            content="surveyQueueLink",
+            # Hard-coded due to the nature of the response
+            return_format_type="csv",
+        )
+
+        payload["record"] = record
+
+        return cast(str, self._call_api(payload, return_type="str"))
+
     def export_survey_access_code(
         self,
         record: str,
