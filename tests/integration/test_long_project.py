@@ -40,6 +40,14 @@ def test_export_survey_access_code(long_project):
 
 
 @pytest.mark.integration
+def test_export_survey_return_code(long_project):
+    code = long_project.export_survey_return_code(
+        record="1", instrument="contact_info", event="enrollment_arm_1"
+    )
+    assert len(code) == 8
+
+
+@pytest.mark.integration
 def test_survey_participant_export(long_project):
     data = long_project.export_survey_participant_list(
         instrument="contact_info", event="enrollment_arm_1"

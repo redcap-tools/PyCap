@@ -825,6 +825,22 @@ def handle_long_project_survey_access_code_request(**kwargs) -> Any:
     return (201, headers, resp)
 
 
+def handle_long_project_survey_return_code_request(**kwargs) -> Any:
+    """Get the survey return code for a record and instrument and event"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+
+    if (
+        "test" in data.get("instrument")
+        and "raw" in data.get("event")
+        and "1" in data.get("record")
+    ):
+        resp = "AAAAAAAA"
+
+    return (201, headers, resp)
+
+
 def get_simple_project_request_handler(request_type: str) -> Callable:
     """Given a request type, extract the handler function"""
     handlers_dict = {
@@ -870,6 +886,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "surveyLink": handle_long_project_survey_link_request,
         "surveyQueueLink": handle_long_project_survey_queue_link_request,
         "surveyAccessCode": handle_long_project_survey_access_code_request,
+        "surveyReturnCode": handle_long_project_survey_return_code_request,
         "version": handle_long_project_version_request,
     }
 
