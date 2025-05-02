@@ -139,6 +139,38 @@ def test_limit_export_records_forms_and_fields(long_project):
     assert complete_cols == ["baseline_data_complete"]
 
 
+def test_delete_records_from_one_instrument_only(long_project):
+    # Add new record to test partial deletion
+    new_record = [
+        {
+            "study_id": "3",
+            "redcap_event_name": "enrollment_arm_1",
+            "redcap_repeat_instrument": "",
+            "redcap_repeat_instance": "",
+        },
+        {
+            "study_id": "3",
+            "redcap_event_name": "visit_1_arm_1",
+            "redcap_repeat_instrument": "",
+            "redcap_repeat_instance": "",
+        },
+    ]
+    res = long_project.import_records(new_record)
+    assert res["count"] == 1
+
+    res = long_project.export_records(records=["3"])
+    assert len(res) == 2
+
+    res = long_project.delete_records(records=["3"], event="visit_1_arm_1")
+    assert res == 1
+
+    res = long_project.export_records(records=["3"])
+    assert len(res) == 1
+    # restore project to original state pre-test
+    res = long_project.delete_records(["3"])
+    assert res == 1
+
+
 @pytest.mark.integration
 def test_arms_export(long_project):
     response = long_project.export_arms()

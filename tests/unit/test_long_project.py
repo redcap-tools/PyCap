@@ -149,6 +149,19 @@ def test_export_with_events(long_project):
         assert isinstance(record, dict)
 
 
+def test_delete_records_from_event(long_project):
+    res = long_project.delete_records(
+        records=["1"],
+        arm="1",
+        instrument="form_1",
+        event="enrollment_arm_1",
+        repeat_instance=1,
+        delete_logging=True,
+    )
+
+    assert res == 1
+
+
 def test_fem_export(long_project):
     fem = long_project.export_instrument_event_mappings(format_type="json")
 
