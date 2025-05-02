@@ -797,6 +797,18 @@ def handle_long_project_survey_link_request(**kwargs) -> Any:
     return (201, headers, resp)
 
 
+def handle_long_project_survey_queue_link_request(**kwargs) -> Any:
+    """Get the survey queue link for a record"""
+    data = kwargs["data"]
+    headers = kwargs["headers"]
+    resp = None
+
+    if "1" in data.get("record"):
+        resp = "https://redcapdemo.vumc.org/surveys/?sq=DMgheEPAgLETxJkf"
+
+    return (201, headers, resp)
+
+
 def handle_long_project_survey_access_code_request(**kwargs) -> Any:
     """Get the survey access code for a record and instrument and event"""
     data = kwargs["data"]
@@ -856,6 +868,7 @@ def get_long_project_request_handler(request_type: str) -> Callable:
         "record": handle_long_project_records_request,
         "report": handle_long_project_reports_request,
         "surveyLink": handle_long_project_survey_link_request,
+        "surveyQueueLink": handle_long_project_survey_queue_link_request,
         "surveyAccessCode": handle_long_project_survey_access_code_request,
         "version": handle_long_project_version_request,
     }

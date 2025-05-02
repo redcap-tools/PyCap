@@ -18,6 +18,28 @@ def test_is_longitudinal(long_project):
 
 
 @pytest.mark.integration
+def test_export_survey_link(long_project):
+    link = long_project.export_survey_link(
+        instrument="contact_info", event="enrollment_arm_1", record="1"
+    )
+    assert link.startswith("https://redcapdemo.vumc.org/surveys/?s=")
+
+
+@pytest.mark.integration
+def test_export_survey_queue_link(long_project):
+    link = long_project.export_survey_queue_link(record="1")
+    assert link.startswith("https://redcapdemo.vumc.org/surveys/?sq=")
+
+
+@pytest.mark.integration
+def test_export_survey_access_code(long_project):
+    code = long_project.export_survey_access_code(
+        record="1", instrument="contact_info", event="enrollment_arm_1"
+    )
+    assert len(code) == 9
+
+
+@pytest.mark.integration
 def test_survey_participant_export(long_project):
     data = long_project.export_survey_participant_list(
         instrument="contact_info", event="enrollment_arm_1"
@@ -303,19 +325,3 @@ def test_fem_import(long_project):
 
     response = long_project.import_instrument_event_mappings(current_fem)
     assert response == 44
-
-
-@pytest.mark.integration
-def test_export_survey_link(long_project):
-    link = long_project.export_survey_link(
-        instrument="contact_info", event="enrollment_arm_1", record="1"
-    )
-    assert link.startswith("https://redcapdemo.vumc.org/surveys/?s=")
-
-
-@pytest.mark.integration
-def test_export_survey_access_code(long_project):
-    code = long_project.export_survey_access_code(
-        record="1", instrument="contact_info", event="enrollment_arm_1"
-    )
-    assert len(code) == 9

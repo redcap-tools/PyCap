@@ -76,6 +76,11 @@ def test_export_survey_link(long_project):
     assert res.startswith("https://redcapdemo.vumc.org/surveys/?s=")
 
 
+def test_export_survey_queue_link(long_project):
+    res = long_project.export_survey_queue_link(record="1")
+    assert res.startswith("https://redcapdemo.vumc.org/surveys/?sq=")
+
+
 def test_export_survey_access_code(long_project):
     res = long_project.export_survey_access_code(
         instrument="test", record="1", event="raw"
