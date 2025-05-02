@@ -142,6 +142,57 @@ class Surveys(Base):
 
         return cast(str, self._call_api(payload, return_type="str"))
 
+    def export_survey_return_code(
+        self,
+        record: str,
+        instrument: str,
+        event: Optional[str] = None,
+        repeat_instance: int = 1,
+    ) -> str:
+        # pylint: disable=line-too-long
+        """
+        Export a Survey Return Code for a Participant
+
+        Note:
+            The passed instrument must be set up as a survey instrument, which has return codes enabled.
+
+        Args:
+            record:
+                Name of the record
+            instrument:
+                Name of instrument as seen in the Data Dictionary (metadata).
+            event:
+                Unique event name, only used in longitudinal projects
+            repeat_instance:
+                only for projects with repeating instruments/events)
+                The repeat instance number of the repeating event (if longitudinal)
+                or the repeating instrument (if classic or longitudinal).
+                Default value is '1'.
+
+        Returns:
+            A survey return code for a specified record and data collection
+            instrument
+
+        Examples:
+            >>> proj.export_survey_return_code(record="1", instrument="form_1", event="event_1_arm_1")
+            '...'
+        """
+        # pylint: enable=line-too-long
+        payload = self._initialize_payload(
+            content="surveyReturnCode",
+            # Hard-coded due to the nature of the response
+            return_format_type="csv",
+        )
+
+        payload["record"] = record
+        payload["instrument"] = instrument
+        payload["repeat_instance"] = repeat_instance
+
+        if event:
+            payload["event"] = event
+
+        return cast(str, self._call_api(payload, return_type="str"))
+
     def export_survey_participant_list(
         self,
         instrument: str,
