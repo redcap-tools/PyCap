@@ -330,13 +330,41 @@ class Records(Base):
     def delete_records(
         self,
         records: List[str],
+        arm: Optional[str] = None,
+        instrument: Optional[str] = None,
+        event: Optional[str] = None,
+        repeat_instance: Optional[int] = None,
+        delete_logging: bool = False,
         return_format_type: Literal["json", "csv", "xml"] = "json",
     ):
+        # pylint: disable=line-too-long
         """
         Delete records from the project.
 
         Args:
             records: List of record IDs to delete from the project
+            arm:
+                the arm number of the arm in which the record(s) should be deleted.
+                (This can only be used if the project is longitudinal with more than one arm.)
+                NOTE: If the arm parameter is not provided, the specified records will be
+                deleted from all arms in which they exist. Whereas, if arm is provided,
+                they will only be deleted from the specified arm.
+            instrument:
+                the unique instrument name (column B in the Data Dictionary) of an
+                instrument (as a string) if you wish to delete the data for all fields
+                on the specified instrument for the records specified.
+            event:
+                the unique event name - only for longitudinal projects. NOTE: If
+                instrument is provided for a longitudinal project, the event parameter
+                is mandatory.
+            repeat_instance:
+                the repeating instance number for a repeating instrument or repeating event.
+                NOTE: If project has repeating instruments/events, it will remove only the
+                data for that repeating instance.
+            delete_logging:
+                provide a value of False ("keep logging") or True ("delete logging"). This
+                activity when deleting the record?" setting enabled by an administrator on
+                the Edit Project Settings page. The default value for PyCap is False
             return_format_type:
                 Response format. By default, response will be json-decoded.
 
@@ -352,11 +380,38 @@ class Records(Base):
             {'count': 2}
             >>> proj.delete_records(["3", "4"])
             2
+            >>> new_record = [
+            ...     {"record_id": 3, "redcap_event_name": "event_1_arm_1", "redcap_repeat_instance": 1, "field_1": 1,},
+            ...     {"record_id": 3, "redcap_event_name": "event_1_arm_1", "redcap_repeat_instance": 2, "field_1": 0,},
+            ... ]
+            >>> proj.import_records(new_record)
+            {'count': 1}
+            >>> proj.delete_records(records=["3"], event="event_1_arm_1", repeat_instance=2)
+            1
+            >>> proj.export_records(records=["3"])
+            [{'record_id': '3', 'redcap_event_name': 'event_1_arm_1', 'redcap_repeat_instrument': '', 'redcap_repeat_instance': 1,
+            'field_1': '1', 'checkbox_field___1': '0', 'checkbox_field___2': '0', 'upload_field': '', 'form_1_complete': '0'}]
+            >>> proj.delete_records(records=["3"])
+            1
         """
+        # pylint: enable=line-too-long
         payload = self._initialize_payload(
             content="record", return_format_type=return_format_type
         )
         payload["action"] = "delete"
+        if delete_logging:
+            payload["delete_logging"] = "1"
+        else:
+            payload["delete_logging"] = "0"
+
+        if arm:
+            payload["arm"] = arm
+        if instrument:
+            payload["instrument"] = instrument
+        if event:
+            payload["event"] = event
+        if repeat_instance:
+            payload["repeat_instance"] = repeat_instance
         # Turn list of records into dict, and append to payload
         records_dict = {
             f"records[{ idx }]": record for idx, record in enumerate(records)

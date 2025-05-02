@@ -506,6 +506,23 @@ def handle_simple_project_delete_records(data: dict) -> int:
     return resp
 
 
+def handle_long_project_delete_records(data: dict) -> int:
+    """Given long project delete request, determine how many records were deleted"""
+    resp = 0
+    assert data["arm"]
+    assert data["instrument"]
+    assert data["event"]
+    assert data["repeat_instance"]
+    assert data["repeat_instance"]
+    assert data["delete_logging"]
+
+    for key in data:
+        if "records[" in key:
+            resp += 1
+
+    return resp
+
+
 def handle_simple_project_import_records(data: dict) -> dict:
     """Given simple project import request, determine response"""
     resp = {"count": 2}
@@ -572,6 +589,10 @@ def handle_long_project_records_request(**kwargs) -> Any:
     # if the None value gets returned it means the test failed
     resp = None
     headers = kwargs["headers"]
+    if "delete" in data.get("action", "other"):
+        resp = handle_long_project_delete_records(data)
+
+        return (201, headers, json.dumps(resp))
     # data import
     if "returnContent" in data:
         resp = {"count": 1}
