@@ -56,11 +56,7 @@ Currently, these API calls are available:
 * Records
 * Repeating instruments and events
 * Report
-* Survey link
-* Survey access code
-* Survey participant list
-* Survey queue link
-* Survey return code
+* Surveys
 * Users
 * User-DAG assignment
 * User Roles
