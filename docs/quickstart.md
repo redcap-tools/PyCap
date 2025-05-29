@@ -2,11 +2,24 @@
 
 PyCap makes it very simple to interact with the data stored in your REDCap projects
 
+> First, install python-dotenv (`poetry add python-dotenv`) and create a `.env` file in your project root with your REDCap credentials:
+
+```dotenv
+REDCAP_API_URL=https://redcap.example.edu/api/
+REDCAP_API_KEY=SomeSuperSecretAPIKeyThatNobodyElseShouldHave
+```
+
+Then update your code to load the values from the environment:
+
 ```python
+from dotenv import load_dotenv
+import os
 from redcap import Project
 
-api_url = 'https://redcap.example.edu/api/'
-api_key = 'SomeSuperSecretAPIKeyThatNobodyElseShouldHave'
+load_dotenv()  # Load variables from .env file
+
+api_url = os.getenv('REDCAP_API_URL')
+api_key = os.getenv('REDCAP_API_KEY')
 project = Project(api_url, api_key)
 ```
 
