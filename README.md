@@ -31,6 +31,25 @@ To install the bleeding edge version from the github repo, use the following
 $ pip install -e git+https://github.com/redcap-tools/PyCap.git#egg=PyCap
 ```
 
+## Quickstart
+
+1. Copy `.env.example` to `.env` and update the values with your REDCap endpoint and API token.
+2. Install [`python-dotenv`](https://pypi.org/project/python-dotenv/) with `pip install python-dotenv` (or add it to your Poetry environment).
+
+Then load your credentials and connect:
+
+```python
+from dotenv import load_dotenv
+import os
+from redcap import Project
+
+load_dotenv()  # reads .env from the project root
+
+api_url = os.environ["REDCAP_API_URL"]
+api_key = os.environ["REDCAP_API_KEY"]
+project = Project(api_url, api_key)
+```
+
 ## Documentation
 
 Canonical documentation and usage examples can be found [here](https://redcap-tools.github.io/PyCap/).
