@@ -16,6 +16,13 @@ If you want to load REDCap data into [`pandas`](https://pandas.pydata.org/) data
 $ pip install PyCap[all]
 ```
 
+For secure credential management, install [`python-dotenv`](https://pypi.org/project/python-dotenv/) (`pip install python-dotenv`) and create a `.env` file in your project root with your REDCap credentials:
+
+```dotenv
+REDCAP_API_URL=https://redcap.example.edu/api/
+REDCAP_API_KEY=YourSuperSecretAPIKeyHere
+```
+
 To install the bleeding edge version from the github repo, use the following
 
 ```sh
