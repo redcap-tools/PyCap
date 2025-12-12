@@ -615,6 +615,68 @@ def test_df_import(simple_project):
     assert not "error" in response
 
 
+def test_import_records_background_process_true(simple_project, mocker):
+    """Test that background_process=True passes backgroundProcess=1 in payload"""
+    mocked_api_call = mocker.patch.object(
+        simple_project, "_call_api", return_value={"count": 1}
+    )
+
+    data = [{"record_id": "1", "test": "value"}]
+    simple_project.import_records(data, background_process=True)
+
+    args, _ = mocked_api_call.call_args
+    payload = args[0]
+
+    assert "backgroundProcess" in payload
+    assert payload["backgroundProcess"] == 1
+
+
+def test_import_records_background_process_false(simple_project, mocker):
+    """Test that background_process=False passes backgroundProcess=0 in payload"""
+    mocked_api_call = mocker.patch.object(
+        simple_project, "_call_api", return_value={"count": 1}
+    )
+
+    data = [{"record_id": "1", "test": "value"}]
+    simple_project.import_records(data, background_process=False)
+
+    args, _ = mocked_api_call.call_args
+    payload = args[0]
+
+    assert "backgroundProcess" in payload
+    assert payload["backgroundProcess"] == 0
+
+
+def test_import_records_background_process_none(simple_project, mocker):
+    """Test that background_process=None does not add backgroundProcess to payload"""
+    mocked_api_call = mocker.patch.object(
+        simple_project, "_call_api", return_value={"count": 1}
+    )
+
+    data = [{"record_id": "1", "test": "value"}]
+    simple_project.import_records(data, background_process=None)
+
+    args, _ = mocked_api_call.call_args
+    payload = args[0]
+
+    assert "backgroundProcess" not in payload
+
+
+def test_import_records_background_process_default(simple_project, mocker):
+    """Test that not specifying background_process does not add it to payload"""
+    mocked_api_call = mocker.patch.object(
+        simple_project, "_call_api", return_value={"count": 1}
+    )
+
+    data = [{"record_id": "1", "test": "value"}]
+    simple_project.import_records(data)
+
+    args, _ = mocked_api_call.call_args
+    payload = args[0]
+
+    assert "backgroundProcess" not in payload
+
+
 def test_reports_json_export(simple_project):
     report = simple_project.export_report(report_id="1")
 

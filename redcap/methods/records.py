@@ -259,6 +259,7 @@ class Records(Base):
         record_type: Literal["flat", "eav"] = "flat",
         date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
         force_auto_number: bool = False,
+        background_process: Optional[bool] = None,
     ):
         """
         Import data into the REDCap Project
@@ -298,6 +299,8 @@ class Records(Base):
                 of imported records by REDCap. If this is set to true, and auto-numbering
                 for records is enabled for the project, auto-numbering of imported records
                 will be enabled.
+            background_process:
+                Specifies whether to do the import as background process.
 
         Raises:
             RedcapError: Bad request made, double check field names and other inputs
@@ -321,6 +324,9 @@ class Records(Base):
         payload["type"] = record_type
         payload["dateFormat"] = date_format
         payload["forceAutoNumber"] = force_auto_number
+        if background_process is not None:
+            # This option is not supported in old REDCap versions (< 14.something)
+            payload["backgroundProcess"] = int(background_process)
 
         return_type = self._lookup_return_type(
             format_type=return_format_type,
