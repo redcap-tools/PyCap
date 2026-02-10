@@ -256,6 +256,7 @@ class Records(Base):
         return_content: Literal["count", "ids", "auto_ids", "nothing"] = "count",
         overwrite: Literal["normal", "overwrite"] = "normal",
         import_format: Literal["json", "csv", "xml", "df"] = "json",
+        record_type: Literal["flat", "eav"] = "flat",
         date_format: Literal["YMD", "DMY", "MDY"] = "YMD",
         force_auto_number: bool = False,
     ):
@@ -284,6 +285,8 @@ class Records(Base):
                 database if not specified in the to_import dictionaries.
             import_format:
                 Format of incoming data. By default, to_import will be json-encoded
+            record_type:
+                Database output structure type, by default flat (one row per record)
             date_format:
                 Describes the formatting of dates. By default, date strings
                 are formatted as 'YYYY-MM-DD' corresponding to 'YMD'. If date
@@ -315,6 +318,7 @@ class Records(Base):
         )
         payload["overwriteBehavior"] = overwrite
         payload["returnContent"] = return_content
+        payload["type"] = record_type
         payload["dateFormat"] = date_format
         payload["forceAutoNumber"] = force_auto_number
 
