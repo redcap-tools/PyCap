@@ -143,10 +143,9 @@ class Base:
         actual_token_len = len(token)
         expected_token_len = 32
 
-        assert actual_token_len == expected_token_len, (
-            f"Incorrect token format '{ token }', token must must be",
-            f"{ expected_token_len } characters long",
-        )
+        assert (
+            actual_token_len == expected_token_len
+        ), f"Incorrect token format token must must be { expected_token_len } characters long"
 
     @staticmethod
     def _validate_request_kwargs(**request_kwargs):
