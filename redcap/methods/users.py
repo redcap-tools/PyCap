@@ -31,9 +31,16 @@ class Users(Base):
 
         Examples:
             >>> proj.export_users()
-            [{'username': ..., 'email': ..., 'expiration': '', 'data_access_group': '',
-            'data_access_group_id': '', 'design': 1, 'alerts': 1, 'user_rights': 1,
-            'data_access_groups': 1, 'reports': 1, ...}]
+            [{'username': '...', 'email': '...', 'firstname': '...', 'lastname': '...',
+            'expiration': '', 'data_access_group': '', 'data_access_group_id': '',
+            'data_access_group_label': '', 'design': 1, 'alerts': 1, 'user_rights': 1,
+            'data_access_groups': 1, 'reports': 1, 'stats_and_charts': 1,
+            'manage_survey_participants': 1, 'calendar': 1, 'data_import_tool': 1,
+            'data_comparison_tool': 1, 'logging': 1, 'email_logging': 0, 'file_repository': 1,
+            'data_quality_create': 1, 'data_quality_execute': 1, 'api_export': 1, 'api_import': 1,
+            'api_modules': 1, 'mobile_app': 1, 'mobile_app_download_data': 0, 'record_create': 1,
+            'record_rename': 1, 'record_delete': 1, 'lock_records_all_forms': 1, 'lock_records': 1,
+            'lock_records_customization': 0, 'forms': {'form_1': 1}, 'forms_export': {'form_1': 1}}]
         """
         payload = self._initialize_payload(content="user", format_type=format_type)
         return_type = self._lookup_return_type(format_type, request_type="export")
