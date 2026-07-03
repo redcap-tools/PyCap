@@ -6,6 +6,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
+    Iterator,
     List,
     Literal,
     Optional,
@@ -246,6 +247,214 @@ class Records(Base):
             df_kwargs=df_kwargs,
             record_type=record_type,
         )
+
+    # pylint: enable=too-many-locals
+
+    def _export_record_ids(
+        self,
+        filter_logic: Optional[str] = None,
+        date_begin: Optional[datetime] = None,
+        date_end: Optional[datetime] = None,
+        events: Optional[List[str]] = None,
+    ) -> List[str]:
+        """Export the project's record IDs, de-duplicated and order-preserving.
+
+        Only the primary key field is requested, which keeps the response small
+        even for very large projects. For longitudinal or repeating data the
+        same record ID appears on more than one row, so the IDs are
+        de-duplicated while preserving the order in which they're returned.
+
+        Args:
+            filter_logic: Filter which records are returned using REDCap conditional syntax
+            date_begin: Filter on records created after a date
+            date_end: Filter on records created before a date
+            events: An array of unique event names from which to export records
+
+        Returns:
+            The list of unique record IDs matching the given filters
+        """
+        id_field = self.def_field
+        id_rows = cast(
+            Json,
+            self.export_records(
+                format_type="json",
+                fields=[id_field],
+                events=events,
+                filter_logic=filter_logic,
+                date_begin=date_begin,
+                date_end=date_end,
+            ),
+        )
+
+        return list(dict.fromkeys(str(row[id_field]) for row in id_rows))
+
+    # pylint: disable=too-many-locals
+
+    def export_records_chunked(
+        self,
+        chunk_size: int = 100,
+        format_type: Literal["json", "csv", "xml", "df"] = "json",
+        records: Optional[List[str]] = None,
+        fields: Optional[Union[List[str], str]] = None,
+        forms: Optional[Union[List[str], str]] = None,
+        events: Optional[List[str]] = None,
+        raw_or_label: Literal["raw", "label", "both"] = "raw",
+        raw_or_label_headers: Literal["raw", "label"] = "raw",
+        event_name: Literal["label", "unique"] = "label",
+        record_type: Literal["flat", "eav"] = "flat",
+        export_survey_fields: bool = False,
+        export_data_access_groups: bool = False,
+        export_checkbox_labels: bool = False,
+        filter_logic: Optional[str] = None,
+        date_begin: Optional[datetime] = None,
+        date_end: Optional[datetime] = None,
+        decimal_character: Optional[Literal[",", "."]] = None,
+        export_blank_for_gray_form_status: Optional[bool] = None,
+        df_kwargs: Optional[Dict[str, Any]] = None,
+    ) -> Iterator[Union[Json, str, "pd.DataFrame"]]:
+        r"""
+        Export records in batches, one chunk at a time.
+
+        This is a memory-friendly alternative to `export_records` for large
+        projects. Rather than pulling every record in a single response, it
+        first exports the list of record IDs, then exports those records
+        `chunk_size` at a time, yielding each batch. Only one batch is held in
+        memory at once, so a 20,000+ record cohort can be streamed to disk (or
+        processed incrementally) without materializing the whole export. The
+        smaller requests are also gentler on the REDCap server.
+
+        Each yielded value has the same shape `export_records` would return for
+        the given `format_type`: a list of dicts for `'json'`, a string for
+        `'csv'`/`'xml'`, or a `pandas.DataFrame` for `'df'`.
+
+        Note:
+            Every batch is a self-contained export, so for the `'csv'` and
+            `'xml'` formats each chunk carries its own header. When writing the
+            chunks to a single file, either use `'json'`/`'df'` or account for
+            the repeated headers.
+
+        Args:
+            chunk_size:
+                Number of records to export per batch. Must be a positive
+                integer.
+            format_type:
+                Format of returned data. `'json'` returns json-decoded
+                objects while `'csv'` and `'xml'` return other formats.
+                `'df'` will attempt to return a `pandas.DataFrame`
+            records:
+                Array of record names specifying specific records to export.
+                By default, all record IDs are looked up and exported. When
+                provided, these IDs are batched directly without a separate
+                lookup
+            fields:
+                Single field name or array of field names specifying specific
+                fields to pull.
+                By default, all fields are exported
+            forms:
+                Single form name or array of form names to export. If in the
+                web UI, the form name has a space in it, replace the space
+                with an underscore.
+                By default, all forms are exported
+            events:
+                An array of unique event names from which to export records
+                Note:
+                    This only applies to longitudinal projects
+            raw_or_label:
+                Export the raw coded values or labels for the options of
+                multiple choice fields, or both
+            raw_or_label_headers:
+                Export the column names of the instrument as their raw
+                value or their labeled value
+            event_name:
+                Export the unique event name or the event label
+            record_type:
+                Database output structure type
+            export_survey_fields:
+                Specifies whether or not to export the survey identifier
+                field (e.g., "redcap_survey_identifier") or survey timestamp
+                fields (e.g., form_name+"_timestamp") when surveys are
+                utilized in the project
+            export_data_access_groups:
+                Specifies whether or not to export the
+                `"redcap_data_access_group"` field when data access groups
+                are utilized in the project
+
+                Note:
+                    This flag is only viable if the user whose token is
+                    being used to make the API request is *not* in a data
+                    access group. If the user is in a group, then this flag
+                    will revert to its default value.
+            export_checkbox_labels:
+                Specify whether to export checkbox values as their label on
+                export.
+            filter_logic:
+                Filter which records are returned using REDCap conditional syntax
+            date_begin:
+                Filter on records created after a date
+            date_end:
+                Filter on records created before a date
+            decimal_character:
+                Force all numbers into same decimal format
+            export_blank_for_gray_form_status:
+                Whether or not to export blank values for instrument complete status fields
+                that have a gray status icon
+            df_kwargs:
+                Passed to `pandas.read_csv` to control construction of each
+                returned DataFrame.
+                By default, `{'index_col': self.def_field}`
+
+        Raises:
+            ValueError: `chunk_size` is not a positive integer
+
+        Yields:
+            Union[List[Dict[str, Any]], str, pd.DataFrame]: One batch of
+            exported records per iteration
+
+        Examples:
+            Process a large project one batch at a time, without holding the
+            whole export in memory:
+
+            >>> chunks = proj.export_records_chunked(chunk_size=1000)  # doctest: +SKIP
+            >>> for chunk in chunks:  # doctest: +SKIP
+            ...     for record in chunk:
+            ...         print(record["record_id"])
+        """
+        if chunk_size < 1:
+            raise ValueError("chunk_size must be a positive integer")
+
+        if records is None:
+            record_ids = self._export_record_ids(
+                filter_logic=filter_logic,
+                date_begin=date_begin,
+                date_end=date_end,
+                events=events,
+            )
+        else:
+            # De-duplicate while preserving the caller's ordering
+            record_ids = list(dict.fromkeys(records))
+
+        for offset in range(0, len(record_ids), chunk_size):
+            record_batch = record_ids[offset : offset + chunk_size]
+            yield self.export_records(
+                format_type=format_type,
+                records=record_batch,
+                fields=fields,
+                forms=forms,
+                events=events,
+                raw_or_label=raw_or_label,
+                raw_or_label_headers=raw_or_label_headers,
+                event_name=event_name,
+                record_type=record_type,
+                export_survey_fields=export_survey_fields,
+                export_data_access_groups=export_data_access_groups,
+                export_checkbox_labels=export_checkbox_labels,
+                filter_logic=filter_logic,
+                date_begin=date_begin,
+                date_end=date_end,
+                decimal_character=decimal_character,
+                export_blank_for_gray_form_status=export_blank_for_gray_form_status,
+                df_kwargs=df_kwargs,
+            )
 
     # pylint: enable=too-many-locals
 

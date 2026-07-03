@@ -463,6 +463,68 @@ def test_export_records_strictly_enforces_format(simple_project):
         simple_project.export_records(format_type="unsupported")
 
 
+def test_export_records_chunked_yields_json(simple_project):
+    chunks = list(simple_project.export_records_chunked(chunk_size=1))
+
+    # the mocked project exports two record ids, so a chunk size of one
+    # should produce two batches
+    assert len(chunks) == 2
+    for chunk in chunks:
+        assert is_json(chunk)
+
+
+def test_export_records_chunked_single_batch(simple_project):
+    chunks = list(simple_project.export_records_chunked(chunk_size=100))
+
+    assert len(chunks) == 1
+    assert is_json(chunks[0])
+
+
+def test_export_records_chunked_df(simple_project):
+    chunks = list(simple_project.export_records_chunked(chunk_size=1, format_type="df"))
+
+    assert len(chunks) == 2
+    for chunk in chunks:
+        assert isinstance(chunk, pd.DataFrame)
+
+
+def test_export_records_chunked_batches_record_ids(simple_project, mocker):
+    mocker.patch.object(
+        simple_project,
+        "_export_record_ids",
+        return_value=["1", "2", "3", "4", "5"],
+    )
+    spy = mocker.spy(simple_project, "export_records")
+
+    list(simple_project.export_records_chunked(chunk_size=2))
+
+    requested_batches = [call.kwargs["records"] for call in spy.call_args_list]
+
+    assert requested_batches == [["1", "2"], ["3", "4"], ["5"]]
+
+
+def test_export_records_chunked_uses_given_records(simple_project, mocker):
+    id_lookup = mocker.spy(simple_project, "_export_record_ids")
+    spy = mocker.spy(simple_project, "export_records")
+
+    # duplicate id should be dropped while preserving order
+    list(
+        simple_project.export_records_chunked(
+            chunk_size=2, records=["1", "2", "1", "3"]
+        )
+    )
+
+    id_lookup.assert_not_called()
+    requested_batches = [call.kwargs["records"] for call in spy.call_args_list]
+
+    assert requested_batches == [["1", "2"], ["3"]]
+
+
+def test_export_records_chunked_rejects_bad_chunk_size(simple_project):
+    with pytest.raises(ValueError):
+        list(simple_project.export_records_chunked(chunk_size=0))
+
+
 def test_instruments_export(simple_project):
     response = simple_project.export_instruments()
 
@@ -552,7 +614,7 @@ def test_export_data_access_groups(simple_project):
     # When not passed, that key shouldn't be there
     records = simple_project.export_records()
     for record in records:
-        assert not "redcap_data_access_group" in record
+        assert "redcap_data_access_group" not in record
 
 
 def test_export_methods_handle_empty_data_error(simple_project, mocker):
@@ -585,7 +647,7 @@ def test_import_records(simple_project):
     response = simple_project.import_records(data)
 
     assert "count" in response
-    assert not "error" in response
+    assert "error" not in response
 
 
 def test_import_records_changes_with_return_content(simple_project):
@@ -612,7 +674,7 @@ def test_df_import(simple_project):
     response = simple_project.import_records(dataframe, import_format="df")
 
     assert "count" in response
-    assert not "error" in response
+    assert "error" not in response
 
 
 def test_import_records_background_process_true(simple_project, mocker):
