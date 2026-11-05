@@ -290,6 +290,12 @@ def handle_simple_project_file_request(**kwargs) -> Any:
     data = kwargs["data"]
     headers = kwargs["headers"]
     resp = {}
+    if "bad_record" in str(data):
+        resp = (
+            '<?xml version="1.0" encoding="UTF-8" ?>'
+            "<hash><error>The record 'bad_record' does not exist</error></hash>"
+        )
+        return (400, headers, resp)
     # file export
     if " filename" not in str(data):
         # name of the data file that was imported
