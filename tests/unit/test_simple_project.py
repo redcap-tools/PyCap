@@ -175,6 +175,19 @@ def test_file_import(simple_project):
         simple_project.import_file("1", "file", upload_fname, fobj)
 
 
+def test_file_import_raises_on_error(simple_project):
+    this_dir, _ = os.path.split(__file__)
+    upload_fname = os.path.join(this_dir, "data.txt")
+    with open(upload_fname, "r", encoding="UTF-8") as fobj:
+        with pytest.raises(RedcapError):
+            simple_project.import_file("bad_record", "file", upload_fname, fobj)
+
+
+def test_file_delete_raises_on_error(simple_project):
+    with pytest.raises(RedcapError):
+        simple_project.delete_file("bad_record", "file")
+
+
 def test_file_export(simple_project):
     record, field = "1", "file"
     content, headers = simple_project.export_file(record, field)

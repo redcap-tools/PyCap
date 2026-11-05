@@ -190,7 +190,12 @@ class _RCRequest:
 
         bad_request = False
 
-        if self.fmt == "json":
+        # empty json content is hardcoded, so check the real response instead
+        if self.config.return_empty_json:
+            bad_request = not response.ok or "<error>" in response.text.lower()
+            if bad_request:
+                content = response.text
+        elif self.fmt == "json":
             try:
                 bad_request = "error" in content.keys()  # type: ignore
             except AttributeError:
